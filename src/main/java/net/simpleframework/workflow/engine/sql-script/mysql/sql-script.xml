@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sql-script>
+	<version>1.0.0</version>
+	<name>script</name>
+	<description>workflow database script.</description>
+	<tran-sql>
+    <![CDATA[
+      create table sf_workflow_model (
+        id char(32) not null,
+        modelname varchar(64) not null, 
+        modeltext varchar(128),
+        status tinyint not null,
+        userid char(32) not null,
+        createdate datetime not null,
+        lastuserid varchar(32),
+        lastupdate datetime,
+        unique(modelname),
+        primary key(id)
+      );
+    ]]>
+	</tran-sql>
+	<tran-sql>
+    <![CDATA[
+      create table sf_workflow_model_lob (
+        id char(32) not null,
+        processschema text,
+        processimage mediumblob,
+        primary key(id)
+      );
+    ]]>
+	</tran-sql>
+	<tran-sql>
+    <![CDATA[
+      create table sf_workflow_process (
+        id char(32) not null,
+        modelid char(32) not null,
+        title varchar(128),
+        status tinyint not null,
+        userid char(32),
+        createdate datetime not null,
+        roleid char(32),
+        completedate datetime,
+        properties text,
+        primary key(id)
+      );
+    ]]>
+	</tran-sql>
+	<tran-sql>
+    <![CDATA[
+      create table sf_workflow_process_lob (
+        id char(32) not null,
+        processmodel text,
+        primary key(id)
+      );
+    ]]>
+	</tran-sql>
+	<tran-sql>
+    <![CDATA[
+      create table sf_workflow_delegation (
+        id char(32) not null,
+        delegationid char(32) not null,
+        delegationtype tinyint not null,
+        status tinyint not null,
+        createdate datetime not null,
+        userid char(32) not null,
+        roleid char(32),
+        runningdate datetime,
+        completedate datetime,
+        startdate datetime, 
+        enddate datetime,   
+        rulehandler varchar(128), 
+        description varchar(256),
+        primary key(id)
+      );
+    ]]>
+	</tran-sql>
+	<tran-sql>
+    <![CDATA[
+      create table sf_workflow_activity (
+        id char(32) not null,
+        processid char(32) not null,
+        previousid char(32),
+        tasknodeid char(32) not null,
+        tasknodetype tinyint not null,
+        status tinyint not null,
+        createdate datetime not null,
+        completedate datetime,
+        properties text,
+        primary key(id)
+      );
+    ]]>
+	</tran-sql>
+	<tran-sql>
+    <![CDATA[
+      create table sf_workflow_workitem (
+        id char(32) not null,
+        activityid char(32) not null,
+        status tinyint not null,
+        roleid char(32) not null, 
+        userid char(32) not null,
+        createdate datetime not null,
+        completedate datetime,
+        readmark bit,
+        primary key(id)
+      );
+    ]]>
+	</tran-sql>
+	<tran-sql>
+    <![CDATA[
+      create table sf_workflow_variable (
+        id char(32) not null,
+        variablesource tinyint not null,
+        sourceid char(32) not null,
+        variablename varchar(32) not null, 
+        stringvalue varchar(128),
+        clobvalue text,
+        unique(variablesource, sourceid, variablename),
+        primary key(id)
+      );
+    ]]>
+	</tran-sql>
+	<tran-sql>
+    <![CDATA[
+      create table sf_workflow_variable_log (
+        id char(32) not null,
+        variableid char(32) not null,
+        createdate datetime not null,
+        userid char(32) not null,
+        stringvalue varchar(128),
+        clobvalue text,
+        primary key(id)
+      );
+    ]]>
+	</tran-sql>
+</sql-script>
