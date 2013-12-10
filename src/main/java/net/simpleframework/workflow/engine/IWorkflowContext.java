@@ -1,6 +1,6 @@
 package net.simpleframework.workflow.engine;
 
-import net.simpleframework.ctx.service.ado.db.IDbModuleContext;
+import net.simpleframework.ctx.IADOModuleContext;
 import net.simpleframework.workflow.engine.participant.IParticipantModel;
 import net.simpleframework.workflow.engine.remote.IProcessRemote;
 
@@ -10,7 +10,7 @@ import net.simpleframework.workflow.engine.remote.IProcessRemote;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public interface IWorkflowContext extends IDbModuleContext {
+public interface IWorkflowContext extends IADOModuleContext {
 
 	static final String MODULE_NAME = "simple-workflow";
 

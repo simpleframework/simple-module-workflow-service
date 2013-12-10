@@ -150,7 +150,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 			final ProcessLobBean lob = new ProcessLobBean();
 			lob.setId(process.getId());
 			lob.setProcessModel(doc.toString().toCharArray());
-			context.getEntityManager(ProcessLobBean.class).insert(lob);
+			getEntityManager(ProcessLobBean.class).insert(lob);
 		}
 		return process;
 	}

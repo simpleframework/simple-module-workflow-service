@@ -47,8 +47,8 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 	public ProcessDocument getProcessDocument(final ProcessModelBean processModel) {
 		ProcessDocument doc = (ProcessDocument) processModel.getAttr("processDocument");
 		if (doc == null) {
-			final ProcessModelLobBean lob = context.getEntityManager(ProcessModelLobBean.class)
-					.getBean(processModel.getId());
+			final ProcessModelLobBean lob = getEntityManager(ProcessModelLobBean.class).getBean(
+					processModel.getId());
 			if (lob != null) {
 				processModel.setAttr("processDocument",
 						doc = new ProcessDocument(lob.getProcessSchema()));
@@ -80,7 +80,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 		final ProcessModelLobBean lob = new ProcessModelLobBean();
 		lob.setId(bean.getId());
 		lob.setProcessSchema(schema.toCharArray());
-		context.getEntityManager(ProcessModelLobBean.class).insert(lob);
+		getEntityManager(ProcessModelLobBean.class).insert(lob);
 
 		return bean;
 	}

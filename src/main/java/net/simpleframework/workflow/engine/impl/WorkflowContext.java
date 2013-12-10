@@ -1,12 +1,14 @@
 package net.simpleframework.workflow.engine.impl;
 
 import static net.simpleframework.common.I18n.$m;
+import net.simpleframework.ado.IADOManagerFactory;
 import net.simpleframework.ado.db.DbEntityTable;
+import net.simpleframework.ado.db.DbManagerFactory;
 import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.query.IDataQuery;
+import net.simpleframework.ctx.AbstractADOModuleContext;
 import net.simpleframework.ctx.IApplicationContext;
 import net.simpleframework.ctx.Module;
-import net.simpleframework.ctx.service.ado.db.AbstractDbModuleContext;
 import net.simpleframework.ctx.task.ExecutorRunnable;
 import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.ActivityLobBean;
@@ -35,32 +37,34 @@ import net.simpleframework.workflow.schema.AbstractTaskNode;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public abstract class WorkflowContext extends AbstractDbModuleContext implements IWorkflowContext {
-
-	@Override
-	protected DbEntityTable[] getEntityTables() {
-		return new DbEntityTable[] { new DbEntityTable(ProcessModelBean.class, "sf_workflow_model"),
-				new DbEntityTable(ProcessModelLobBean.class, "sf_workflow_model_lob").setNoCache(true),
-				new DbEntityTable(ProcessBean.class, "sf_workflow_process"),
-				new DbEntityTable(ProcessLobBean.class, "sf_workflow_process_lob").setNoCache(true),
-				new DbEntityTable(DelegationBean.class, "sf_workflow_delegation"),
-				new DbEntityTable(ActivityBean.class, "sf_workflow_activity"),
-				new DbEntityTable(ActivityLobBean.class, "sf_workflow_activity_lob").setNoCache(true),
-				new DbEntityTable(WorkitemBean.class, "sf_workflow_workitem"),
-				new DbEntityTable(VariableBean.class, "sf_workflow_variable"),
-				new DbEntityTable(VariableLogBean.class, "sf_workflow_variable_log") };
-	}
+public abstract class WorkflowContext extends AbstractADOModuleContext implements IWorkflowContext {
 
 	@Override
 	public void onInit(final IApplicationContext application) throws Exception {
 		super.onInit(application);
+
+		final IADOManagerFactory aFactory = getADOManagerFactory();
+		if (aFactory instanceof DbManagerFactory) {
+			((DbManagerFactory) aFactory).regist(new DbEntityTable(ProcessModelBean.class,
+					"sf_workflow_model"), new DbEntityTable(ProcessModelLobBean.class,
+					"sf_workflow_model_lob").setNoCache(true), new DbEntityTable(ProcessBean.class,
+					"sf_workflow_process"), new DbEntityTable(ProcessLobBean.class,
+					"sf_workflow_process_lob").setNoCache(true), new DbEntityTable(DelegationBean.class,
+					"sf_workflow_delegation"), new DbEntityTable(ActivityBean.class,
+					"sf_workflow_activity"), new DbEntityTable(ActivityLobBean.class,
+					"sf_workflow_activity_lob").setNoCache(true), new DbEntityTable(WorkitemBean.class,
+					"sf_workflow_workitem"), new DbEntityTable(VariableBean.class,
+					"sf_workflow_variable"), new DbEntityTable(VariableLogBean.class,
+					"sf_workflow_variable_log"));
+		}
 
 		// 引擎的初始化
 		getTaskExecutor().execute(new ExecutorRunnable() {
 			@Override
 			protected void task() throws Exception {
 				// 启动子流程监控
-				final IDataQuery<?> qs = getEntityManager(ActivityBean.class).queryBeans(
+				final IDataQuery<?> qs = ((DbManagerFactory) getADOManagerFactory()).getEntityManager(
+						ActivityBean.class).queryBeans(
 						new ExpressionValue("tasknodeType=? and (status=? or status=?)",
 								AbstractTaskNode.SUBNODE_TYPE, EActivityStatus.running,
 								EActivityStatus.waiting));
