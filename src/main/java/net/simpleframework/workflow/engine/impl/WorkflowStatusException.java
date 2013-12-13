@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.simpleframework.common.StringUtils;
-import net.simpleframework.common.th.RuntimeExceptionEx;
+import net.simpleframework.ctx.ModuleException;
 import net.simpleframework.workflow.engine.EActivityStatus;
 import net.simpleframework.workflow.engine.EProcessModelStatus;
 import net.simpleframework.workflow.engine.EProcessStatus;
@@ -18,7 +18,7 @@ import net.simpleframework.workflow.engine.EWorkitemStatus;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class WorkflowStatusException extends RuntimeExceptionEx {
+public class WorkflowStatusException extends ModuleException {
 
 	public WorkflowStatusException(final String msg, final Throwable cause) {
 		super(msg, cause);
@@ -34,11 +34,12 @@ public class WorkflowStatusException extends RuntimeExceptionEx {
 		BEANCLASS_LIST.add(EWorkitemStatus.class);
 	}
 
-	public static RuntimeException of(final String msg) {
+	public static WorkflowStatusException of(final String msg) {
 		return _of(WorkflowStatusException.class, msg);
 	}
 
-	public static RuntimeException of(final Enum<?> currentStatus, final Enum<?>... needStatus) {
+	public static WorkflowStatusException of(final Enum<?> currentStatus,
+			final Enum<?>... needStatus) {
 		return of($m(
 				"WorkflowStatusException." + BEANCLASS_LIST.indexOf(currentStatus.getDeclaringClass()),
 				currentStatus, StringUtils.join(needStatus, ", ")));
