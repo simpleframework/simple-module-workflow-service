@@ -21,7 +21,6 @@ import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
 import net.simpleframework.common.coll.KVMap;
-import net.simpleframework.common.object.ObjectFactory;
 import net.simpleframework.ctx.task.ExecutorRunnable;
 import net.simpleframework.ctx.task.ITaskExecutor;
 import net.simpleframework.workflow.WorkflowException;
@@ -562,7 +561,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			formClass = ((ProcessNode) tasknode.parent()).getFormClass();
 		}
 		if (formClass != null) {
-			workflowForm = ObjectFactory.singleton(formClass);
+			workflowForm = singleton(formClass);
 		}
 		return workflowForm;
 	}

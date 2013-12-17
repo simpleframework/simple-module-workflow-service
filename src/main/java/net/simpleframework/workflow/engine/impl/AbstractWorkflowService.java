@@ -12,7 +12,6 @@ import net.simpleframework.common.BeanUtils;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.common.coll.KVMap;
-import net.simpleframework.common.object.ObjectFactory;
 import net.simpleframework.ctx.script.IScriptEval;
 import net.simpleframework.ctx.script.ScriptEvalFactory;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
@@ -76,7 +75,7 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 		}
 		final ArrayList<IWorkflowListener> al = new ArrayList<IWorkflowListener>();
 		for (final String listenerClass : set) {
-			al.add((IWorkflowListener) ObjectFactory.singleton(listenerClass));
+			al.add((IWorkflowListener) singleton(listenerClass));
 		}
 		return al;
 	}
