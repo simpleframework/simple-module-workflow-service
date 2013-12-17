@@ -1,9 +1,9 @@
 package net.simpleframework.workflow.engine.impl;
 
 import static net.simpleframework.common.I18n.$m;
-import net.simpleframework.ado.IADOManagerFactory;
 import net.simpleframework.ado.db.DbEntityTable;
 import net.simpleframework.ado.db.DbManagerFactory;
+import net.simpleframework.ado.db.IDbEntityTableRegistry;
 import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.ctx.AbstractADOModuleContext;
@@ -37,26 +37,12 @@ import net.simpleframework.workflow.schema.AbstractTaskNode;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public abstract class WorkflowContext extends AbstractADOModuleContext implements IWorkflowContext {
+public abstract class WorkflowContext extends AbstractADOModuleContext implements IWorkflowContext,
+		IDbEntityTableRegistry {
 
 	@Override
 	public void onInit(final IApplicationContext application) throws Exception {
 		super.onInit(application);
-
-		final IADOManagerFactory aFactory = getADOManagerFactory();
-		if (aFactory instanceof DbManagerFactory) {
-			((DbManagerFactory) aFactory).regist(new DbEntityTable(ProcessModelBean.class,
-					"sf_workflow_model"), new DbEntityTable(ProcessModelLobBean.class,
-					"sf_workflow_model_lob").setNoCache(true), new DbEntityTable(ProcessBean.class,
-					"sf_workflow_process"), new DbEntityTable(ProcessLobBean.class,
-					"sf_workflow_process_lob").setNoCache(true), new DbEntityTable(DelegationBean.class,
-					"sf_workflow_delegation"), new DbEntityTable(ActivityBean.class,
-					"sf_workflow_activity"), new DbEntityTable(ActivityLobBean.class,
-					"sf_workflow_activity_lob").setNoCache(true), new DbEntityTable(WorkitemBean.class,
-					"sf_workflow_workitem"), new DbEntityTable(VariableBean.class,
-					"sf_workflow_variable"), new DbEntityTable(VariableLogBean.class,
-					"sf_workflow_variable_log"));
-		}
 
 		// 引擎的初始化
 		getTaskExecutor().execute(new ExecutorRunnable() {
@@ -75,6 +61,20 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 				}
 			}
 		});
+	}
+
+	@Override
+	public DbEntityTable[] createEntityTables() {
+		return new DbEntityTable[] { new DbEntityTable(ProcessModelBean.class, "sf_workflow_model"),
+				new DbEntityTable(ProcessModelLobBean.class, "sf_workflow_model_lob").setNoCache(true),
+				new DbEntityTable(ProcessBean.class, "sf_workflow_process"),
+				new DbEntityTable(ProcessLobBean.class, "sf_workflow_process_lob").setNoCache(true),
+				new DbEntityTable(DelegationBean.class, "sf_workflow_delegation"),
+				new DbEntityTable(ActivityBean.class, "sf_workflow_activity"),
+				new DbEntityTable(ActivityLobBean.class, "sf_workflow_activity_lob").setNoCache(true),
+				new DbEntityTable(WorkitemBean.class, "sf_workflow_workitem"),
+				new DbEntityTable(VariableBean.class, "sf_workflow_variable"),
+				new DbEntityTable(VariableLogBean.class, "sf_workflow_variable_log") };
 	}
 
 	@Override
