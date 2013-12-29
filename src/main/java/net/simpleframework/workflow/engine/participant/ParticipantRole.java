@@ -2,6 +2,7 @@ package net.simpleframework.workflow.engine.participant;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 
 import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.KVMap;
@@ -26,8 +27,9 @@ public class ParticipantRole extends AbstractParticipants {
 				.getParticipantType().getParticipant());
 		final IParticipantModel service = context.getParticipantService();
 		final ID roleId = service.getRole(participant).getId();
-		for (final ID userId : service.users(roleId, variables)) {
-			participants.add(new Participant(userId, roleId));
+		final Enumeration<ID> users = service.users(roleId, variables);
+		while (users.hasMoreElements()) {
+			participants.add(new Participant(users.nextElement(), roleId));
 		}
 		return participants;
 	}

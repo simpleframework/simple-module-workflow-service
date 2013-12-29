@@ -3,8 +3,8 @@ package net.simpleframework.workflow.engine.impl;
 import static net.simpleframework.common.I18n.$m;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +16,7 @@ import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.Convert;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
+import net.simpleframework.common.coll.CollectionUtils;
 import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.EProcessModelStatus;
@@ -176,9 +177,10 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 				if (pt instanceof User) {
 					final ID userId2 = service.getUser(participant).getId();
 					if (userId.equals(userId2)) {
-						final Collection<ID> roleIds = service.roles(userId, variables);
-						if (roleIds.size() > 0) {
-							items.add(new InitiateItem(processModel, userId, roleIds));
+						final Enumeration<ID> roleIds = service.roles(userId, variables);
+						while (roleIds.hasMoreElements()) {
+							items.add(new InitiateItem(processModel, userId, CollectionUtils
+									.toList(roleIds)));
 						}
 					}
 				} else if (pt instanceof Role) {
