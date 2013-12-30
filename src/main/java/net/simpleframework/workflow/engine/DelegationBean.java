@@ -2,7 +2,7 @@ package net.simpleframework.workflow.engine;
 
 import java.util.Date;
 
-import net.simpleframework.ado.bean.AbstractIdBean;
+import net.simpleframework.ado.bean.AbstractDescriptionBean;
 import net.simpleframework.common.ID;
 
 /**
@@ -11,7 +11,7 @@ import net.simpleframework.common.ID;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class DelegationBean extends AbstractIdBean {
+public class DelegationBean extends AbstractDescriptionBean {
 
 	private EDelegationSource delegationSource;
 
@@ -36,11 +36,6 @@ public class DelegationBean extends AbstractIdBean {
 	 * 定义该委托类，参考IDelegationRuleHandler
 	 */
 	private String ruleHandler;
-
-	/**
-	 * 委托描述
-	 */
-	private String description;
 
 	public EDelegationSource getDelegationSource() {
 		return delegationSource;
@@ -128,14 +123,6 @@ public class DelegationBean extends AbstractIdBean {
 
 	public void setRuleHandler(final String ruleHandler) {
 		this.ruleHandler = ruleHandler;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(final String description) {
-		this.description = description;
 	}
 
 	private static final long serialVersionUID = -642924978376103383L;
