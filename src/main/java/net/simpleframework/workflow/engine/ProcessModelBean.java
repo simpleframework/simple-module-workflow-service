@@ -2,6 +2,7 @@ package net.simpleframework.workflow.engine;
 
 import java.util.Date;
 
+import net.simpleframework.ado.db.common.EntityInterceptor;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
 
@@ -11,6 +12,8 @@ import net.simpleframework.common.StringUtils;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
+@EntityInterceptor(listenerTypes = { "net.simpleframework.module.log.EntityUpdateLogAdapter",
+		"net.simpleframework.module.log.EntityDeleteLogAdapter" }, columns = { "status" })
 public class ProcessModelBean extends AbstractWorkflowBean {
 	private String modelName, modelText;
 
