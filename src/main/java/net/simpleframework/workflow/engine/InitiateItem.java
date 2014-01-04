@@ -77,7 +77,7 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 
 	public ProcessModelBean model() {
 		if (processModel == null) {
-			processModel = context.getModelService().getBean(getModelId());
+			processModel = context.getProcessModelService().getBean(getModelId());
 		}
 		return processModel;
 	}
@@ -115,7 +115,7 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 	public void doTransitions() {
 		_transitions.clear();
 
-		final IProcessModelService service = context.getModelService();
+		final IProcessModelService service = context.getProcessModelService();
 		final ProcessModelBean processModel = model();
 		final IScriptEval script = service.createScriptEval(processModel);
 		final StartNode startNode = service.getProcessDocument(processModel).getProcessNode()

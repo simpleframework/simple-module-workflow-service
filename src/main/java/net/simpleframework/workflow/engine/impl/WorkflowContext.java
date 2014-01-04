@@ -83,7 +83,7 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 	}
 
 	@Override
-	public IProcessModelService getModelService() {
+	public IProcessModelService getProcessModelService() {
 		return singleton(ProcessModelService.class);
 	}
 

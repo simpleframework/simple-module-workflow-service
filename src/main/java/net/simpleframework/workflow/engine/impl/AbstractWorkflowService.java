@@ -99,7 +99,7 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 	}
 
 	protected ProcessModelService getModelService() {
-		return (ProcessModelService) context.getModelService();
+		return (ProcessModelService) context.getProcessModelService();
 	}
 
 	protected ProcessService getProcessService() {

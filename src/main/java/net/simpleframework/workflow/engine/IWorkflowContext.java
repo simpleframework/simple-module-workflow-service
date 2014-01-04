@@ -19,7 +19,7 @@ public interface IWorkflowContext extends IModuleContext {
 	 * 
 	 * @return
 	 */
-	IProcessModelService getModelService();
+	IProcessModelService getProcessModelService();
 
 	/**
 	 * 流程实例管理器
