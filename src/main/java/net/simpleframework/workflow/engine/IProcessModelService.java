@@ -66,12 +66,4 @@ public interface IProcessModelService extends IDbBeanService<ProcessModelBean>,
 	 * @return
 	 */
 	boolean isStartProcess(ID userId, Object model);
-
-	/**
-	 * 设置模型的状态
-	 * 
-	 * @param processModel
-	 * @param status
-	 */
-	void setStatus(ProcessModelBean processModel, EProcessModelStatus status);
 }

@@ -202,12 +202,6 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 	}
 
 	@Override
-	public void setStatus(final ProcessModelBean processModel, final EProcessModelStatus status) {
-		processModel.setStatus(status);
-		update(new String[] { "status" }, processModel);
-	}
-
-	@Override
 	public KVMap createVariables(final ProcessModelBean model) {
 		final KVMap variables = super.createVariables(model);
 		variables.add("model", model);
