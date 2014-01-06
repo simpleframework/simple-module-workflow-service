@@ -3,6 +3,7 @@ package net.simpleframework.workflow.engine;
 import java.util.Date;
 import java.util.Properties;
 
+import net.simpleframework.ado.db.common.EntityInterceptor;
 import net.simpleframework.common.ID;
 
 /**
@@ -11,6 +12,8 @@ import net.simpleframework.common.ID;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
+@EntityInterceptor(listenerTypes = { "net.simpleframework.module.log.EntityUpdateLogAdapter",
+		"net.simpleframework.module.log.EntityDeleteLogAdapter" }, columns = { "title", "status" })
 public class ProcessBean extends AbstractWorkflowBean {
 	private ID modelId;
 
@@ -84,6 +87,11 @@ public class ProcessBean extends AbstractWorkflowBean {
 
 	public void setProperties(final Properties properties) {
 		this.properties = properties;
+	}
+
+	@Override
+	public String toString() {
+		return getTitle();
 	}
 
 	public static final String processId = "__process_Id";
