@@ -125,4 +125,9 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 		}
 		TransitionUtils.doTransitions(startNode, script, _transitions);
 	}
+
+	@Override
+	public String toString() {
+		return model().toString();
+	}
 }
