@@ -100,7 +100,7 @@
         userid char(32) not null,
         createdate datetime not null,
         completedate datetime,
-        readmark bit,
+        readmark tinyint(1),
         primary key(id)
       );
     ]]>
