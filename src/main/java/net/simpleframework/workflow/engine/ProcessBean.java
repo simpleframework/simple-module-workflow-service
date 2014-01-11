@@ -94,7 +94,5 @@ public class ProcessBean extends AbstractWorkflowBean {
 		return getTitle();
 	}
 
-	public static final String processId = "__process_Id";
-
 	private static final long serialVersionUID = -4249661933122865392L;
 }
