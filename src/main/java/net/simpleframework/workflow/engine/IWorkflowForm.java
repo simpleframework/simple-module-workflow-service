@@ -1,9 +1,6 @@
 package net.simpleframework.workflow.engine;
 
-import java.awt.Dimension;
 import java.util.Map;
-
-import net.simpleframework.common.coll.KVMap;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -28,9 +25,7 @@ public interface IWorkflowForm {
 	 * 
 	 * @param variables
 	 */
-	void bindVariables(KVMap variables);
+	void bindVariables(Map<String, Object> variables);
 
 	String getTitle();
-
-	Dimension getSize();
 }
