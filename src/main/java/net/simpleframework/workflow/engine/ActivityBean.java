@@ -96,7 +96,5 @@ public class ActivityBean extends AbstractWorkflowBean {
 	// return taskNode;
 	// }
 
-	public static final String activityId = "__activity_Id";
-
 	private static final long serialVersionUID = 5146309554672912773L;
 }

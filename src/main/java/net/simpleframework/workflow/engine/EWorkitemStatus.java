@@ -17,6 +17,14 @@ public enum EWorkitemStatus {
 		}
 	},
 
+	suspended {
+
+		@Override
+		public String toString() {
+			return $m("EWorkitemStatus.suspended");
+		}
+	},
+
 	complete {
 
 		@Override
@@ -30,14 +38,6 @@ public enum EWorkitemStatus {
 		@Override
 		public String toString() {
 			return $m("EWorkitemStatus.abort");
-		}
-	},
-
-	suspended {
-
-		@Override
-		public String toString() {
-			return $m("EWorkitemStatus.suspended");
 		}
 	}
 }
