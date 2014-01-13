@@ -71,7 +71,7 @@ public class WorkitemBean extends AbstractWorkflowBean {
 		this.readMark = readMark;
 	}
 
-	public static final String workitemId = "__workitem_Id";
+	// public static final String workitemId = "__workitem_Id";
 
 	private static final long serialVersionUID = 1553478269588195799L;
 }
