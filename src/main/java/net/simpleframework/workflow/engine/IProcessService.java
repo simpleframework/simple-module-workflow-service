@@ -95,5 +95,5 @@ public interface IProcessService extends IVariableAware<ProcessBean>, IListenerA
 	 * @param process
 	 * @param title
 	 */
-	void setProcessTitle(ProcessBean process, String title);
+	void saveProcessTitle(ProcessBean process, String title);
 }
