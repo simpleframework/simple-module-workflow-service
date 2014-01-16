@@ -4,7 +4,6 @@ import static net.simpleframework.common.I18n.$m;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,7 +15,6 @@ import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.Convert;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
-import net.simpleframework.common.coll.CollectionUtils;
 import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.EProcessModelStatus;
@@ -157,7 +155,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 		if (items != null) {
 			items = items.clone();
 			for (final InitiateItem item : items) {
-				if (item.model() == null || item.getInitiateRoles().size() == 0) {
+				if (item.model() == null || !item.roles().hasMoreElements()) {
 					items.remove(item.getModelId());
 				}
 			}
@@ -177,16 +175,13 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 				if (pt instanceof User) {
 					final ID userId2 = service.getUser(participant).getId();
 					if (userId.equals(userId2)) {
-						final Enumeration<ID> roleIds = service.roles(userId, variables);
-						while (roleIds.hasMoreElements()) {
-							items.add(new InitiateItem(processModel, userId, CollectionUtils
-									.toList(roleIds)));
-						}
+						items.add(new InitiateItem(processModel, userId, service.getUser(userId)
+								.getRoleId(), variables));
 					}
 				} else if (pt instanceof Role) {
 					final ID roleId = service.getRole(participant).getId();
 					if (service.getUser(userId).isMember(roleId, variables)) {
-						items.add(new InitiateItem(processModel, userId, roleId));
+						items.add(new InitiateItem(processModel, userId, roleId, variables));
 					}
 				}
 			} else {

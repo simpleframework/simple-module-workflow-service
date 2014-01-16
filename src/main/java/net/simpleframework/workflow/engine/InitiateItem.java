@@ -1,9 +1,7 @@
 package net.simpleframework.workflow.engine;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -22,39 +20,28 @@ import net.simpleframework.workflow.schema.TransitionNode;
  */
 public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 
-	/**
-	 * 流程模型id
-	 */
+	/* 流程模型id */
 	private final ID modelId;
 
 	private final ID userId;
 
-	/**
-	 * 传递给流程实例的变量
-	 */
-	private final KVMap variables = new KVMap();
+	/* 启动角色 */
+	private ID roleId;
 
-	private final ArrayList<ID> initiateRoles = new ArrayList<ID>();
+	/* 传递给流程实例的变量 */
+	private final Map<String, Object> variables = new KVMap();
 
-	/**
-	 * 登录用户可能有多个角色，客户端需要指定一个角色作为流程启动者
-	 */
-	private ID selectedRoleId;
-
-	/**
-	 * 存放开始节点的手动转移
-	 */
+	/* 存放开始节点的手动转移 */
 	private final Map<String, TransitionNode> _transitions = new LinkedHashMap<String, TransitionNode>();
 
-	public InitiateItem(final ProcessModelBean processModel, final ID userId,
-			final Collection<ID> roleIds) {
+	public InitiateItem(final ProcessModelBean processModel, final ID userId, final ID roleId,
+			final Map<String, Object> variables) {
 		this.modelId = processModel.getId();
 		this.userId = userId;
-		initiateRoles.addAll(roleIds);
-	}
-
-	public InitiateItem(final ProcessModelBean processModel, final ID userId, final ID roleId) {
-		this(processModel, userId, Arrays.asList(roleId));
+		this.roleId = roleId;
+		if (variables != null) {
+			this.variables.putAll(variables);
+		}
 	}
 
 	public ID getModelId() {
@@ -65,12 +52,13 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 		return userId;
 	}
 
-	public KVMap getVariables() {
+	public Map<String, Object> getVariables() {
 		return variables;
 	}
 
-	public Collection<ID> getInitiateRoles() {
-		return initiateRoles;
+	/* 其它可启动的角色 */
+	public Enumeration<ID> roles() {
+		return context.getParticipantService().roles(getUserId(), getVariables());
 	}
 
 	private transient ProcessModelBean processModel;
@@ -82,17 +70,12 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 		return processModel;
 	}
 
-	public ID getSelectedRoleId() {
-		if (selectedRoleId != null) {
-			return selectedRoleId;
-		} else {
-			Iterator<ID> it;
-			return (it = getInitiateRoles().iterator()).hasNext() ? it.next() : null;
-		}
+	public ID getRoleId() {
+		return roleId;
 	}
 
-	public void setSelectedRoleId(final ID selected) {
-		this.selectedRoleId = selected;
+	public void setRoleId(final ID roleId) {
+		this.roleId = roleId;
 	}
 
 	public boolean isTransitionManual() {

@@ -68,7 +68,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public ProcessBean startProcess(final InitiateItem initiateItem, final String topic) {
-		final ID roleId = initiateItem.getSelectedRoleId();
+		final ID roleId = initiateItem.getRoleId();
 		if (roleId == null) {
 			throw WorkflowException.of($m("ProcessService.2"));
 		}
@@ -118,7 +118,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	private ProcessBean startProcess(final ProcessModelBean processModel, final ID userId,
-			final ID roleId, final KVMap variables, final Properties properties, final String topic) {
+			final ID roleId, final Map<String, Object> variables, final Properties properties,
+			final String topic) {
 		if (processModel.getStatus() != EProcessModelStatus.deploy) {
 			throw WorkflowException.of($m("ProcessService.1"));
 		}
