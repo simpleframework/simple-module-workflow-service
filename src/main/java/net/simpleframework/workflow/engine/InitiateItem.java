@@ -1,11 +1,11 @@
 package net.simpleframework.workflow.engine;
 
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import net.simpleframework.common.ID;
+import net.simpleframework.common.coll.CollectionUtils;
 import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.common.object.ObjectEx;
 import net.simpleframework.ctx.script.IScriptEval;
@@ -28,8 +28,11 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 	/* 启动角色 */
 	private ID roleId;
 
+	/* 实际启动角色 */
+	private ID selectedRoleId;
+
 	/* 传递给流程实例的变量 */
-	private final Map<String, Object> variables = new KVMap();
+	private final Map<String, Object> variables = new KVMap().add("userRole", true);
 
 	/* 存放开始节点的手动转移 */
 	private final Map<String, TransitionNode> _transitions = new LinkedHashMap<String, TransitionNode>();
@@ -57,8 +60,9 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 	}
 
 	/* 其它可启动的角色 */
-	public Enumeration<ID> roles() {
-		return context.getParticipantService().roles(getUserId(), getVariables());
+	public Collection<ID> roles() {
+		return CollectionUtils.toList(context.getParticipantService().roles(getUserId(),
+				getVariables()));
 	}
 
 	private transient ProcessModelBean processModel;
@@ -76,6 +80,14 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 
 	public void setRoleId(final ID roleId) {
 		this.roleId = roleId;
+	}
+
+	public ID getSelectedRoleId() {
+		return selectedRoleId == null ? getRoleId() : selectedRoleId;
+	}
+
+	public void setSelectedRoleId(final ID selectedRoleId) {
+		this.selectedRoleId = selectedRoleId;
 	}
 
 	public boolean isTransitionManual() {

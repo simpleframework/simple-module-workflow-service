@@ -155,7 +155,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 		if (items != null) {
 			items = items.clone();
 			for (final InitiateItem item : items) {
-				if (item.model() == null || !item.roles().hasMoreElements()) {
+				if (item.model() == null || item.roles().size() == 0) {
 					items.remove(item.getModelId());
 				}
 			}
