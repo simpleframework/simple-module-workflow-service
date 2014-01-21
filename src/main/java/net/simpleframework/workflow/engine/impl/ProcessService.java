@@ -249,11 +249,12 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
-	public KVMap createVariables(final ProcessBean process) {
-		final KVMap variables = getModelService().createVariables(getProcessModel(process));
-		variables.add("process", process);
+	public Map<String, Object> createVariables(final ProcessBean process) {
+		final Map<String, Object> variables = getModelService().createVariables(
+				getProcessModel(process));
+		variables.put("process", process);
 		for (final String variable : getVariableNames(process)) {
-			variables.add(variable, getVariable(process, variable));
+			variables.put(variable, getVariable(process, variable));
 		}
 		return variables;
 	}

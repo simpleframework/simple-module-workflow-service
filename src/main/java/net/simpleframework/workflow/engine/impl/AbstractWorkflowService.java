@@ -44,7 +44,7 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 		return script;
 	}
 
-	public KVMap createVariables(final T bean) {
+	public Map<String, Object> createVariables(final T bean) {
 		final KVMap variables = new KVMap();
 		return variables;
 	}

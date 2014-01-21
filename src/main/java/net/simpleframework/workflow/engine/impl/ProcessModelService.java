@@ -197,9 +197,9 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 	}
 
 	@Override
-	public KVMap createVariables(final ProcessModelBean model) {
-		final KVMap variables = super.createVariables(model);
-		variables.add("model", model);
+	public Map<String, Object> createVariables(final ProcessModelBean model) {
+		final Map<String, Object> variables = super.createVariables(model);
+		variables.put("model", model);
 		return variables;
 	}
 

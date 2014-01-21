@@ -1,6 +1,7 @@
 package net.simpleframework.workflow.engine;
 
-import net.simpleframework.common.coll.KVMap;
+import java.util.Map;
+
 import net.simpleframework.ctx.script.IScriptEval;
 
 /**
@@ -23,5 +24,5 @@ public interface IScriptAware<T extends AbstractWorkflowBean> {
 	 * @param bean
 	 * @return
 	 */
-	KVMap createVariables(final T bean);
+	Map<String, Object> createVariables(final T bean);
 }

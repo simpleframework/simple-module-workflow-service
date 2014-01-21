@@ -514,11 +514,12 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	@Override
-	public KVMap createVariables(final ActivityBean activity) {
-		final KVMap variables = getProcessService().createVariables(getProcessBean(activity));
-		variables.add("activity", activity);
+	public Map<String, Object> createVariables(final ActivityBean activity) {
+		final Map<String, Object> variables = getProcessService().createVariables(
+				getProcessBean(activity));
+		variables.put("activity", activity);
 		for (final String variable : getVariableNames(activity)) {
-			variables.add(variable, getVariable(activity, variable));
+			variables.put(variable, getVariable(activity, variable));
 		}
 		return variables;
 	}

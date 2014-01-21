@@ -239,9 +239,10 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	@Override
-	public KVMap createVariables(final WorkitemBean workitem) {
-		final KVMap variables = getActivityService().createVariables(getActivity(workitem));
-		variables.add("workitem", workitem);
+	public Map<String, Object> createVariables(final WorkitemBean workitem) {
+		final Map<String, Object> variables = getActivityService().createVariables(
+				getActivity(workitem));
+		variables.put("workitem", workitem);
 		return variables;
 	}
 
