@@ -74,7 +74,7 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 	private void doInit(final ActivityBean activity) {
 		activityId = activity.getId();
 
-		final AbstractTaskNode tasknode = context.getActivityService().taskNode(activity);
+		final AbstractTaskNode tasknode = context.getActivityService().getTaskNode(activity);
 		final IScriptEval script;
 		if (workitemComplete != null) {
 			script = context.getWorkitemService().createScriptEval(workitemComplete.getWorkitem());

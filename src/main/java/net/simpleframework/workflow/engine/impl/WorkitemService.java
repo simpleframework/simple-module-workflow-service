@@ -32,6 +32,7 @@ import net.simpleframework.workflow.engine.event.IWorkflowListener;
 import net.simpleframework.workflow.engine.participant.Participant;
 import net.simpleframework.workflow.engine.participant.ParticipantUtils;
 import net.simpleframework.workflow.schema.AbstractTaskNode;
+import net.simpleframework.workflow.schema.StartNode;
 import net.simpleframework.workflow.schema.UserNode;
 
 /**
@@ -45,6 +46,11 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	@Override
 	public ActivityBean getActivity(final WorkitemBean workitem) {
 		return aService.getBean(workitem.getActivityId());
+	}
+
+	@Override
+	public ProcessBean getProcessBean(final WorkitemBean workitem) {
+		return pService.getBean(getActivity(workitem).getProcessId());
 	}
 
 	@Override
@@ -80,7 +86,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			} else {
 				final Collection<Participant> participants = PropSequential.list(activity);
 				if (participants.size() > 0) { // 获取顺序执行的参与者
-					final AbstractTaskNode tasknode = aService.taskNode(activity);
+					final AbstractTaskNode tasknode = aService.getTaskNode(activity);
 					final Iterator<Participant> it = participants.iterator();
 					if (ParticipantUtils.isInstanceShared(tasknode)) {
 						insert(createWorkitem(activity, it.next()));
@@ -131,7 +137,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			final IDataQuery<ActivityBean> qs = aService.getNextActivities(activity);
 			ActivityBean nextActivity;
 			while ((nextActivity = qs.next()) != null) {
-				if (!(aService.taskNode(nextActivity) instanceof UserNode)) {
+				if (!(aService.getTaskNode(nextActivity) instanceof UserNode)) {
 					throw WorkflowException.of($m("WorkitemService.0"));
 				}
 				WorkitemBean workitem2;
@@ -150,7 +156,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		} else if (status == EActivityStatus.running) {
 			// 顺序，单实例
 
-			if (ParticipantUtils.isSequential(aService.taskNode(activity))) {
+			if (ParticipantUtils.isSequential(aService.getTaskNode(activity))) {
 				final IDataQuery<WorkitemBean> qs = getWorkitemList(activity, EWorkitemStatus.running);
 				WorkitemBean workitem2;
 				if ((workitem2 = qs.next()) != null) {
@@ -251,7 +257,19 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	@Override
 	public void deleteProcess(final WorkitemBean workitem) {
 		// 检测是否含有完成状态，否则不能删除
-
+		final Object processId = getActivity(workitem).getProcessId();
+		final IDataQuery<ActivityBean> qs = aService.query("processId=?", processId);
+		ActivityBean activity;
+		while ((activity = qs.next()) != null) {
+			if (aService.getTaskNode(activity) instanceof StartNode) {
+				continue;
+			}
+			final EActivityStatus status = activity.getStatus();
+			if (status != EActivityStatus.running) {
+				throw WorkflowException.of($m("WorkitemService.3"));
+			}
+		}
+		pService.delete(processId);
 	}
 
 	WorkitemBean createWorkitem(final ActivityBean activity, final Participant participant) {

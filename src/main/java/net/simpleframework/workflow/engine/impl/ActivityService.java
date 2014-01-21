@@ -89,7 +89,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		activity.setCompleteDate(new Date());
 		update(new String[] { "completeDate", "status" }, activity);
 
-		final AbstractTaskNode tasknode = taskNode(activity);
+		final AbstractTaskNode tasknode = getTaskNode(activity);
 		if (tasknode instanceof UserNode) {
 			// 放弃未完成的工作项
 			final IDataQuery<WorkitemBean> qs = wService.getWorkitemList(activity,
@@ -186,7 +186,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		if (activity == null) {
 			return;
 		}
-		final SubNode sub = (SubNode) taskNode(activity);
+		final SubNode sub = (SubNode) getTaskNode(activity);
 		if (sub.isSync()) {
 			// 设置返回的变量，仅在同步方式
 			final ProcessService service = (ProcessService) context.getProcessService();
@@ -254,7 +254,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 						final ProcessBean mProcess = getProcessBean(nActivity);
 						final IProcessService service = context.getProcessService();
-						final SubNode sub = (SubNode) taskNode(nActivity);
+						final SubNode sub = (SubNode) getTaskNode(nActivity);
 						final KVMap data = new KVMap(); // 提交的参数
 
 						final EActivityStatus status = nActivity.getStatus();
@@ -417,7 +417,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 		final ActivityBean preActivity = getPreActivity(activity, tasknode);
 		AbstractTaskNode to;
-		if (preActivity == null || !((to = taskNode(preActivity)) instanceof UserNode)) {
+		if (preActivity == null || !((to = getTaskNode(preActivity)) instanceof UserNode)) {
 			throw WorkflowException.of($m("ActivityService.1"));
 		}
 
@@ -484,7 +484,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		ActivityBean preActivity = getPreActivity(activity);
 		while (preActivity != null && tasknode != null) {
 			if (tasknode.equals(preActivity.getTasknodeId())
-					|| tasknode.equals(taskNode(preActivity).getName())) {
+					|| tasknode.equals(getTaskNode(preActivity).getName())) {
 				break;
 			}
 			preActivity = getPreActivity(preActivity);
@@ -498,7 +498,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	@Override
-	public AbstractTaskNode taskNode(final ActivityBean activity) {
+	public AbstractTaskNode getTaskNode(final ActivityBean activity) {
 		final AbstractTaskNode taskNode = (AbstractTaskNode) pService.getProcessNode(
 				getProcessBean(activity)).getNodeById(activity.getTasknodeId());
 		assert taskNode != null;
@@ -517,7 +517,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public Object getVariable(final ActivityBean activity, final String name) {
-		final VariableNode variableNode = taskNode(activity).getVariableNodeByName(name);
+		final VariableNode variableNode = getTaskNode(activity).getVariableNodeByName(name);
 		return vService.getVariableValue(activity, variableNode);
 	}
 
@@ -533,7 +533,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public Collection<String> getVariableNames(final ActivityBean activity) {
-		return taskNode(activity).variables().keySet();
+		return getTaskNode(activity).variables().keySet();
 	}
 
 	// private final KVMap formInstancCache = new KVMap();
@@ -545,7 +545,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 		Object workflowForm = null;
 		String formClass = null;
-		final AbstractTaskNode tasknode = taskNode(activity);
+		final AbstractTaskNode tasknode = getTaskNode(activity);
 		if (tasknode instanceof UserNode) {
 			formClass = ((UserNode) tasknode).getFormClass();
 		}

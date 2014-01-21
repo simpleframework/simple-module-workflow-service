@@ -140,7 +140,8 @@ public class VariableService extends AbstractWorkflowService<VariableBean> {
 				variableNode = pService.getProcessNode((ProcessBean) bean).getVariableNodeByName(
 						names[i]);
 			} else if (bean instanceof ActivityBean) {
-				variableNode = aService.taskNode((ActivityBean) bean).getVariableNodeByName(names[i]);
+				variableNode = aService.getTaskNode((ActivityBean) bean)
+						.getVariableNodeByName(names[i]);
 			}
 			if (variableNode == null) {
 				continue;

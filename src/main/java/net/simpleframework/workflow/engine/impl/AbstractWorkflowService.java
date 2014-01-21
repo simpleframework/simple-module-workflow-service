@@ -67,7 +67,7 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 		if (bean instanceof ProcessBean) {
 			set2 = pService.getProcessNode((ProcessBean) bean).listeners();
 		} else if (bean instanceof ActivityBean) {
-			set2 = aService.taskNode((ActivityBean) bean).listeners();
+			set2 = aService.getTaskNode((ActivityBean) bean).listeners();
 		}
 		if (set2 != null) {
 			set.addAll(set2);

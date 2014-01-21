@@ -34,7 +34,7 @@ public interface IActivityService extends IVariableAware<ActivityBean>,
 	 * @param activity
 	 * @return
 	 */
-	AbstractTaskNode taskNode(ActivityBean activity);
+	AbstractTaskNode getTaskNode(ActivityBean activity);
 
 	/**
 	 * 获取指定流程实例下的所有环节实例，默认按创建日期排序
