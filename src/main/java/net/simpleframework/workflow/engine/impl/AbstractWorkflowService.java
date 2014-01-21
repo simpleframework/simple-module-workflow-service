@@ -97,11 +97,10 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 		return false;
 	}
 
-	protected static ProcessModelService mService = (ProcessModelService) context
-			.getProcessModelService();
-	protected static ProcessService pService = (ProcessService) context.getProcessService();
-	protected static ActivityService aService = (ActivityService) context.getActivityService();
-	protected static WorkitemService wService = (WorkitemService) context.getWorkitemService();
+	protected static ProcessModelService mService = (ProcessModelService) IWorkflowContextAware.mService;
+	protected static ProcessService pService = (ProcessService) IWorkflowContextAware.pService;
+	protected static ActivityService aService = (ActivityService) IWorkflowContextAware.aService;
+	protected static WorkitemService wService = (WorkitemService) IWorkflowContextAware.wService;
 
 	protected static VariableService vService = singleton(VariableService.class);
 }

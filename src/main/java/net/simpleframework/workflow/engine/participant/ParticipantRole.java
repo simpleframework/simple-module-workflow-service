@@ -25,9 +25,8 @@ public class ParticipantRole extends AbstractParticipants {
 		final TransitionNode transition = (TransitionNode) variables.get("transition");
 		final String participant = ScriptEvalUtils.replaceExpr(script, ((UserNode) transition.to())
 				.getParticipantType().getParticipant());
-		final IParticipantModel service = context.getParticipantService();
-		final ID roleId = service.getRole(participant).getId();
-		final Enumeration<ID> users = service.users(roleId, variables);
+		final ID roleId = permission.getRole(participant).getId();
+		final Enumeration<ID> users = permission.users(roleId, variables);
 		while (users.hasMoreElements()) {
 			participants.add(new Participant(users.nextElement(), roleId));
 		}

@@ -21,7 +21,6 @@ import net.simpleframework.workflow.engine.InitiateItem;
 import net.simpleframework.workflow.engine.InitiateItems;
 import net.simpleframework.workflow.engine.ProcessModelBean;
 import net.simpleframework.workflow.engine.ProcessModelLobBean;
-import net.simpleframework.workflow.engine.participant.IParticipantModel;
 import net.simpleframework.workflow.schema.AbstractParticipantType;
 import net.simpleframework.workflow.schema.AbstractParticipantType.Role;
 import net.simpleframework.workflow.schema.AbstractParticipantType.User;
@@ -63,7 +62,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 		if (userId != null) {
 			bean.setUserId(userId);
 			if (!StringUtils.hasText(processNode.getAuthor())) {
-				processNode.setAuthor(context.getParticipantService().getUser(userId).getText());
+				processNode.setAuthor(permission.getUser(userId).getText());
 			}
 		}
 		bean.setModelName(processNode.getName());
@@ -158,7 +157,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 			}
 			return items;
 		}
-		final IParticipantModel service = context.getParticipantService();
+
 		items = new InitiateItems();
 		final IDataQuery<ProcessModelBean> query = getModelList(EProcessModelStatus.deploy);
 		ProcessModelBean processModel;
@@ -170,14 +169,14 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 				final AbstractParticipantType pt = ((Manual) startupType).getParticipantType();
 				final String participant = pt.getParticipant();
 				if (pt instanceof User) {
-					final ID userId2 = service.getUser(participant).getId();
+					final ID userId2 = permission.getUser(participant).getId();
 					if (userId.equals(userId2)) {
-						items.add(new InitiateItem(processModel, userId, service.getUser(userId)
+						items.add(new InitiateItem(processModel, userId, permission.getUser(userId)
 								.getRoleId(), variables));
 					}
 				} else if (pt instanceof Role) {
-					final ID roleId = service.getRole(participant).getId();
-					if (service.getUser(userId).isMember(roleId, variables)) {
+					final ID roleId = permission.getRole(participant).getId();
+					if (permission.getUser(userId).isMember(roleId, variables)) {
 						items.add(new InitiateItem(processModel, userId, roleId, variables));
 					}
 				}

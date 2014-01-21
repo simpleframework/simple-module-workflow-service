@@ -17,8 +17,7 @@ public class Participant implements IWorkflowContextAware {
 
 	public Participant(final ID userId, final ID roleId) {
 		this.userId = userId;
-		this.roleId = roleId != null ? roleId : context.getParticipantService().getUser(userId)
-				.getRoleId();
+		this.roleId = roleId != null ? roleId : permission.getUser(userId).getRoleId();
 	}
 
 	public Participant(final ID userId) {

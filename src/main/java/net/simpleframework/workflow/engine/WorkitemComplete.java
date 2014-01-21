@@ -26,25 +26,24 @@ public class WorkitemComplete extends ObjectEx implements Serializable, IWorkflo
 		workitemId = workitem.getId();
 
 		// 判断是否所有的工作项都已完成
-		final IWorkitemService service = context.getWorkitemService();
-		final ActivityBean activity = service.getActivity(workitem);
+		final ActivityBean activity = wService.getActivity(workitem);
 
 		if (PropSequential.list(activity).size() > 0) {
 			allCompleted = false;
 		} else {
-			final int allWorkitems = service.getWorkitemList(activity).getCount();
+			final int allWorkitems = wService.getWorkitemList(activity).getCount();
 			// 完成的工作项
-			final int complete = service.getWorkitemList(activity, EWorkitemStatus.complete)
+			final int complete = wService.getWorkitemList(activity, EWorkitemStatus.complete)
 					.getCount();
-			if (complete + 1 < ParticipantUtils.getResponseValue(context.getActivityService()
-					.getTaskNode(activity), allWorkitems)) {
+			if (complete + 1 < ParticipantUtils.getResponseValue(aService.getTaskNode(activity),
+					allWorkitems)) {
 				allCompleted = false;
 			}
 		}
 	}
 
 	public WorkitemBean getWorkitem() {
-		return context.getWorkitemService().getBean(workitemId);
+		return wService.getBean(workitemId);
 	}
 
 	public boolean isAllCompleted() {
@@ -61,12 +60,11 @@ public class WorkitemComplete extends ObjectEx implements Serializable, IWorkflo
 	}
 
 	public Object getWorkflowForm() {
-		return context.getActivityService().getWorkflowForm(
-				context.getWorkitemService().getActivity(getWorkitem()));
+		return aService.getWorkflowForm(wService.getActivity(getWorkitem()));
 	}
 
 	public void complete(final Map<String, String> parameters) {
-		context.getWorkitemService().complete(parameters, this);
+		wService.complete(parameters, this);
 	}
 
 	private static Map<ID, KVMap> variablesCache = new ConcurrentHashMap<ID, KVMap>();

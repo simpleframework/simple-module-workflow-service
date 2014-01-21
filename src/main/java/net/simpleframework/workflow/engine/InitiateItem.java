@@ -61,15 +61,14 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 
 	/* 其它可启动的角色 */
 	public Collection<ID> roles() {
-		return CollectionUtils.toList(context.getParticipantService().roles(getUserId(),
-				getVariables()));
+		return CollectionUtils.toList(permission.roles(getUserId(), getVariables()));
 	}
 
 	private transient ProcessModelBean processModel;
 
 	public ProcessModelBean model() {
 		if (processModel == null) {
-			processModel = context.getProcessModelService().getBean(getModelId());
+			processModel = mService.getBean(getModelId());
 		}
 		return processModel;
 	}
@@ -110,10 +109,9 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 	public void doTransitions() {
 		_transitions.clear();
 
-		final IProcessModelService service = context.getProcessModelService();
 		final ProcessModelBean processModel = model();
-		final IScriptEval script = service.createScriptEval(processModel);
-		final StartNode startNode = service.getProcessDocument(processModel).getProcessNode()
+		final IScriptEval script = mService.createScriptEval(processModel);
+		final StartNode startNode = mService.getProcessDocument(processModel).getProcessNode()
 				.startNode();
 		for (final Map.Entry<String, Object> e : getVariables().entrySet()) {
 			script.putVariable(e.getKey(), e.getValue());

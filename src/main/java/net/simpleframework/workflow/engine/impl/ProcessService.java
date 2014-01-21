@@ -168,9 +168,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 						final String[] mappings = StringUtils.split(properties
 								.getProperty(IProcessRemote.VAR_MAPPINGS));
 						if (mappings != null) {
-							final IProcessService service = context.getProcessService();
 							for (final String mapping : mappings) {
-								data.add(mapping, service.getVariable(process, mapping));
+								data.add(mapping, pService.getVariable(process, mapping));
 							}
 						}
 

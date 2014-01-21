@@ -47,7 +47,7 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 
 	public ActivityComplete(final WorkitemComplete workitemComplete) {
 		this.workitemComplete = workitemComplete;
-		doInit(context.getWorkitemService().getActivity(workitemComplete.getWorkitem()));
+		doInit(wService.getActivity(workitemComplete.getWorkitem()));
 	}
 
 	public ActivityComplete(final ActivityBean activity) {
@@ -77,7 +77,7 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 		final AbstractTaskNode tasknode = context.getActivityService().getTaskNode(activity);
 		final IScriptEval script;
 		if (workitemComplete != null) {
-			script = context.getWorkitemService().createScriptEval(workitemComplete.getWorkitem());
+			script = wService.createScriptEval(workitemComplete.getWorkitem());
 			final KVMap variables = workitemComplete.getVariables();
 			for (final Map.Entry<String, Object> e : variables.entrySet()) {
 				script.putVariable(e.getKey(), e.getValue());

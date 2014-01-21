@@ -32,7 +32,6 @@ import net.simpleframework.workflow.engine.EVariableSource;
 import net.simpleframework.workflow.engine.EWorkitemStatus;
 import net.simpleframework.workflow.engine.IActivityService;
 import net.simpleframework.workflow.engine.IMappingVal;
-import net.simpleframework.workflow.engine.IProcessService;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.WorkitemBean;
 import net.simpleframework.workflow.engine.event.IActivityListener;
@@ -189,16 +188,15 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		final SubNode sub = (SubNode) getTaskNode(activity);
 		if (sub.isSync()) {
 			// 设置返回的变量，仅在同步方式
-			final ProcessService service = (ProcessService) context.getProcessService();
 			final ProcessBean mProcess = getProcessBean(activity);
-			final ProcessNode processNode = service.getProcessNode(mProcess);
+			final ProcessNode processNode = pService.getProcessNode(mProcess);
 			for (final VariableMapping vm : sub.getMappingSet()) {
 				final VariableNode vNode = processNode.getVariableNodeByName(vm.variable);
 				if (vNode == null) {
 					continue;
 				}
 				if (vNode.getMode() == EVariableMode.inout) {
-					service.setVariable(mProcess, vm.variable, mappingVal.val(vm.mapping));
+					pService.setVariable(mProcess, vm.variable, mappingVal.val(vm.mapping));
 				}
 			}
 		}
@@ -253,7 +251,6 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 						}
 
 						final ProcessBean mProcess = getProcessBean(nActivity);
-						final IProcessService service = context.getProcessService();
 						final SubNode sub = (SubNode) getTaskNode(nActivity);
 						final KVMap data = new KVMap(); // 提交的参数
 
@@ -269,7 +266,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 								if (i++ > 0) {
 									mappings.append(";");
 								}
-								data.add(vMapping.mapping, service.getVariable(mProcess, vMapping.variable));
+								data.add(vMapping.mapping,
+										pService.getVariable(mProcess, vMapping.variable));
 								mappings.append(vMapping.mapping);
 							}
 							if (mappings.length() > 0) {

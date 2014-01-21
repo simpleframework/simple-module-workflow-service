@@ -43,8 +43,8 @@ public class ParticipantRelativeRole extends AbstractParticipants {
 			final ID userId = process.getUserId();
 			if (userId != null) {
 				if (StringUtils.hasText(relative)) {
-					final Collection<Participant> _participants = context.getParticipantService()
-							.getRelativeParticipants(userId, process.getRoleId(), relative, variables);
+					final Collection<Participant> _participants = permission.getRelativeParticipants(
+							userId, process.getRoleId(), relative, variables);
 					if (_participants != null) {
 						participants.addAll(_participants);
 					}
@@ -61,17 +61,16 @@ public class ParticipantRelativeRole extends AbstractParticipants {
 			if (preActivity != null) {
 				WorkitemBean workitem = workitemComplete.getWorkitem();
 				if (StringUtils.hasText(relative)) {
-					final Collection<Participant> _participants = context.getParticipantService()
-							.getRelativeParticipants(workitem.getUserId(), workitem.getRoleId(), relative,
-									variables);
+					final Collection<Participant> _participants = permission.getRelativeParticipants(
+							workitem.getUserId(), workitem.getRoleId(), relative, variables);
 					if (_participants != null) {
 						participants.addAll(_participants);
 					}
 				} else {
 					participants.add(new Participant(workitem.getUserId(), workitem.getRoleId()));
 					// 其它已完成任务项
-					final IDataQuery<WorkitemBean> qs = context.getWorkitemService().getWorkitemList(
-							preActivity, EWorkitemStatus.complete);
+					final IDataQuery<WorkitemBean> qs = wService.getWorkitemList(preActivity,
+							EWorkitemStatus.complete);
 					while ((workitem = qs.next()) != null) {
 						participants.add(new Participant(workitem.getUserId(), workitem.getRoleId()));
 					}

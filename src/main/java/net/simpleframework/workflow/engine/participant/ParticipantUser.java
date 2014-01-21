@@ -24,7 +24,7 @@ public class ParticipantUser extends AbstractParticipants {
 		final TransitionNode transition = (TransitionNode) variables.get("transition");
 		final String participant = ScriptEvalUtils.replaceExpr(script, ((UserNode) transition.to())
 				.getParticipantType().getParticipant());
-		final ID userId = context.getParticipantService().getUser(participant).getId();
+		final ID userId = permission.getUser(participant).getId();
 		if (userId != null) {
 			participants.add(new Participant(userId));
 		}
