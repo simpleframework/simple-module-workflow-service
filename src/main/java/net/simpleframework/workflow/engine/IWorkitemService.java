@@ -66,11 +66,11 @@ public interface IWorkitemService extends IDbBeanService<WorkitemBean>,
 	void setWorkitemDelegation(WorkitemBean workitem, DelegationBean delegation);
 
 	/**
-	 * 删除当前的流程实例，
+	 * 删除当前的流程实例，删除条件是没有完成的工作
 	 * 
 	 * @param workitem
 	 */
-	// void deleteProcess(WorkitemBean workitem);
+	void deleteProcess(WorkitemBean workitem);
 
 	/**
 	 * 是否最终状态，不可状态转换

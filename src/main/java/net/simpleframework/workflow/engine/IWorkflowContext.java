@@ -15,28 +15,28 @@ public interface IWorkflowContext extends IModuleContext {
 	static final String MODULE_NAME = "simple-workflow";
 
 	/**
-	 * 模型管理器
+	 * 模型服务
 	 * 
 	 * @return
 	 */
 	IProcessModelService getProcessModelService();
 
 	/**
-	 * 流程实例管理器
+	 * 流程实例服务
 	 * 
 	 * @return
 	 */
 	IProcessService getProcessService();
 
 	/**
-	 * 任务环节管理器
+	 * 任务环节服务
 	 * 
 	 * @return
 	 */
 	IActivityService getActivityService();
 
 	/**
-	 * 工作列表管理器
+	 * 工作列表服务
 	 * 
 	 * @return
 	 */

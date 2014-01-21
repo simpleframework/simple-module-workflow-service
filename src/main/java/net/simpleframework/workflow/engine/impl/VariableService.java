@@ -23,9 +23,6 @@ import net.simpleframework.workflow.schema.VariableNode;
  *         http://www.simpleframework.net
  */
 public class VariableService extends AbstractWorkflowService<VariableBean> {
-	static VariableService get() {
-		return singleton(VariableService.class);
-	}
 
 	VariableBean createVariableBean(final AbstractWorkflowBean bean,
 			final VariableNode variableNode, final Object value) {
@@ -33,7 +30,7 @@ public class VariableService extends AbstractWorkflowService<VariableBean> {
 		if (bean instanceof ProcessBean) {
 			if (variableNode.isStatically()) {
 				variable.setVariableSource(EVariableSource.model);
-				variable.setSourceId(getProcessService().getProcessModel((ProcessBean) bean).getId());
+				variable.setSourceId(pService.getProcessModel((ProcessBean) bean).getId());
 			} else {
 				variable.setVariableSource(EVariableSource.process);
 				variable.setSourceId(bean.getId());
@@ -53,7 +50,7 @@ public class VariableService extends AbstractWorkflowService<VariableBean> {
 		if (bean instanceof ProcessBean) {
 			if (variableNode.isStatically()) {
 				vs = EVariableSource.model;
-				id = getProcessService().getProcessModel((ProcessBean) bean).getId();
+				id = pService.getProcessModel((ProcessBean) bean).getId();
 			} else {
 				vs = EVariableSource.process;
 			}
@@ -140,11 +137,10 @@ public class VariableService extends AbstractWorkflowService<VariableBean> {
 		for (int i = 0; i < length; i++) {
 			VariableNode variableNode = null;
 			if (bean instanceof ProcessBean) {
-				variableNode = getProcessService().processNode((ProcessBean) bean)
-						.getVariableNodeByName(names[i]);
+				variableNode = pService.getProcessNode((ProcessBean) bean).getVariableNodeByName(
+						names[i]);
 			} else if (bean instanceof ActivityBean) {
-				variableNode = getActivityService().taskNode((ActivityBean) bean)
-						.getVariableNodeByName(names[i]);
+				variableNode = aService.taskNode((ActivityBean) bean).getVariableNodeByName(names[i]);
 			}
 			if (variableNode == null) {
 				continue;
@@ -159,7 +155,7 @@ public class VariableService extends AbstractWorkflowService<VariableBean> {
 		}
 	}
 
-	void deleteVariables(final EVariableSource source, final Object[] beanIds) {
+	void deleteVariables(final EVariableSource source, final Object... beanIds) {
 		deleteWith("variableSource=? and " + SqlUtils.getIdsSQLParam("sourceId", beanIds.length),
 				ArrayUtils.add(new Object[] { source }, beanIds));
 	}

@@ -8,11 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.simpleframework.ado.IParamsValue;
-import net.simpleframework.ado.db.IDbDataQuery;
 import net.simpleframework.ado.db.IDbEntityManager;
-import net.simpleframework.ado.db.common.SqlUtils;
 import net.simpleframework.ado.query.IDataQuery;
-import net.simpleframework.common.Convert;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
 import net.simpleframework.common.coll.KVMap;
@@ -221,33 +218,25 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 			@Override
 			public void onBeforeDelete(final IDbEntityManager<?> manager,
 					final IParamsValue paramsValue) {
-				final IDbDataQuery<Map<String, Object>> qs = manager.queryMapSet(
-						new String[] { "status" }, paramsValue);
-				Map<String, Object> data;
-				while ((data = qs.next()) != null) {
-					final EProcessModelStatus status = Convert.toEnum(EProcessModelStatus.class,
-							data.get("status"));
-					if (status == EProcessModelStatus.deploy) {
+				super.onBeforeDelete(manager, paramsValue);
+				for (final ProcessModelBean processModel : coll(paramsValue)) {
+					if (processModel.getStatus() == EProcessModelStatus.deploy) {
 						throw WorkflowException.of($m("ProcessModelService.0"));
 					}
+
+					final Object id = processModel.getId();
+					if (pService.count("modelId=?", id) > 0) {
+						throw WorkflowException.of($m("ProcessModelService.2"));
+					}
+
+					// 删除流程变量，静态
+					vService.deleteVariables(EVariableSource.model, id);
 				}
 			}
 
 			@Override
 			public void onAfterDelete(final IDbEntityManager<?> manager, final IParamsValue paramsValue) {
 				itemsCache.clear();
-
-				// 删除流程实例
-				final ProcessService service = getProcessService();
-				final Object[] modelIds = paramsValue.getValues();
-				final Object[] processIds = service.list("id",
-						SqlUtils.getIdsSQLParam("modelId", modelIds.length), modelIds).toArray();
-				if (processIds.length > 0) {
-					service.delete(processIds);
-				}
-
-				// 删除流程变量，静态
-				VariableService.get().deleteVariables(EVariableSource.model, modelIds);
 			}
 		});
 	}

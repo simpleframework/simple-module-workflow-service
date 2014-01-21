@@ -15,7 +15,6 @@ import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.ctx.script.IScriptEval;
 import net.simpleframework.ctx.script.ScriptEvalFactory;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
-import net.simpleframework.ctx.task.ITaskExecutor;
 import net.simpleframework.workflow.engine.AbstractWorkflowBean;
 import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.IWorkflowContextAware;
@@ -66,9 +65,9 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 		}
 		set2 = null;
 		if (bean instanceof ProcessBean) {
-			set2 = getProcessService().processNode((ProcessBean) bean).listeners();
+			set2 = pService.getProcessNode((ProcessBean) bean).listeners();
 		} else if (bean instanceof ActivityBean) {
-			set2 = getActivityService().taskNode((ActivityBean) bean).listeners();
+			set2 = aService.taskNode((ActivityBean) bean).listeners();
 		}
 		if (set2 != null) {
 			set.addAll(set2);
@@ -98,23 +97,11 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 		return false;
 	}
 
-	protected ProcessModelService getModelService() {
-		return (ProcessModelService) context.getProcessModelService();
-	}
+	protected static ProcessModelService mService = (ProcessModelService) context
+			.getProcessModelService();
+	protected static ProcessService pService = (ProcessService) context.getProcessService();
+	protected static ActivityService aService = (ActivityService) context.getActivityService();
+	protected static WorkitemService wService = (WorkitemService) context.getWorkitemService();
 
-	protected ProcessService getProcessService() {
-		return (ProcessService) context.getProcessService();
-	}
-
-	protected ActivityService getActivityService() {
-		return (ActivityService) context.getActivityService();
-	}
-
-	protected WorkitemService getWorkitemService() {
-		return (WorkitemService) context.getWorkitemService();
-	}
-
-	protected ITaskExecutor getTaskExecutor() {
-		return context.getTaskExecutor();
-	}
+	protected static VariableService vService = singleton(VariableService.class);
 }

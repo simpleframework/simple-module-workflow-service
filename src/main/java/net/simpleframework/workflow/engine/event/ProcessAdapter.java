@@ -21,6 +21,10 @@ public class ProcessAdapter implements IProcessListener {
 	}
 
 	@Override
+	public void onDelete(final ProcessBean process) {
+	}
+
+	@Override
 	public void onSuspend(final ProcessBean process) {
 	}
 }

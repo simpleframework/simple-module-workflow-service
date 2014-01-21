@@ -28,6 +28,8 @@ public interface IProcessListener extends IWorkflowListener {
 	 */
 	void onAbort(ProcessBean process, EProcessAbortPolicy policy);
 
+	void onDelete(ProcessBean process);
+
 	/**
 	 * 流程挂起或恢复时触发
 	 * 

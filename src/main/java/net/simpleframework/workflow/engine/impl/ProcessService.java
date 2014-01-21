@@ -10,7 +10,6 @@ import java.util.Properties;
 
 import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
-import net.simpleframework.ado.db.common.SqlUtils;
 import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
@@ -27,7 +26,6 @@ import net.simpleframework.workflow.engine.EProcessModelStatus;
 import net.simpleframework.workflow.engine.EProcessStatus;
 import net.simpleframework.workflow.engine.EVariableSource;
 import net.simpleframework.workflow.engine.EWorkitemStatus;
-import net.simpleframework.workflow.engine.IActivityService;
 import net.simpleframework.workflow.engine.IProcessService;
 import net.simpleframework.workflow.engine.InitiateItem;
 import net.simpleframework.workflow.engine.ProcessBean;
@@ -53,7 +51,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public ProcessModelBean getProcessModel(final ProcessBean process) {
-		return getModelService().getBean(process.getModelId());
+		return mService.getBean(process.getModelId());
 	}
 
 	/**
@@ -62,8 +60,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	 * @param process
 	 * @return
 	 */
-	ProcessNode processNode(final ProcessBean process) {
-		return getModelService().getProcessDocument(getProcessModel(process)).getProcessNode();
+	ProcessNode getProcessNode(final ProcessBean process) {
+		return mService.getProcessDocument(getProcessModel(process)).getProcessNode();
 	}
 
 	@Override
@@ -107,9 +105,9 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	private void createStartNode(final ProcessBean process,
 			final Collection<TransitionNode> transitions) {
 		// 创建开始任务
-		final StartNode startNode = processNode(process).startNode();
-		final ActivityBean sActivity = getActivityService().createActivity(process, startNode, null);
-		getActivityService().insert(sActivity);
+		final StartNode startNode = getProcessNode(process).startNode();
+		final ActivityBean sActivity = aService.createActivity(process, startNode, null);
+		aService.insert(sActivity);
 		if (transitions == null) {
 			new ActivityComplete(sActivity).complete();
 		} else {
@@ -146,7 +144,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 			}
 		}
 
-		final ProcessDocument doc = getModelService().getProcessDocument(processModel);
+		final ProcessDocument doc = mService.getProcessDocument(processModel);
 		if (!doc.getProcessNode().isInstanceShared()) {
 			final ProcessLobBean lob = new ProcessLobBean();
 			lob.setId(process.getId());
@@ -158,7 +156,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public void backToRemote(final ProcessBean process) {
-		final ITaskExecutor taskExecutor = getTaskExecutor();
+		final ITaskExecutor taskExecutor = context.getTaskExecutor();
 		taskExecutor.addScheduledTask(WorkflowSettings.get().getSubTaskPeriod(),
 				new ExecutorRunnable() {
 					@Override
@@ -235,11 +233,10 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		update(new String[] { "status", "completeDate" }, process);
 
 		if (policy == EProcessAbortPolicy.allActivities) {
-			final IDataQuery<ActivityBean> qs = getActivityService().getActivities(process);
+			final IDataQuery<ActivityBean> qs = aService.getActivities(process);
 			ActivityBean activity;
-			final ActivityService service = getActivityService();
 			while ((activity = qs.next()) != null) {
-				service._abort(activity, EActivityAbortPolicy.normal, false);
+				aService._abort(activity, EActivityAbortPolicy.normal, false);
 			}
 		}
 
@@ -250,8 +247,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public Map<String, Object> createVariables(final ProcessBean process) {
-		final Map<String, Object> variables = getModelService().createVariables(
-				getProcessModel(process));
+		final Map<String, Object> variables = mService.createVariables(getProcessModel(process));
 		variables.put("process", process);
 		for (final String variable : getVariableNames(process)) {
 			variables.put(variable, getVariable(process, variable));
@@ -261,8 +257,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public Object getVariable(final ProcessBean process, final String name) {
-		final VariableNode variableNode = processNode(process).getVariableNodeByName(name);
-		return VariableService.get().getVariableValue(process, variableNode);
+		final VariableNode variableNode = getProcessNode(process).getVariableNodeByName(name);
+		return vService.getVariableValue(process, variableNode);
 	}
 
 	@Override
@@ -272,23 +268,22 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public void setVariable(final ProcessBean process, final String[] names, final Object[] values) {
-		VariableService.get().setVariableValue(process, names, values);
+		vService.setVariableValue(process, names, values);
 	}
 
 	@Override
 	public Collection<String> getVariableNames(final ProcessBean process) {
-		return processNode(process).variables().keySet();
+		return getProcessNode(process).variables().keySet();
 	}
 
 	@Override
 	public WorkitemBean getFirstWorkitem(final ProcessBean process) {
-		final IActivityService service = getActivityService();
-		final ActivityBean startActivity = service.getStartActivity(process);
-		final IDataQuery<ActivityBean> qs = service.getNextActivities(startActivity);
+		final ActivityBean startActivity = aService.getStartActivity(process);
+		final IDataQuery<ActivityBean> qs = aService.getNextActivities(startActivity);
 		ActivityBean activity;
 		while ((activity = qs.next()) != null) {
-			final WorkitemBean workitem = getWorkitemService().getWorkitemList(activity,
-					EWorkitemStatus.running).next();
+			final WorkitemBean workitem = wService.getWorkitemList(activity, EWorkitemStatus.running)
+					.next();
 			if (workitem != null) {
 				return workitem;
 			}
@@ -313,18 +308,23 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		addListener(new DbEntityAdapterEx() {
 
 			@Override
-			public void onAfterDelete(final IDbEntityManager<?> manager, final IParamsValue paramsValue) {
-				// 删除任务环节
-				final ActivityService service = getActivityService();
-				final Object[] processIds = paramsValue.getValues();
-				final Object[] activityIds = service.list("id",
-						SqlUtils.getIdsSQLParam("processId", processIds.length), processIds).toArray();
-				if (activityIds.length > 0) {
-					service.delete(activityIds);
-				}
+			public void onBeforeDelete(final IDbEntityManager<?> manager,
+					final IParamsValue paramsValue) {
+				super.onBeforeDelete(manager, paramsValue);
 
-				// 删除流程变量
-				VariableService.get().deleteVariables(EVariableSource.process, processIds);
+				for (final ProcessBean process : coll(paramsValue)) {
+					final Object id = process.getId();
+					// 触发删除事件
+					for (final IWorkflowListener listener : getEventListeners(process)) {
+						((IProcessListener) listener).onDelete(process);
+					}
+
+					// 删除任务环节
+					aService.deleteWith("processId=?", id);
+
+					// 删除流程变量
+					vService.deleteVariables(EVariableSource.process, id);
+				}
 			}
 		});
 	}

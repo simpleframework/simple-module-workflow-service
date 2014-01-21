@@ -44,7 +44,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		IWorkitemService {
 	@Override
 	public ActivityBean getActivity(final WorkitemBean workitem) {
-		return getActivityService().getBean(workitem.getActivityId());
+		return aService.getBean(workitem.getActivityId());
 	}
 
 	@Override
@@ -52,22 +52,20 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			final WorkitemComplete workitemComplete) {
 		final WorkitemBean workitem = workitemComplete.getWorkitem();
 		try {
-			final ActivityService service = getActivityService();
 			assertStatus(workitem, EWorkitemStatus.running);
 			final ActivityBean activity = getActivity(workitem);
 			assertStatus(activity, EActivityStatus.running);
-			final ProcessBean process = service.getProcessBean(activity);
+			final ProcessBean process = aService.getProcessBean(activity);
 			if (process.getStatus() == EProcessStatus.suspended) {
 				throw WorkflowStatusException.of($m("WorkitemService.2"));
 			}
 
-			final ProcessService pService = getProcessService();
 			// 更新流程变量
 			final KVMap variables = workitemComplete.getVariables();
 			for (final Map.Entry<String, Object> e : variables.entrySet()) {
 				final String key = e.getKey();
-				if (service.getVariableNames(activity).contains(key)) {
-					service.setVariable(activity, key, e.getValue());
+				if (aService.getVariableNames(activity).contains(key)) {
+					aService.setVariable(activity, key, e.getValue());
 				} else {
 					pService.setVariable(process, key, e.getValue());
 				}
@@ -78,27 +76,27 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			update(new String[] { "completeDate", "status" }, workitem);
 
 			if (workitemComplete.isAllCompleted()) {
-				service.complete(workitemComplete.getActivityComplete());
+				aService.complete(workitemComplete.getActivityComplete());
 			} else {
 				final Collection<Participant> participants = PropSequential.list(activity);
 				if (participants.size() > 0) { // 获取顺序执行的参与者
-					final AbstractTaskNode tasknode = service.taskNode(activity);
+					final AbstractTaskNode tasknode = aService.taskNode(activity);
 					final Iterator<Participant> it = participants.iterator();
 					if (ParticipantUtils.isInstanceShared(tasknode)) {
 						insert(createWorkitem(activity, it.next()));
 						PropSequential.set(activity, it);
-						service.update(new String[] { "properties" }, activity);
+						aService.update(new String[] { "properties" }, activity);
 					} else {
-						final ActivityBean nActivity = service
-								.createActivity(process, tasknode, activity);
+						final ActivityBean nActivity = aService.createActivity(process, tasknode,
+								activity);
 						final Participant participant = it.next();
 						PropSequential.set(nActivity, it);
-						service.insert(nActivity);
+						aService.insert(nActivity);
 						insert(createWorkitem(nActivity, participant));
 
 						activity.setStatus(EActivityStatus.complete);
 						activity.setCompleteDate(new Date());
-						service.update(new String[] { "completeDate", "status" }, activity);
+						aService.update(new String[] { "completeDate", "status" }, activity);
 					}
 				}
 			}
@@ -112,7 +110,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			workitemComplete.done();
 
 			// 事件
-			for (final IWorkflowListener listener : service.getEventListeners(activity)) {
+			for (final IWorkflowListener listener : aService.getEventListeners(activity)) {
 				((IActivityListener) listener).onWorkitemCompleted(workitemComplete);
 			}
 		} finally {
@@ -124,17 +122,16 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	public void retake(final WorkitemBean workitem) {
 		assertStatus(workitem, EWorkitemStatus.complete);
 		final ActivityBean activity = getActivity(workitem);
-		final ActivityService service = getActivityService();
-		final ProcessBean process = service.getProcessBean(activity);
+		final ProcessBean process = aService.getProcessBean(activity);
 		assertStatus(process, EProcessStatus.running);
 
 		final EActivityStatus status = activity.getStatus();
 		if (status == EActivityStatus.complete) {
 			// 检测后续环节是否合法
-			final IDataQuery<ActivityBean> qs = service.getNextActivities(activity);
+			final IDataQuery<ActivityBean> qs = aService.getNextActivities(activity);
 			ActivityBean nextActivity;
 			while ((nextActivity = qs.next()) != null) {
-				if (!(service.taskNode(nextActivity) instanceof UserNode)) {
+				if (!(aService.taskNode(nextActivity) instanceof UserNode)) {
 					throw WorkflowException.of($m("WorkitemService.0"));
 				}
 				WorkitemBean workitem2;
@@ -144,16 +141,16 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 						throw WorkflowException.of($m("WorkitemService.1"));
 					}
 				}
-				service.abort(nextActivity, EActivityAbortPolicy.nextActivities);
+				aService.abort(nextActivity, EActivityAbortPolicy.nextActivities);
 			}
 
 			activity.setStatus(EActivityStatus.running);
 			activity.setCompleteDate(null);
-			service.update(new String[] { "status", "completeDate" }, activity);
+			aService.update(new String[] { "status", "completeDate" }, activity);
 		} else if (status == EActivityStatus.running) {
 			// 顺序，单实例
 
-			if (ParticipantUtils.isSequential(service.taskNode(activity))) {
+			if (ParticipantUtils.isSequential(aService.taskNode(activity))) {
 				final IDataQuery<WorkitemBean> qs = getWorkitemList(activity, EWorkitemStatus.running);
 				WorkitemBean workitem2;
 				if ((workitem2 = qs.next()) != null) {
@@ -166,7 +163,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 					PropSequential.push(activity,
 							new Participant(workitem2.getUserId(), workitem2.getRoleId()));
-					service.update(new String[] { "properties" }, activity);
+					aService.update(new String[] { "properties" }, activity);
 				}
 			}
 		} else {
@@ -180,7 +177,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		}
 
 		// 事件
-		for (final IWorkflowListener listener : service.getEventListeners(activity)) {
+		for (final IWorkflowListener listener : aService.getEventListeners(activity)) {
 			((IActivityListener) listener).onWorkitemRetake(workitem);
 		}
 	}
@@ -240,8 +237,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 	@Override
 	public Map<String, Object> createVariables(final WorkitemBean workitem) {
-		final Map<String, Object> variables = getActivityService().createVariables(
-				getActivity(workitem));
+		final Map<String, Object> variables = aService.createVariables(getActivity(workitem));
 		variables.put("workitem", workitem);
 		return variables;
 	}
@@ -250,6 +246,12 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	public boolean isFinalStatus(final WorkitemBean workitem) {
 		final EWorkitemStatus status = workitem.getStatus();
 		return status == EWorkitemStatus.complete || status == EWorkitemStatus.abort;
+	}
+
+	@Override
+	public void deleteProcess(final WorkitemBean workitem) {
+		// 检测是否含有完成状态，否则不能删除
+
 	}
 
 	WorkitemBean createWorkitem(final ActivityBean activity, final Participant participant) {
