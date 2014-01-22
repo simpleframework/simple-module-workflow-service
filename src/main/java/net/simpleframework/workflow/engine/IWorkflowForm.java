@@ -26,6 +26,4 @@ public interface IWorkflowForm {
 	 * @param variables
 	 */
 	void bindVariables(Map<String, Object> variables);
-
-	String getTitle();
 }
