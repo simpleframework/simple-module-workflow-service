@@ -32,6 +32,7 @@ import net.simpleframework.workflow.engine.EVariableSource;
 import net.simpleframework.workflow.engine.EWorkitemStatus;
 import net.simpleframework.workflow.engine.IActivityService;
 import net.simpleframework.workflow.engine.IMappingVal;
+import net.simpleframework.workflow.engine.IWorkflowForm;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.WorkitemBean;
 import net.simpleframework.workflow.engine.event.IActivityListener;
@@ -537,11 +538,10 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	// private final KVMap formInstancCache = new KVMap();
 
 	@Override
-	public Object getWorkflowForm(final ActivityBean activity) {
+	public IWorkflowForm getWorkflowForm(final ActivityBean activity) {
 		if (activity == null) {
 			return null;
 		}
-		Object workflowForm = null;
 		String formClass = null;
 		final AbstractTaskNode tasknode = getTaskNode(activity);
 		if (tasknode instanceof UserNode) {
@@ -550,10 +550,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		if (formClass == null) {
 			formClass = ((ProcessNode) tasknode.parent()).getFormClass();
 		}
-		if (formClass != null) {
-			workflowForm = singleton(formClass);
-		}
-		return workflowForm;
+		return (IWorkflowForm) (formClass != null ? singleton(formClass) : null);
 	}
 
 	@Override

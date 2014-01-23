@@ -59,26 +59,26 @@ public class WorkitemComplete extends ObjectEx implements Serializable, IWorkflo
 		return activityComplete;
 	}
 
-	public Object getWorkflowForm() {
+	public IWorkflowForm getWorkflowForm() {
 		return aService.getWorkflowForm(wService.getActivity(getWorkitem()));
 	}
 
 	public void complete(final Map<String, String> parameters) {
-		wService.complete(parameters, this);
+		wService.complete(this);
 	}
 
-	private static Map<ID, KVMap> variablesCache = new ConcurrentHashMap<ID, KVMap>();
+	private static Map<ID, Map<String, Object>> varsCache = new ConcurrentHashMap<ID, Map<String, Object>>();
 
-	public KVMap getVariables() {
-		KVMap kv = variablesCache.get(workitemId);
+	public Map<String, Object> getVariables() {
+		Map<String, Object> kv = varsCache.get(workitemId);
 		if (kv == null) {
-			variablesCache.put(workitemId, kv = new KVMap());
+			varsCache.put(workitemId, kv = new KVMap());
 		}
 		return kv;
 	}
 
 	public void done() {
-		variablesCache.remove(workitemId);
+		varsCache.remove(workitemId);
 	}
 
 	public void reset() {

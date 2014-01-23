@@ -12,7 +12,6 @@ import net.simpleframework.ado.db.IDbDataQuery;
 import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
-import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.DelegationBean;
@@ -22,7 +21,6 @@ import net.simpleframework.workflow.engine.EDelegationSource;
 import net.simpleframework.workflow.engine.EProcessStatus;
 import net.simpleframework.workflow.engine.EWorkitemStatus;
 import net.simpleframework.workflow.engine.IActivityService.PropSequential;
-import net.simpleframework.workflow.engine.IWorkflowForm;
 import net.simpleframework.workflow.engine.IWorkitemService;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.WorkitemBean;
@@ -54,8 +52,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	@Override
-	public void complete(final Map<String, String> parameters,
-			final WorkitemComplete workitemComplete) {
+	public void complete(final WorkitemComplete workitemComplete) {
 		final WorkitemBean workitem = workitemComplete.getWorkitem();
 		try {
 			assertStatus(workitem, EWorkitemStatus.running);
@@ -67,7 +64,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			}
 
 			// 更新流程变量
-			final KVMap variables = workitemComplete.getVariables();
+			final Map<String, Object> variables = workitemComplete.getVariables();
 			for (final Map.Entry<String, Object> e : variables.entrySet()) {
 				final String key = e.getKey();
 				if (aService.getVariableNames(activity).contains(key)) {
@@ -105,12 +102,6 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 						aService.update(new String[] { "completeDate", "status" }, activity);
 					}
 				}
-			}
-
-			// 完成表单的complete
-			final IWorkflowForm workflowForm = (IWorkflowForm) workitemComplete.getWorkflowForm();
-			if (workflowForm != null) {
-				workflowForm.onComplete(parameters, workitemComplete);
 			}
 
 			workitemComplete.done();

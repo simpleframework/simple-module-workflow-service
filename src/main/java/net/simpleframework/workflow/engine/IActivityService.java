@@ -140,7 +140,7 @@ public interface IActivityService extends IVariableAware<ActivityBean>,
 	 * @param activity
 	 * @return
 	 */
-	Object getWorkflowForm(ActivityBean activity);
+	IWorkflowForm getWorkflowForm(ActivityBean activity);
 
 	/**
 	 * 是否最终状态，不可状态转换

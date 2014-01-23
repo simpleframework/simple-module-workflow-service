@@ -1,7 +1,5 @@
 package net.simpleframework.workflow.engine;
 
-import java.util.Map;
-
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.IDbBeanService;
@@ -39,7 +37,7 @@ public interface IWorkitemService extends IDbBeanService<WorkitemBean>,
 	 * 
 	 * @param workitemComplete
 	 */
-	void complete(Map<String, String> parameters, WorkitemComplete workitemComplete);
+	void complete(WorkitemComplete workitemComplete);
 
 	/**
 	 * 取回当前的工作项

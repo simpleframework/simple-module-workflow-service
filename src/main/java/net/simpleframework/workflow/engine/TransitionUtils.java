@@ -1,5 +1,6 @@
 package net.simpleframework.workflow.engine;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -34,7 +35,7 @@ public abstract class TransitionUtils {
 
 	public static void doTransitions(final AbstractTaskNode tasknode, final IScriptEval script,
 			final Map<String, TransitionNode> _transitions) {
-		final LinkedHashMap<String, TransitionNode> logicTransitions = new LinkedHashMap<String, TransitionNode>();
+		final Map<String, TransitionNode> logicTransitions = new LinkedHashMap<String, TransitionNode>();
 		for (final TransitionNode transition : tasknode.toTransitions()) {
 			final AbstractTransitionType tt = transition.getTransitionType();
 			if (tt instanceof Conditional) {
@@ -53,14 +54,18 @@ public abstract class TransitionUtils {
 				logicTransitions.put(transition.getId(), transition);
 			}
 		}
-		while (logicTransitions.size() > 0) {
-			final TransitionNode transition = logicTransitions.remove(0);
+
+		final ArrayList<TransitionNode> al = new ArrayList<TransitionNode>(logicTransitions.values());
+		while (al.size() > 0) {
+			final TransitionNode transition = al.remove(0);
 			final LogicConditional lc = (LogicConditional) transition.getTransitionType();
 			final String id2 = lc.getTransitionId();
 			final ETransitionLogic logic = lc.getLogic();
 			final TransitionNode transition2 = _transitions.get(id2);
+
 			if (transition2 == null && logicTransitions.get(id2) != null) {
-				logicTransitions.put(transition.getId(), transition);
+				// 逻辑关系未算出，加入队尾
+				al.add(transition);
 				continue;
 			}
 			if ((logic == ETransitionLogic.and && transition2 != null)

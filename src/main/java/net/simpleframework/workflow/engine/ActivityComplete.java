@@ -78,7 +78,7 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 		final IScriptEval script;
 		if (workitemComplete != null) {
 			script = wService.createScriptEval(workitemComplete.getWorkitem());
-			final KVMap variables = workitemComplete.getVariables();
+			final Map<String, Object> variables = workitemComplete.getVariables();
 			for (final Map.Entry<String, Object> e : variables.entrySet()) {
 				script.putVariable(e.getKey(), e.getValue());
 			}
