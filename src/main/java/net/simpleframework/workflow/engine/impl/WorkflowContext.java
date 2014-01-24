@@ -9,6 +9,7 @@ import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.ctx.AbstractADOModuleContext;
 import net.simpleframework.ctx.IApplicationContext;
 import net.simpleframework.ctx.Module;
+import net.simpleframework.ctx.permission.IPermissionConst;
 import net.simpleframework.ctx.task.ExecutorRunnable;
 import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.ActivityLobBean;
@@ -110,5 +111,10 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 	@Override
 	public IParticipantModel getParticipantService() {
 		return (IParticipantModel) singleton("net.simpleframework.workflow.web.DefaultParticipantModel");
+	}
+
+	@Override
+	public String getManagerRole() {
+		return IPermissionConst.ROLE_MANAGER;
 	}
 }
