@@ -6,7 +6,7 @@ package net.simpleframework.workflow.engine;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public interface IDelegationRuleHandler {
+public interface IDelegationRuleHandler extends IWorkflowHandler {
 
 	/**
 	 * 定义委托是否开始执行

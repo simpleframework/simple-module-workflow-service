@@ -12,7 +12,7 @@ import net.simpleframework.workflow.schema.ProcessDocument;
  *         http://www.simpleframework.net
  */
 public interface IProcessModelService extends IDbBeanService<ProcessModelBean>,
-		IListenerAware<ProcessModelBean>, IScriptAware<ProcessModelBean> {
+		IEventListenerAware<ProcessModelBean>, IScriptAware<ProcessModelBean> {
 
 	/**
 	 * 获取模型的文档对象

@@ -25,8 +25,8 @@ import net.simpleframework.workflow.engine.IWorkitemService;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.WorkitemBean;
 import net.simpleframework.workflow.engine.WorkitemComplete;
-import net.simpleframework.workflow.engine.event.IActivityListener;
-import net.simpleframework.workflow.engine.event.IWorkflowListener;
+import net.simpleframework.workflow.engine.event.IActivityEventListener;
+import net.simpleframework.workflow.engine.event.IWorkflowEventListener;
 import net.simpleframework.workflow.engine.participant.Participant;
 import net.simpleframework.workflow.engine.participant.ParticipantUtils;
 import net.simpleframework.workflow.schema.AbstractTaskNode;
@@ -107,8 +107,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			workitemComplete.done();
 
 			// 事件
-			for (final IWorkflowListener listener : aService.getEventListeners(activity)) {
-				((IActivityListener) listener).onWorkitemCompleted(workitemComplete);
+			for (final IWorkflowEventListener listener : aService.getEventListeners(activity)) {
+				((IActivityEventListener) listener).onWorkitemCompleted(workitemComplete);
 			}
 		} finally {
 			workitemComplete.reset();
@@ -174,8 +174,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		}
 
 		// 事件
-		for (final IWorkflowListener listener : aService.getEventListeners(activity)) {
-			((IActivityListener) listener).onWorkitemRetake(workitem);
+		for (final IWorkflowEventListener listener : aService.getEventListeners(activity)) {
+			((IActivityEventListener) listener).onWorkitemRetake(workitem);
 		}
 	}
 

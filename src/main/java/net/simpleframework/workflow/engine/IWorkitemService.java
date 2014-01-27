@@ -11,7 +11,7 @@ import net.simpleframework.ctx.service.ado.db.IDbBeanService;
  *         http://www.simpleframework.net
  */
 public interface IWorkitemService extends IDbBeanService<WorkitemBean>,
-		IListenerAware<WorkitemBean>, IScriptAware<WorkitemBean> {
+		IEventListenerAware<WorkitemBean>, IScriptAware<WorkitemBean> {
 
 	/**
 	 * 获取环节实例

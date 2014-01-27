@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import net.simpleframework.ctx.script.IScriptEval;
-import net.simpleframework.workflow.engine.IWorkflowContextAware;
+import net.simpleframework.workflow.engine.IWorkflowHandler;
 import net.simpleframework.workflow.schema.AbstractParticipantType;
 import net.simpleframework.workflow.schema.TransitionNode;
 import net.simpleframework.workflow.schema.UserNode;
@@ -15,7 +15,7 @@ import net.simpleframework.workflow.schema.UserNode;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public interface IParticipantHandler extends IWorkflowContextAware {
+public interface IParticipantHandler extends IWorkflowHandler {
 
 	/**
 	 * 定义交互环节的参与者

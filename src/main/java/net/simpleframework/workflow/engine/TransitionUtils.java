@@ -6,6 +6,7 @@ import java.util.Map;
 
 import net.simpleframework.common.Convert;
 import net.simpleframework.common.StringUtils;
+import net.simpleframework.common.object.ObjectFactory;
 import net.simpleframework.ctx.script.IScriptEval;
 import net.simpleframework.workflow.schema.AbstractTaskNode;
 import net.simpleframework.workflow.schema.AbstractTransitionType;
@@ -49,7 +50,7 @@ public abstract class TransitionUtils {
 					_transitions.put(transition.getId(), transition);
 				}
 			} else if (tt instanceof AbstractTransitionType.Interface) {
-				//
+				ObjectFactory.singleton(((AbstractTransitionType.Interface) tt).getHandleClass());
 			} else if (tt instanceof LogicConditional) {
 				logicTransitions.put(transition.getId(), transition);
 			}

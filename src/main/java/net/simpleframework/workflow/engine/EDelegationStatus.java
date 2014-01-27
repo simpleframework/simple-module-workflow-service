@@ -12,11 +12,11 @@ public enum EDelegationStatus {
 	/**
 	 * 开始状态
 	 */
-	start {
+	ready {
 
 		@Override
 		public String toString() {
-			return $m("EDelegationStatus.start");
+			return $m("EDelegationStatus.ready");
 		}
 	},
 

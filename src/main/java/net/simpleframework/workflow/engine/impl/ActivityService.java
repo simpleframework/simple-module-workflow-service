@@ -35,8 +35,8 @@ import net.simpleframework.workflow.engine.IMappingVal;
 import net.simpleframework.workflow.engine.IWorkflowForm;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.WorkitemBean;
-import net.simpleframework.workflow.engine.event.IActivityListener;
-import net.simpleframework.workflow.engine.event.IWorkflowListener;
+import net.simpleframework.workflow.engine.event.IActivityEventListener;
+import net.simpleframework.workflow.engine.event.IWorkflowEventListener;
 import net.simpleframework.workflow.engine.participant.Participant;
 import net.simpleframework.workflow.engine.participant.ParticipantUtils;
 import net.simpleframework.workflow.engine.remote.IProcessRemote;
@@ -133,8 +133,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 
 		// 事件
-		for (final IWorkflowListener listener : getEventListeners(activity)) {
-			((IActivityListener) listener).onCompleted(activityComplete);
+		for (final IWorkflowEventListener listener : getEventListeners(activity)) {
+			((IActivityEventListener) listener).onCompleted(activityComplete);
 		}
 	}
 
@@ -346,8 +346,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 
 		// 触发事件
-		for (final IWorkflowListener listener : getEventListeners(activity)) {
-			((IActivityListener) listener).onAbort(activity, policy);
+		for (final IWorkflowEventListener listener : getEventListeners(activity)) {
+			((IActivityEventListener) listener).onAbort(activity, policy);
 		}
 	}
 
@@ -367,8 +367,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 		update(new String[] { "status" }, activity);
 
-		for (final IWorkflowListener listener : getEventListeners(activity)) {
-			((IActivityListener) listener).onSuspend(activity);
+		for (final IWorkflowEventListener listener : getEventListeners(activity)) {
+			((IActivityEventListener) listener).onSuspend(activity);
 		}
 	}
 
@@ -450,8 +450,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 		_abort(activity, EActivityAbortPolicy.normal, true);
 
-		for (final IWorkflowListener listener : getEventListeners(activity)) {
-			((IActivityListener) listener).onFallback(nActivity, tasknode);
+		for (final IWorkflowEventListener listener : getEventListeners(activity)) {
+			((IActivityEventListener) listener).onFallback(nActivity, tasknode);
 		}
 	}
 

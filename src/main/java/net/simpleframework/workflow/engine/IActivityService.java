@@ -18,7 +18,7 @@ import net.simpleframework.workflow.schema.AbstractTaskNode;
  *         http://www.simpleframework.net
  */
 public interface IActivityService extends IVariableAware<ActivityBean>,
-		IDbBeanService<ActivityBean>, IListenerAware<ActivityBean>, IScriptAware<ActivityBean> {
+		IDbBeanService<ActivityBean>, IEventListenerAware<ActivityBean>, IScriptAware<ActivityBean> {
 
 	/**
 	 * 获取流程实例对象

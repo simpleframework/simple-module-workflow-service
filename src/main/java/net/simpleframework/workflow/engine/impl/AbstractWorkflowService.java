@@ -19,7 +19,7 @@ import net.simpleframework.workflow.engine.AbstractWorkflowBean;
 import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.IWorkflowContextAware;
 import net.simpleframework.workflow.engine.ProcessBean;
-import net.simpleframework.workflow.engine.event.IWorkflowListener;
+import net.simpleframework.workflow.engine.event.IWorkflowEventListener;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -57,7 +57,7 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 
 	private final Map<ID, Set<String>> listenerClassMap = new ConcurrentHashMap<ID, Set<String>>();
 
-	public Collection<IWorkflowListener> getEventListeners(final T bean) {
+	public Collection<IWorkflowEventListener> getEventListeners(final T bean) {
 		final Set<String> set = new LinkedHashSet<String>();
 		Set<String> set2 = listenerClassMap.get(bean.getId());
 		if (set2 != null) {
@@ -72,14 +72,15 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 		if (set2 != null) {
 			set.addAll(set2);
 		}
-		final ArrayList<IWorkflowListener> al = new ArrayList<IWorkflowListener>();
+		final ArrayList<IWorkflowEventListener> al = new ArrayList<IWorkflowEventListener>();
 		for (final String listenerClass : set) {
-			al.add((IWorkflowListener) singleton(listenerClass));
+			al.add((IWorkflowEventListener) singleton(listenerClass));
 		}
 		return al;
 	}
 
-	public void addEventListener(final T bean, final Class<? extends IWorkflowListener> listenerClass) {
+	public void addEventListener(final T bean,
+			final Class<? extends IWorkflowEventListener> listenerClass) {
 		final ID id = bean.getId();
 		Set<String> set = listenerClassMap.get(id);
 		if (set == null) {
@@ -89,7 +90,7 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 	}
 
 	public boolean removeEventListener(final T bean,
-			final Class<? extends IWorkflowListener> listenerClass) {
+			final Class<? extends IWorkflowEventListener> listenerClass) {
 		final Set<String> set = listenerClassMap.get(bean.getId());
 		if (set != null) {
 			return set.remove(listenerClass.getName());
