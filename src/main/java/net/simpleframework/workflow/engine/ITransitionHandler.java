@@ -1,5 +1,6 @@
 package net.simpleframework.workflow.engine;
 
+import net.simpleframework.workflow.IWorkflowHandler;
 import net.simpleframework.workflow.schema.TransitionNode;
 
 /**

@@ -22,6 +22,7 @@ import net.simpleframework.workflow.schema.TransitionNode;
  *         http://www.simpleframework.net
  */
 public abstract class TransitionUtils {
+
 	public static boolean isTransitionManual(final TransitionNode transition) {
 		if (transition != null) {
 			final AbstractTransitionType tt = transition.getTransitionType();
@@ -50,7 +51,11 @@ public abstract class TransitionUtils {
 					_transitions.put(transition.getId(), transition);
 				}
 			} else if (tt instanceof AbstractTransitionType.Interface) {
-				ObjectFactory.singleton(((AbstractTransitionType.Interface) tt).getHandleClass());
+				final ITransitionHandler handler = (ITransitionHandler) ObjectFactory
+						.singleton(((AbstractTransitionType.Interface) tt).getHandleClass());
+				if (handler.isPass(transition)) {
+					_transitions.put(transition.getId(), transition);
+				}
 			} else if (tt instanceof LogicConditional) {
 				logicTransitions.put(transition.getId(), transition);
 			}

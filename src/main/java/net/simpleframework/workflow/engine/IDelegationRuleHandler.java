@@ -1,5 +1,7 @@
 package net.simpleframework.workflow.engine;
 
+import net.simpleframework.workflow.IWorkflowHandler;
+
 /**
  * Licensed under the Apache License, Version 2.0
  * 
