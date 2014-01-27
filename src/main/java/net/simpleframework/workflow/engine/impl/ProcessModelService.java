@@ -22,7 +22,7 @@ import net.simpleframework.workflow.engine.InitiateItems;
 import net.simpleframework.workflow.engine.ProcessModelBean;
 import net.simpleframework.workflow.engine.ProcessModelLobBean;
 import net.simpleframework.workflow.schema.AbstractParticipantType;
-import net.simpleframework.workflow.schema.AbstractParticipantType.Role;
+import net.simpleframework.workflow.schema.AbstractParticipantType.BaseRole;
 import net.simpleframework.workflow.schema.AbstractParticipantType.User;
 import net.simpleframework.workflow.schema.AbstractProcessStartupType;
 import net.simpleframework.workflow.schema.AbstractProcessStartupType.Manual;
@@ -174,7 +174,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 						items.add(new InitiateItem(processModel, userId, permission.getUser(userId)
 								.getRoleId(), variables));
 					}
-				} else if (pt instanceof Role) {
+				} else if (pt instanceof BaseRole) {
 					final ID roleId = permission.getRole(participant).getId();
 					if (permission.getUser(userId).isMember(roleId, variables)) {
 						items.add(new InitiateItem(processModel, userId, roleId, variables));

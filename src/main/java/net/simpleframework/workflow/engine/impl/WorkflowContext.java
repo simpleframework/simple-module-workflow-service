@@ -10,6 +10,8 @@ import net.simpleframework.ctx.AbstractADOModuleContext;
 import net.simpleframework.ctx.IApplicationContext;
 import net.simpleframework.ctx.Module;
 import net.simpleframework.ctx.permission.IPermissionConst;
+import net.simpleframework.ctx.permission.IPermissionHandler;
+import net.simpleframework.ctx.permission.PermissionFactory;
 import net.simpleframework.ctx.task.ExecutorRunnable;
 import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.ActivityLobBean;
@@ -27,7 +29,7 @@ import net.simpleframework.workflow.engine.ProcessModelLobBean;
 import net.simpleframework.workflow.engine.VariableBean;
 import net.simpleframework.workflow.engine.VariableLogBean;
 import net.simpleframework.workflow.engine.WorkitemBean;
-import net.simpleframework.workflow.engine.participant.IParticipantModel;
+import net.simpleframework.workflow.engine.participant.IWorkflowPermissionHandler;
 import net.simpleframework.workflow.engine.remote.DefaultProcessRemote;
 import net.simpleframework.workflow.engine.remote.IProcessRemote;
 import net.simpleframework.workflow.schema.AbstractTaskNode;
@@ -109,8 +111,10 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 	}
 
 	@Override
-	public IParticipantModel getParticipantService() {
-		return (IParticipantModel) singleton("net.simpleframework.workflow.web.DefaultParticipantModel");
+	public IWorkflowPermissionHandler getParticipantService() {
+		final IPermissionHandler handler = PermissionFactory.get();
+		return (handler instanceof IWorkflowPermissionHandler ? (IWorkflowPermissionHandler) handler
+				: null);
 	}
 
 	@Override

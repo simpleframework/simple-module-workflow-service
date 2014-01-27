@@ -15,7 +15,7 @@ import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.common.object.ObjectEx;
 import net.simpleframework.ctx.script.IScriptEval;
 import net.simpleframework.workflow.WorkflowException;
-import net.simpleframework.workflow.engine.participant.IParticipants;
+import net.simpleframework.workflow.engine.participant.IParticipantHandler;
 import net.simpleframework.workflow.engine.participant.Participant;
 import net.simpleframework.workflow.engine.participant.ParticipantUtils;
 import net.simpleframework.workflow.schema.AbstractParticipantType;
@@ -106,9 +106,9 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 		final ArrayList<Participant> participants = new ArrayList<Participant>();
 		if (pt instanceof RuleRole) {
 			try {
-				final IParticipants hdl = (IParticipants) ClassUtils.forName(
+				final IParticipantHandler hdl = (IParticipantHandler) ClassUtils.forName(
 						((UserNode) toTask).getParticipantType().getParticipant()).newInstance();
-				final Collection<Participant> _participants = hdl.participants(script, variables);
+				final Collection<Participant> _participants = hdl.getParticipants(script, variables);
 				if (_participants != null) {
 					participants.addAll(_participants);
 				}
@@ -116,9 +116,9 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 				throw WorkflowException.of(e);
 			}
 		} else {
-			final IParticipants hdl = ParticipantUtils.hdlMap.get(pt.getClass());
+			final IParticipantHandler hdl = ParticipantUtils.getParticipantHandler(pt.getClass());
 			Collection<Participant> _participants;
-			if (hdl != null && (_participants = hdl.participants(script, variables)) != null) {
+			if (hdl != null && (_participants = hdl.getParticipants(script, variables)) != null) {
 				participants.addAll(_participants);
 			}
 		}
@@ -165,8 +165,7 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 			values = _transitions.values();
 		}
 		for (final TransitionNode transition : values) {
-			final AbstractTaskNode node = transition.to();
-			if (node instanceof UserNode && isParticipantManual((UserNode) node)) {
+			if (isParticipantManual(transition.to())) {
 				return true;
 			}
 		}
@@ -177,12 +176,16 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 		return isParticipantManual((String[]) null);
 	}
 
-	public boolean isParticipantManual(final UserNode usernode) {
-		if (usernode == null) {
-			return false;
-		}
-		final AbstractParticipantType pt = usernode.getParticipantType();
+	public boolean isParticipantManual(final AbstractTaskNode taskNode) {
+		final AbstractParticipantType pt = taskNode instanceof UserNode ? ((UserNode) taskNode)
+				.getParticipantType() : null;
 		return pt instanceof Role && ((Role) pt).isManual();
+	}
+
+	public boolean isParticipantMultiSelected(final AbstractTaskNode taskNode) {
+		final AbstractParticipantType pt = taskNode instanceof UserNode ? ((UserNode) taskNode)
+				.getParticipantType() : null;
+		return pt instanceof Role && ((Role) pt).isMultiSelected();
 	}
 
 	public Collection<TransitionNode> getTransitions() {

@@ -55,11 +55,16 @@ public abstract class ParticipantUtils {
 		return pt instanceof Role ? ((Role) pt).isInstanceShared() : true;
 	}
 
-	public static HashMap<Class<? extends AbstractParticipantType>, IParticipants> hdlMap;
+	public static IParticipantHandler getParticipantHandler(
+			final Class<? extends AbstractParticipantType> typeClass) {
+		return handlerCache.get(typeClass);
+	}
+
+	private static HashMap<Class<? extends AbstractParticipantType>, IParticipantHandler> handlerCache;
 	static {
-		hdlMap = new HashMap<Class<? extends AbstractParticipantType>, IParticipants>();
-		hdlMap.put(AbstractParticipantType.User.class, new ParticipantUser());
-		hdlMap.put(UserNode.Role.class, new ParticipantRole());
-		hdlMap.put(UserNode.RelativeRole.class, new ParticipantRelativeRole());
+		handlerCache = new HashMap<Class<? extends AbstractParticipantType>, IParticipantHandler>();
+		handlerCache.put(AbstractParticipantType.User.class, new ParticipantUserHandler());
+		handlerCache.put(UserNode.Role.class, new ParticipantRoleHandler());
+		handlerCache.put(UserNode.RelativeRole.class, new ParticipantRelativeRoleHandler());
 	}
 }

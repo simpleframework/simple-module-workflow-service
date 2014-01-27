@@ -9,7 +9,6 @@ import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.common.object.ObjectEx;
 import net.simpleframework.workflow.engine.IActivityService.PropSequential;
 import net.simpleframework.workflow.engine.participant.ParticipantUtils;
-import net.simpleframework.workflow.schema.AbstractTaskNode;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -47,10 +46,6 @@ public class WorkitemComplete extends ObjectEx implements Serializable, IWorkflo
 		return wService.getBean(workitemId);
 	}
 
-	public ActivityBean getActivity() {
-		return wService.getActivity(getWorkitem());
-	}
-
 	public boolean isAllCompleted() {
 		return allCompleted;
 	}
@@ -64,12 +59,8 @@ public class WorkitemComplete extends ObjectEx implements Serializable, IWorkflo
 		return activityComplete;
 	}
 
-	public AbstractTaskNode getTaskNode() {
-		return aService.getTaskNode(getActivity());
-	}
-
 	public IWorkflowForm getWorkflowForm() {
-		return aService.getWorkflowForm(getActivity());
+		return aService.getWorkflowForm(wService.getActivity(getWorkitem()));
 	}
 
 	public void complete(final Map<String, String> parameters) {

@@ -1,7 +1,7 @@
 package net.simpleframework.workflow.engine;
 
 import net.simpleframework.ctx.IModuleContext;
-import net.simpleframework.workflow.engine.participant.IParticipantModel;
+import net.simpleframework.workflow.engine.participant.IWorkflowPermissionHandler;
 import net.simpleframework.workflow.engine.remote.IProcessRemote;
 
 /**
@@ -47,7 +47,7 @@ public interface IWorkflowContext extends IModuleContext {
 	 * 
 	 * @return
 	 */
-	IParticipantModel getParticipantService();
+	IWorkflowPermissionHandler getParticipantService();
 
 	IProcessRemote getRemoteService();
 }

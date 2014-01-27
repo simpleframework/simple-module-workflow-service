@@ -2,11 +2,11 @@ package net.simpleframework.workflow.engine.participant;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
-import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.ctx.script.IScriptEval;
 import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.ActivityComplete;
@@ -14,8 +14,7 @@ import net.simpleframework.workflow.engine.EWorkitemStatus;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.WorkitemBean;
 import net.simpleframework.workflow.engine.WorkitemComplete;
-import net.simpleframework.workflow.engine.participant.IParticipants.AbstractParticipants;
-import net.simpleframework.workflow.schema.TransitionNode;
+import net.simpleframework.workflow.engine.participant.IParticipantHandler.AbstractParticipantHandler;
 import net.simpleframework.workflow.schema.UserNode;
 import net.simpleframework.workflow.schema.UserNode.ERelativeType;
 
@@ -25,16 +24,16 @@ import net.simpleframework.workflow.schema.UserNode.ERelativeType;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class ParticipantRelativeRole extends AbstractParticipants {
+public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
+
 	@Override
-	public Collection<Participant> participants(final IScriptEval script, final KVMap variables) {
+	public Collection<Participant> getParticipants(final IScriptEval script,
+			final Map<String, Object> variables) {
 		final ArrayList<Participant> participants = new ArrayList<Participant>();
 		final ActivityComplete activityComplete = (ActivityComplete) variables
 				.get("activityComplete");
 		WorkitemComplete workitemComplete;
-		final TransitionNode transition = (TransitionNode) variables.get("transition");
-		final net.simpleframework.workflow.schema.UserNode.RelativeRole rRole = (net.simpleframework.workflow.schema.UserNode.RelativeRole) ((UserNode) transition
-				.to()).getParticipantType();
+		final UserNode.RelativeRole rRole = (UserNode.RelativeRole) getParticipantType(variables);
 		final String relative = rRole.getRelative();
 		final ERelativeType rType = rRole.getRelativeType();
 		if (rType == ERelativeType.processInitiator) {

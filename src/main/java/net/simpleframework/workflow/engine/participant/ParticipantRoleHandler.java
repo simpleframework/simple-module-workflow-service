@@ -3,14 +3,12 @@ package net.simpleframework.workflow.engine.participant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.Map;
 
 import net.simpleframework.common.ID;
-import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.ctx.script.IScriptEval;
 import net.simpleframework.ctx.script.ScriptEvalUtils;
-import net.simpleframework.workflow.engine.participant.IParticipants.AbstractParticipants;
-import net.simpleframework.workflow.schema.TransitionNode;
-import net.simpleframework.workflow.schema.UserNode;
+import net.simpleframework.workflow.engine.participant.IParticipantHandler.AbstractParticipantHandler;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -18,13 +16,14 @@ import net.simpleframework.workflow.schema.UserNode;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class ParticipantRole extends AbstractParticipants {
+public class ParticipantRoleHandler extends AbstractParticipantHandler {
+
 	@Override
-	public Collection<Participant> participants(final IScriptEval script, final KVMap variables) {
+	public Collection<Participant> getParticipants(final IScriptEval script,
+			final Map<String, Object> variables) {
 		final ArrayList<Participant> participants = new ArrayList<Participant>();
-		final TransitionNode transition = (TransitionNode) variables.get("transition");
-		final String participant = ScriptEvalUtils.replaceExpr(script, ((UserNode) transition.to())
-				.getParticipantType().getParticipant());
+		final String participant = ScriptEvalUtils.replaceExpr(script, getParticipantType(variables)
+				.getParticipant());
 		final ID roleId = permission.getRole(participant).getId();
 		final Enumeration<ID> users = permission.users(roleId, variables);
 		while (users.hasMoreElements()) {
