@@ -9,10 +9,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import net.simpleframework.common.ClassUtils;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.common.object.ObjectEx;
+import net.simpleframework.common.object.ObjectFactory;
 import net.simpleframework.ctx.script.IScriptEval;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.participant.IParticipantHandler;
@@ -105,15 +105,11 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 		final AbstractParticipantType pt = ((UserNode) toTask).getParticipantType();
 		final ArrayList<Participant> participants = new ArrayList<Participant>();
 		if (pt instanceof RuleRole) {
-			try {
-				final IParticipantHandler hdl = (IParticipantHandler) ClassUtils.forName(
-						((UserNode) toTask).getParticipantType().getParticipant()).newInstance();
-				final Collection<Participant> _participants = hdl.getParticipants(script, variables);
-				if (_participants != null) {
-					participants.addAll(_participants);
-				}
-			} catch (final Exception e) {
-				throw WorkflowException.of(e);
+			final IParticipantHandler hdl = (IParticipantHandler) ObjectFactory
+					.singleton(((UserNode) toTask).getParticipantType().getParticipant());
+			final Collection<Participant> _participants = hdl.getParticipants(script, variables);
+			if (_participants != null) {
+				participants.addAll(_participants);
 			}
 		} else {
 			final IParticipantHandler hdl = ParticipantUtils.getParticipantHandler(pt.getClass());

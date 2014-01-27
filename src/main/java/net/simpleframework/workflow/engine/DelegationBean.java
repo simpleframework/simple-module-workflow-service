@@ -16,28 +16,29 @@ import net.simpleframework.common.ID;
 		"net.simpleframework.module.log.EntityDeleteLogAdapter" }, columns = { "status" })
 public class DelegationBean extends AbstractDescriptionBean {
 
+	/* 委托的对象 */
 	private EDelegationSource delegationSource;
 
+	/* 委托的对象id */
 	private ID sourceId;
 
 	private EDelegationStatus status;
 
 	private ID roleId;
 
+	/* 委托的用户id */
 	private ID userId;
 
+	/* 创建时间 */
 	private Date createDate;
 
+	/* 委托的实际开始时间和结束时间 */
 	private Date runningDate, completeDate;
 
-	/**
-	 * 定义委托的开始执行时间和结束执行时间
-	 */
+	/* 定义委托的开始执行时间和结束执行时间 */
 	private Date startDate, endDate;
 
-	/**
-	 * 定义该委托类，参考IDelegationRuleHandler
-	 */
+	/* 定义该委托类，参考IDelegationHandler */
 	private String ruleHandler;
 
 	public EDelegationSource getDelegationSource() {
