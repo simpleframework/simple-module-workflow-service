@@ -24,8 +24,6 @@ public class DelegationBean extends AbstractDescriptionBean {
 
 	private EDelegationStatus status;
 
-	private ID roleId;
-
 	/* 委托的用户id */
 	private ID userId;
 
@@ -63,14 +61,6 @@ public class DelegationBean extends AbstractDescriptionBean {
 
 	public void setStatus(final EDelegationStatus status) {
 		this.status = status;
-	}
-
-	public ID getRoleId() {
-		return roleId;
-	}
-
-	public void setRoleId(final ID roleId) {
-		this.roleId = roleId;
 	}
 
 	public ID getUserId() {

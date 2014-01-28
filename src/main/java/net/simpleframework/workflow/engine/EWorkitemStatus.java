@@ -25,6 +25,14 @@ public enum EWorkitemStatus {
 		}
 	},
 
+	delegate {
+
+		@Override
+		public String toString() {
+			return $m("EWorkitemStatus.delegate");
+		}
+	},
+
 	complete {
 
 		@Override

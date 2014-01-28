@@ -63,7 +63,6 @@
         status int2 not null,
         createdate timestamp not null,
         userid char(32) not null,
-        roleid char(32),
         runningdate timestamp,
         completedate timestamp,
         startdate timestamp, 
