@@ -9,9 +9,4 @@ import net.simpleframework.workflow.engine.DelegationBean;
  *         http://www.simpleframework.net
  */
 public class DelegationService extends AbstractWorkflowService<DelegationBean> {
-	private static DelegationService dm = new DelegationService();
-
-	static DelegationService get() {
-		return dm;
-	}
 }

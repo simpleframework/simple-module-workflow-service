@@ -9,11 +9,6 @@ package net.simpleframework.workflow.engine;
 public enum EDelegationSource {
 
 	/**
-	 * 启动项委托
-	 */
-	initiateItem,
-
-	/**
 	 * 任务项委托
 	 */
 	workitem,

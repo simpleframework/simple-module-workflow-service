@@ -187,11 +187,17 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	@Override
-	public void setWorkitemDelegation(final WorkitemBean workitem, final DelegationBean delegation) {
+	public void setWorkitemDelegation(final WorkitemBean workitem, final ID userId,
+			final Date startDate, final Date endDate, final String description) {
+		assertStatus(workitem, EWorkitemStatus.running);
+		final DelegationBean delegation = dService.createBean();
 		delegation.setDelegationSource(EDelegationSource.workitem);
 		delegation.setSourceId(workitem.getId());
-
-		// insert(delegation);
+		delegation.setUserId(userId);
+		delegation.setStartDate(startDate);
+		delegation.setEndDate(endDate);
+		delegation.setDescription(description);
+		dService.insert(delegation);
 	}
 
 	private IDbDataQuery<WorkitemBean> _getWorkitemList(final ID id, final String field,

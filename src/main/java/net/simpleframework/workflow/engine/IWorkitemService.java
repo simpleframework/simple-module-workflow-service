@@ -1,5 +1,7 @@
 package net.simpleframework.workflow.engine;
 
+import java.util.Date;
+
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.IDbBeanService;
@@ -59,9 +61,13 @@ public interface IWorkitemService extends IDbBeanService<WorkitemBean>,
 	 * 设置工作项委托
 	 * 
 	 * @param workitem
-	 * @param delegation
+	 * @param userId
+	 * @param startDate
+	 * @param endDate
+	 * @param description
 	 */
-	void setWorkitemDelegation(WorkitemBean workitem, DelegationBean delegation);
+	void setWorkitemDelegation(WorkitemBean workitem, ID userId, Date startDate, Date endDate,
+			String description);
 
 	/**
 	 * 获取流程实例
