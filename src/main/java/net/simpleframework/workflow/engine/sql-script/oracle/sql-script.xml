@@ -58,8 +58,8 @@
     <![CDATA[
       create table sf_workflow_delegation (
         id char(32) not null,
-        delegationid char(32) not null,
-        delegationtype number(4) not null,
+        delegationsource number(4) not null,
+        sourceid char(32) not null,
         status number(4) not null,
         createdate timestamp not null,
         userid char(32) not null,
@@ -69,7 +69,8 @@
         enddate timestamp,   
         rulehandler varchar2(128 char), 
         description varchar2(256 char),
-        primary key(id)
+        primary key(id),
+        unique(delegationsource, sourceid, userid)
       );
     ]]>
 	</tran-sql>

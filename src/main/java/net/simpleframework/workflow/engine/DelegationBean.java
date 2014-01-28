@@ -72,6 +72,9 @@ public class DelegationBean extends AbstractDescriptionBean {
 	}
 
 	public Date getCreateDate() {
+		if (createDate == null) {
+			createDate = new Date();
+		}
 		return createDate;
 	}
 
