@@ -9,6 +9,7 @@ import java.util.Map;
 
 import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
+import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
@@ -40,6 +41,9 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 
 	@Override
 	public ProcessDocument getProcessDocument(final ProcessModelBean processModel) {
+		if (processModel == null) {
+			return null;
+		}
 		ProcessDocument doc = (ProcessDocument) processModel.getAttr("processDocument");
 		if (doc == null) {
 			final ProcessModelLobBean lob = getEntityManager(ProcessModelLobBean.class).getBean(
@@ -227,6 +231,9 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 					if (pService.count("modelId=?", id) > 0) {
 						throw WorkflowException.of($m("ProcessModelService.2"));
 					}
+
+					// 删除lob
+					getEntityManager(ProcessModelLobBean.class).delete(new ExpressionValue("id=?", id));
 
 					// 删除流程变量，静态
 					vService.deleteVariables(EVariableSource.model, id);

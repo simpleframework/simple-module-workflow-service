@@ -10,6 +10,7 @@ import java.util.Properties;
 
 import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
+import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
@@ -51,7 +52,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public ProcessModelBean getProcessModel(final ProcessBean process) {
-		return mService.getBean(process.getModelId());
+		return process != null ? mService.getBean(process.getModelId()) : null;
 	}
 
 	/**
@@ -61,7 +62,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	 * @return
 	 */
 	ProcessNode getProcessNode(final ProcessBean process) {
-		return mService.getProcessDocument(getProcessModel(process)).getProcessNode();
+		final ProcessDocument doc = mService.getProcessDocument(getProcessModel(process));
+		return doc != null ? doc.getProcessNode() : null;
 	}
 
 	@Override
@@ -317,6 +319,9 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 					for (final IWorkflowEventListener listener : getEventListeners(process)) {
 						((IProcessEventListener) listener).onDelete(process);
 					}
+
+					// 删除lob
+					getEntityManager(ProcessLobBean.class).delete(new ExpressionValue("id=?", id));
 
 					// 删除任务环节
 					aService.deleteWith("processId=?", id);

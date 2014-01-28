@@ -475,7 +475,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public ActivityBean getPreActivity(final ActivityBean activity) {
-		return getBean(activity.getPreviousId());
+		return activity != null ? getBean(activity.getPreviousId()) : null;
 	}
 
 	@Override
@@ -493,15 +493,17 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public ProcessBean getProcessBean(final ActivityBean activity) {
-		return pService.getBean(activity.getProcessId());
+		return activity != null ? pService.getBean(activity.getProcessId()) : null;
 	}
 
 	@Override
 	public AbstractTaskNode getTaskNode(final ActivityBean activity) {
-		final AbstractTaskNode taskNode = (AbstractTaskNode) pService.getProcessNode(
-				getProcessBean(activity)).getNodeById(activity.getTasknodeId());
-		assert taskNode != null;
-		return taskNode;
+		if (activity == null) {
+			return null;
+		}
+		final ProcessNode processNode = pService.getProcessNode(getProcessBean(activity));
+		return processNode != null ? (AbstractTaskNode) processNode.getNodeById(activity
+				.getTasknodeId()) : null;
 	}
 
 	@Override
