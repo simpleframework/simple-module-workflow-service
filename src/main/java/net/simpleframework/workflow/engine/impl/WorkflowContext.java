@@ -2,21 +2,18 @@ package net.simpleframework.workflow.engine.impl;
 
 import static net.simpleframework.common.I18n.$m;
 import net.simpleframework.ado.db.DbEntityTable;
-import net.simpleframework.ado.db.DbManagerFactory;
 import net.simpleframework.ado.db.IDbEntityTableRegistry;
-import net.simpleframework.ado.db.common.ExpressionValue;
-import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.ctx.AbstractADOModuleContext;
 import net.simpleframework.ctx.IApplicationContext;
 import net.simpleframework.ctx.Module;
 import net.simpleframework.ctx.permission.IPermissionConst;
 import net.simpleframework.ctx.permission.IPermissionHandler;
 import net.simpleframework.ctx.permission.PermissionFactory;
+import net.simpleframework.ctx.settings.ContextSettings;
 import net.simpleframework.ctx.task.ExecutorRunnable;
 import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.ActivityLobBean;
 import net.simpleframework.workflow.engine.DelegationBean;
-import net.simpleframework.workflow.engine.EActivityStatus;
 import net.simpleframework.workflow.engine.IActivityService;
 import net.simpleframework.workflow.engine.IProcessModelService;
 import net.simpleframework.workflow.engine.IProcessService;
@@ -32,7 +29,6 @@ import net.simpleframework.workflow.engine.WorkitemBean;
 import net.simpleframework.workflow.engine.participant.IWorkflowPermissionHandler;
 import net.simpleframework.workflow.engine.remote.DefaultProcessRemote;
 import net.simpleframework.workflow.engine.remote.IProcessRemote;
-import net.simpleframework.workflow.schema.AbstractTaskNode;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -47,21 +43,11 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 	public void onInit(final IApplicationContext application) throws Exception {
 		super.onInit(application);
 
-		// 引擎的初始化
 		getTaskExecutor().execute(new ExecutorRunnable() {
 			@Override
 			protected void task() throws Exception {
-				// 启动子流程监控
-				final IDataQuery<?> qs = ((DbManagerFactory) getADOManagerFactory()).getEntityManager(
-						ActivityBean.class).queryBeans(
-						new ExpressionValue("tasknodeType=? and (status=? or status=?)",
-								AbstractTaskNode.SUBNODE_TYPE, EActivityStatus.running,
-								EActivityStatus.waiting));
-				final IActivityService service = getActivityService();
-				ActivityBean activity;
-				while ((activity = (ActivityBean) qs.next()) != null) {
-					service.doRemoteSubTask(activity);
-				}
+				// 初始化所有服务
+				AbstractWorkflowService.doStartup();
 			}
 		});
 	}
@@ -106,14 +92,19 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 	}
 
 	@Override
+	public ContextSettings getContextSettings() {
+		return singleton(WorkflowSettings.class);
+	}
+
+	@Override
 	public IProcessRemote getRemoteService() {
 		return singleton(DefaultProcessRemote.class);
 	}
 
 	@Override
 	public IWorkflowPermissionHandler getParticipantService() {
-		final IPermissionHandler handler = PermissionFactory.get();
-		return (handler instanceof IWorkflowPermissionHandler ? (IWorkflowPermissionHandler) handler
+		IPermissionHandler pHandler;
+		return ((pHandler = PermissionFactory.get()) instanceof IWorkflowPermissionHandler ? (IWorkflowPermissionHandler) pHandler
 				: null);
 	}
 

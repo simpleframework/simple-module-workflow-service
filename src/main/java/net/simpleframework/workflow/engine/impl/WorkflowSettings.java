@@ -10,10 +10,6 @@ import net.simpleframework.ctx.settings.PropertiesContextSettings;
  */
 public class WorkflowSettings extends PropertiesContextSettings {
 
-	public static WorkflowSettings get() {
-		return singleton(WorkflowSettings.class);
-	}
-
 	/**
 	 * 获取当前服务器的地址
 	 * 
@@ -29,6 +25,10 @@ public class WorkflowSettings extends PropertiesContextSettings {
 	 * @return
 	 */
 	public long getSubTaskPeriod() {
+		return 60 * 5; // 单位秒
+	}
+
+	public long getDelegatePeriod() {
 		return 60 * 5; // 单位秒
 	}
 }

@@ -241,76 +241,73 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	public void doRemoteSubTask(final ActivityBean activity) {
 		final ID activityId = activity.getId();
 		final ITaskExecutor taskExecutor = context.getTaskExecutor();
-		taskExecutor.addScheduledTask(WorkflowSettings.get().getSubTaskPeriod(),
-				new ExecutorRunnable() {
-					@Override
-					protected void task() throws Exception {
-						final ActivityBean nActivity = getBean(activityId);
-						if (nActivity == null) {
-							taskExecutor.removeScheduledTask(this);
-							return;
+		taskExecutor.addScheduledTask(settings.getSubTaskPeriod(), new ExecutorRunnable() {
+			@Override
+			protected void task() throws Exception {
+				final ActivityBean nActivity = getBean(activityId);
+				if (nActivity == null) {
+					taskExecutor.removeScheduledTask(this);
+					return;
+				}
+
+				final ProcessBean mProcess = getProcessBean(nActivity);
+				final SubNode sub = (SubNode) getTaskNode(nActivity);
+				final KVMap data = new KVMap(); // 提交的参数
+
+				final EActivityStatus status = nActivity.getStatus();
+				if (status == EActivityStatus.running) {
+					// 模型名称、主流程的地址及实例id
+					data.add(IProcessRemote.SERVERURL, settings.getServerUrl());
+					data.add(IProcessRemote.SUB_ACTIVITYID, nActivity.getId());
+					data.add(IProcessRemote.MODEL, sub.getModel());
+					int i = 0;
+					final StringBuilder mappings = new StringBuilder();
+					for (final VariableMapping vMapping : sub.getMappingSet()) {
+						if (i++ > 0) {
+							mappings.append(";");
 						}
-
-						final ProcessBean mProcess = getProcessBean(nActivity);
-						final SubNode sub = (SubNode) getTaskNode(nActivity);
-						final KVMap data = new KVMap(); // 提交的参数
-
-						final EActivityStatus status = nActivity.getStatus();
-						if (status == EActivityStatus.running) {
-							// 模型名称、主流程的地址及实例id
-							data.add(IProcessRemote.SERVERURL, WorkflowSettings.get().getServerUrl());
-							data.add(IProcessRemote.SUB_ACTIVITYID, nActivity.getId());
-							data.add(IProcessRemote.MODEL, sub.getModel());
-							int i = 0;
-							final StringBuilder mappings = new StringBuilder();
-							for (final VariableMapping vMapping : sub.getMappingSet()) {
-								if (i++ > 0) {
-									mappings.append(";");
-								}
-								data.add(vMapping.mapping,
-										pService.getVariable(mProcess, vMapping.variable));
-								mappings.append(vMapping.mapping);
-							}
-							if (mappings.length() > 0) {
-								data.add(IProcessRemote.VAR_MAPPINGS, mappings.toString());
-							}
-
-							// 创建远程子流程实例
-							final Map<String, Object> r = context.getRemoteService().call(sub.getUrl(),
-									"startProcess", data);
-							final Object processId = r.get(IProcessRemote.SUB_PROCESSID);
-							if (processId != null) {
-								if (sub.isSync()) {
-									nActivity.setStatus(EActivityStatus.waiting);
-									// 保存子流程id
-									nActivity.getProperties().setProperty(IProcessRemote.SUB_PROCESSID,
-											String.valueOf(processId));
-									getEntityManager(ActivityBean.class).update(
-											new String[] { "status", "properties" }, nActivity);
-								} else {
-									new ActivityComplete(nActivity).complete();
-								}
-								taskExecutor.removeScheduledTask(this);
-							}
-						} else if (status == EActivityStatus.waiting) {
-							// 如果发现环节处在等待状态，则发送一个远程检测请求来确认子流程是否完成
-							final Properties properties = nActivity.getProperties();
-							data.add(IProcessRemote.SUB_PROCESSID,
-									properties.get(IProcessRemote.SUB_PROCESSID));
-							try {
-								final Map<String, Object> r = context.getRemoteService().call(sub.getUrl(),
-										"checkProcess", data);
-								final Boolean success = (Boolean) r.get("success");
-								if (success != null && success.booleanValue()) {
-									taskExecutor.removeScheduledTask(this);
-								}
-							} catch (final IOException e) {
-								// 忽略。启动时调用，不抛出异常
-								log.warn(e);
-							}
-						}
+						data.add(vMapping.mapping, pService.getVariable(mProcess, vMapping.variable));
+						mappings.append(vMapping.mapping);
 					}
-				});
+					if (mappings.length() > 0) {
+						data.add(IProcessRemote.VAR_MAPPINGS, mappings.toString());
+					}
+
+					// 创建远程子流程实例
+					final Map<String, Object> r = context.getRemoteService().call(sub.getUrl(),
+							"startProcess", data);
+					final Object processId = r.get(IProcessRemote.SUB_PROCESSID);
+					if (processId != null) {
+						if (sub.isSync()) {
+							nActivity.setStatus(EActivityStatus.waiting);
+							// 保存子流程id
+							nActivity.getProperties().setProperty(IProcessRemote.SUB_PROCESSID,
+									String.valueOf(processId));
+							getEntityManager(ActivityBean.class).update(
+									new String[] { "status", "properties" }, nActivity);
+						} else {
+							new ActivityComplete(nActivity).complete();
+						}
+						taskExecutor.removeScheduledTask(this);
+					}
+				} else if (status == EActivityStatus.waiting) {
+					// 如果发现环节处在等待状态，则发送一个远程检测请求来确认子流程是否完成
+					final Properties properties = nActivity.getProperties();
+					data.add(IProcessRemote.SUB_PROCESSID, properties.get(IProcessRemote.SUB_PROCESSID));
+					try {
+						final Map<String, Object> r = context.getRemoteService().call(sub.getUrl(),
+								"checkProcess", data);
+						final Boolean success = (Boolean) r.get("success");
+						if (success != null && success.booleanValue()) {
+							taskExecutor.removeScheduledTask(this);
+						}
+					} catch (final IOException e) {
+						// 忽略。启动时调用，不抛出异常
+						log.warn(e);
+					}
+				}
+			}
+		});
 	}
 
 	void _abort(final ActivityBean activity, final EActivityAbortPolicy policy,
@@ -583,8 +580,17 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public void onInit() throws Exception {
-		addListener(new DbEntityAdapterEx() {
+		// 启动子流程监控
+		final IDataQuery<?> qs = query("tasknodeType=? and (status=? or status=?)",
+				AbstractTaskNode.SUBNODE_TYPE, EActivityStatus.running, EActivityStatus.waiting)
+				.setFetchSize(0);
+		ActivityBean activity;
+		while ((activity = (ActivityBean) qs.next()) != null) {
+			doRemoteSubTask(activity);
+		}
 
+		// 添加监听器
+		addListener(new DbEntityAdapterEx() {
 			@Override
 			public void onBeforeDelete(final IDbEntityManager<?> manager,
 					final IParamsValue paramsValue) {

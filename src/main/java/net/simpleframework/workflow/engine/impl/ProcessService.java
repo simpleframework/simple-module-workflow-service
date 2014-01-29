@@ -159,30 +159,29 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	@Override
 	public void backToRemote(final ProcessBean process) {
 		final ITaskExecutor taskExecutor = context.getTaskExecutor();
-		taskExecutor.addScheduledTask(WorkflowSettings.get().getSubTaskPeriod(),
-				new ExecutorRunnable() {
-					@Override
-					protected void task() throws Exception {
-						final Properties properties = process.getProperties();
-						final KVMap data = new KVMap(); // 提交的参数
-						data.add(IProcessRemote.SUB_ACTIVITYID,
-								properties.getProperty(IProcessRemote.SUB_ACTIVITYID));
-						final String[] mappings = StringUtils.split(properties
-								.getProperty(IProcessRemote.VAR_MAPPINGS));
-						if (mappings != null) {
-							for (final String mapping : mappings) {
-								data.add(mapping, pService.getVariable(process, mapping));
-							}
-						}
-
-						final Map<String, Object> r = context.getRemoteService().call(
-								properties.getProperty(IProcessRemote.SERVERURL), "subComplete", data);
-						final Boolean success = (Boolean) r.get("success");
-						if (success != null && success.booleanValue()) {
-							taskExecutor.removeScheduledTask(this);
-						}
+		taskExecutor.addScheduledTask(settings.getSubTaskPeriod(), new ExecutorRunnable() {
+			@Override
+			protected void task() throws Exception {
+				final Properties properties = process.getProperties();
+				final KVMap data = new KVMap(); // 提交的参数
+				data.add(IProcessRemote.SUB_ACTIVITYID,
+						properties.getProperty(IProcessRemote.SUB_ACTIVITYID));
+				final String[] mappings = StringUtils.split(properties
+						.getProperty(IProcessRemote.VAR_MAPPINGS));
+				if (mappings != null) {
+					for (final String mapping : mappings) {
+						data.add(mapping, pService.getVariable(process, mapping));
 					}
-				});
+				}
+
+				final Map<String, Object> r = context.getRemoteService().call(
+						properties.getProperty(IProcessRemote.SERVERURL), "subComplete", data);
+				final Boolean success = (Boolean) r.get("success");
+				if (success != null && success.booleanValue()) {
+					taskExecutor.removeScheduledTask(this);
+				}
+			}
+		});
 	}
 
 	@Override

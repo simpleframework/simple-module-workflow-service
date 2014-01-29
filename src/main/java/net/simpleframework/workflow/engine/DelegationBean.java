@@ -56,7 +56,7 @@ public class DelegationBean extends AbstractDescriptionBean {
 	}
 
 	public EDelegationStatus getStatus() {
-		return status;
+		return status != null ? status : EDelegationStatus.ready;
 	}
 
 	public void setStatus(final EDelegationStatus status) {
