@@ -15,6 +15,7 @@ import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.ActivityLobBean;
 import net.simpleframework.workflow.engine.DelegationBean;
 import net.simpleframework.workflow.engine.IActivityService;
+import net.simpleframework.workflow.engine.IDelegationService;
 import net.simpleframework.workflow.engine.IProcessModelService;
 import net.simpleframework.workflow.engine.IProcessService;
 import net.simpleframework.workflow.engine.IWorkflowContext;
@@ -94,6 +95,11 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 	@Override
 	public ContextSettings getContextSettings() {
 		return singleton(WorkflowSettings.class);
+	}
+
+	@Override
+	public IDelegationService getDelegationService() {
+		return singleton(DelegationService.class);
 	}
 
 	@Override

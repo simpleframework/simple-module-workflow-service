@@ -102,14 +102,11 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 	protected static ProcessService pService = (ProcessService) IWorkflowContextAware.pService;
 	protected static ActivityService aService = (ActivityService) IWorkflowContextAware.aService;
 	protected static WorkitemService wService = (WorkitemService) IWorkflowContextAware.wService;
+	protected static DelegationService dService = (DelegationService) IWorkflowContextAware.dService;
 
-	protected static WorkflowSettings settings;
 	protected static VariableService vService;
-	protected static DelegationService dService;
 
 	static void doStartup() {
-		settings = (WorkflowSettings) context.getContextSettings();
 		vService = singleton(VariableService.class);
-		dService = singleton(DelegationService.class);
 	}
 }

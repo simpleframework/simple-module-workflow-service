@@ -198,6 +198,9 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		delegation.setEndDate(endDate);
 		delegation.setDescription(description);
 		dService.insert(delegation);
+
+		workitem.setStatus(EWorkitemStatus.delegate);
+		update(new String[] { "status" }, workitem);
 	}
 
 	private IDbDataQuery<WorkitemBean> _getWorkitemList(final ID id, final String field,

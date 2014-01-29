@@ -2,6 +2,7 @@ package net.simpleframework.workflow.engine;
 
 import net.simpleframework.ctx.IModuleContextAware;
 import net.simpleframework.ctx.ModuleContextFactory;
+import net.simpleframework.workflow.engine.impl.WorkflowSettings;
 import net.simpleframework.workflow.engine.participant.IWorkflowPermissionHandler;
 
 /**
@@ -14,9 +15,12 @@ public interface IWorkflowContextAware extends IModuleContextAware {
 
 	static final IWorkflowContext context = ModuleContextFactory.get(IWorkflowContext.class);
 
+	static final WorkflowSettings settings = (WorkflowSettings) context.getContextSettings();
+
 	static final IProcessModelService mService = context.getProcessModelService();
 	static final IProcessService pService = context.getProcessService();
 	static final IActivityService aService = context.getActivityService();
 	static final IWorkitemService wService = context.getWorkitemService();
+	static final IDelegationService dService = context.getDelegationService();
 	static final IWorkflowPermissionHandler permission = context.getParticipantService();
 }

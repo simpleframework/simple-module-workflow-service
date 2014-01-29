@@ -2,11 +2,15 @@ package net.simpleframework.workflow.engine.impl;
 
 import java.util.Date;
 
+import net.simpleframework.ado.db.common.SQLValue;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.ctx.task.ExecutorRunnable;
 import net.simpleframework.ctx.task.ITaskExecutor;
 import net.simpleframework.workflow.engine.DelegationBean;
+import net.simpleframework.workflow.engine.EDelegationSource;
 import net.simpleframework.workflow.engine.EDelegationStatus;
+import net.simpleframework.workflow.engine.IDelegationService;
+import net.simpleframework.workflow.engine.WorkitemBean;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -14,7 +18,18 @@ import net.simpleframework.workflow.engine.EDelegationStatus;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class DelegationService extends AbstractWorkflowService<DelegationBean> {
+public class DelegationService extends AbstractWorkflowService<DelegationBean> implements
+		IDelegationService {
+
+	@Override
+	public IDataQuery<DelegationBean> queryWorkitems(final Object userId) {
+		final StringBuilder sb = new StringBuilder();
+		sb.append("select d.* from ").append(getTablename(DelegationBean.class))
+				.append(" d left join ").append(getTablename(WorkitemBean.class))
+				.append(" w on d.sourceid = w.id where w.userId=? and d.delegationsource=?");
+		return getEntityManager().queryBeans(
+				new SQLValue(sb.toString(), userId, EDelegationSource.workitem));
+	}
 
 	public void doDelegateTask(final DelegationBean delegation) {
 		final EDelegationStatus status = delegation.getStatus();

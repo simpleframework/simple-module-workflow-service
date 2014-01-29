@@ -43,6 +43,13 @@ public interface IWorkflowContext extends IModuleContext {
 	IWorkitemService getWorkitemService();
 
 	/**
+	 * 得到委托服务
+	 * 
+	 * @return
+	 */
+	IDelegationService getDelegationService();
+
+	/**
 	 * 参与者模型接口
 	 * 
 	 * @return
