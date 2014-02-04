@@ -27,11 +27,17 @@ public interface IWorkitemService extends IDbBeanService<WorkitemBean>,
 	 * 获取某一环节的所有工作列表
 	 * 
 	 * @param activity
-	 * @param status
 	 * @return
 	 */
 	IDataQuery<WorkitemBean> getWorkitemList(ActivityBean activity, EWorkitemStatus... status);
 
+	/**
+	 * 获取指定用户的工作列表
+	 * 
+	 * @param userId
+	 * @param status
+	 * @return
+	 */
 	IDataQuery<WorkitemBean> getWorkitemList(ID userId, EWorkitemStatus... status);
 
 	/**

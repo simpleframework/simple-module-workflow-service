@@ -92,13 +92,15 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		final AbstractTaskNode tasknode = getTaskNode(activity);
 		if (tasknode instanceof UserNode) {
 			// 放弃未完成的工作项
-			final IDataQuery<WorkitemBean> qs = wService.getWorkitemList(activity,
-					EWorkitemStatus.running, EWorkitemStatus.suspended);
+			final IDataQuery<WorkitemBean> qs = wService.getWorkitemList(activity);
 			WorkitemBean workitem;
 			while ((workitem = qs.next()) != null) {
-				workitem.setStatus(EWorkitemStatus.abort);
-				workitem.setCompleteDate(new Date());
-				wService.update(new String[] { "completeDate", "status" }, workitem);
+				EWorkitemStatus status = workitem.getStatus();
+				if (status == EWorkitemStatus.running || status == EWorkitemStatus.suspended) {
+					workitem.setStatus(EWorkitemStatus.abort);
+					workitem.setCompleteDate(new Date());
+					wService.update(new String[] { "completeDate", "status" }, workitem);
+				}
 			}
 
 			if (!ParticipantUtils.isInstanceShared(tasknode)

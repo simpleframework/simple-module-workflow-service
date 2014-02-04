@@ -12,10 +12,19 @@ import net.simpleframework.ctx.service.ado.db.IDbBeanService;
 public interface IDelegationService extends IDbBeanService<DelegationBean> {
 
 	/**
+	 * 获取工作项委托
+	 * 
+	 * @param workitem
+	 * @return
+	 */
+	DelegationBean queryWorkitem(WorkitemBean workitem);
+
+	/**
 	 * 获取指定用户的委托任务
 	 * 
 	 * @param userId
 	 * @return
 	 */
 	IDataQuery<DelegationBean> queryWorkitems(Object userId);
+
 }

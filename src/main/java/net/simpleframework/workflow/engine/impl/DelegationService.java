@@ -22,6 +22,12 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 		IDelegationService {
 
 	@Override
+	public DelegationBean queryWorkitem(final WorkitemBean workitem) {
+		return getBean("delegationsource=? and sourceid=?", EDelegationSource.workitem,
+				workitem.getId());
+	}
+
+	@Override
 	public IDataQuery<DelegationBean> queryWorkitems(final Object userId) {
 		final StringBuilder sb = new StringBuilder();
 		sb.append("select d.* from ").append(getTablename(DelegationBean.class))

@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
-import net.simpleframework.ado.db.IDbDataQuery;
+import net.simpleframework.ado.db.common.SQLValue;
 import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
@@ -18,6 +18,7 @@ import net.simpleframework.workflow.engine.DelegationBean;
 import net.simpleframework.workflow.engine.EActivityAbortPolicy;
 import net.simpleframework.workflow.engine.EActivityStatus;
 import net.simpleframework.workflow.engine.EDelegationSource;
+import net.simpleframework.workflow.engine.EDelegationStatus;
 import net.simpleframework.workflow.engine.EProcessStatus;
 import net.simpleframework.workflow.engine.EWorkitemStatus;
 import net.simpleframework.workflow.engine.IActivityService.PropSequential;
@@ -77,6 +78,14 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			workitem.setStatus(EWorkitemStatus.complete);
 			workitem.setCompleteDate(new Date());
 			update(new String[] { "completeDate", "status" }, workitem);
+
+			// 设置委托
+			final DelegationBean delegation = dService.queryWorkitem(workitem);
+			if (delegation != null) {
+				delegation.setCompleteDate(new Date());
+				delegation.setStatus(EDelegationStatus.complete);
+				dService.update(new String[] { "completeDate", "status" }, delegation);
+			}
 
 			if (workitemComplete.isAllCompleted()) {
 				aService.complete(workitemComplete.getActivityComplete());
@@ -146,7 +155,6 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			aService.update(new String[] { "status", "completeDate" }, activity);
 		} else if (status == EActivityStatus.running) {
 			// 顺序，单实例
-
 			if (ParticipantUtils.isSequential(aService.getTaskNode(activity))) {
 				final IDataQuery<WorkitemBean> qs = getWorkitemList(activity, EWorkitemStatus.running);
 				WorkitemBean workitem2;
@@ -199,29 +207,11 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		delegation.setDescription(description);
 		dService.insert(delegation);
 
+		// 执行...
+		dService.doDelegateTask(delegation);
+
 		workitem.setStatus(EWorkitemStatus.delegate);
 		update(new String[] { "status" }, workitem);
-	}
-
-	private IDbDataQuery<WorkitemBean> _getWorkitemList(final ID id, final String field,
-			final EWorkitemStatus... status) {
-		final StringBuilder sql = new StringBuilder();
-		sql.append(field).append("=?");
-		final ArrayList<Object> params = new ArrayList<Object>();
-		params.add(id);
-		if (status != null && status.length > 0) {
-			sql.append(" and (");
-			int i = 0;
-			for (final EWorkitemStatus s : status) {
-				if (i++ > 0) {
-					sql.append(" or ");
-				}
-				sql.append("status=?");
-				params.add(s);
-			}
-			sql.append(")");
-		}
-		return query(sql.toString(), params.toArray());
 	}
 
 	@Override
@@ -230,7 +220,23 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		if (activity == null) {
 			return DataQueryUtils.nullQuery();
 		}
-		return _getWorkitemList(activity.getId(), "activityId", status);
+		final StringBuilder sql = new StringBuilder("activityId=?");
+		final ArrayList<Object> params = new ArrayList<Object>();
+		params.add(activity.getId());
+		if (status.length > 0) {
+			final StringBuilder sb = new StringBuilder();
+			for (final EWorkitemStatus s : status) {
+				if (sb.length() > 0) {
+					sb.append(" or ");
+				}
+				sb.append("status=?");
+				params.add(s);
+			}
+			if (sb.length() > 0) {
+				sql.append(" and (").append(sb).append(")");
+			}
+		}
+		return query(sql.toString(), params.toArray());
 	}
 
 	@Override
@@ -238,7 +244,30 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		if (userId == null) {
 			return DataQueryUtils.nullQuery();
 		}
-		return _getWorkitemList(userId, "userId", status);
+		final StringBuilder sql = new StringBuilder();
+		final ArrayList<Object> params = new ArrayList<Object>();
+		sql.append("select w.* from ").append(getTablename(WorkitemBean.class))
+				.append(" w left join ").append(getTablename(DelegationBean.class))
+				.append(" d on w.id = d.sourceid ");
+		sql.append("where ((d.userid=? and d.status=?) or (w.userid=? and (d.status is null or d.status<>?)))");
+		params.add(userId);
+		params.add(EDelegationStatus.running);
+		params.add(userId);
+		params.add(EDelegationStatus.running);
+		if (status.length > 0) {
+			final StringBuilder sb = new StringBuilder();
+			for (final EWorkitemStatus s : status) {
+				if (sb.length() > 0) {
+					sb.append(" or ");
+				}
+				sb.append("w.status=?");
+				params.add(s);
+			}
+			if (sb.length() > 0) {
+				sql.append(" and (").append(sb).append(")");
+			}
+		}
+		return getEntityManager().queryBeans(new SQLValue(sql.toString(), params.toArray()));
 	}
 
 	@Override
@@ -278,6 +307,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		workitem.setUserId(participant.userId);
 		workitem.setCreateDate(activity.getCreateDate());
 		workitem.setRoleId(participant.roleId);
+		workitem.setUserId2(participant.userId);
 		return workitem;
 	}
 }

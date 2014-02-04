@@ -98,6 +98,7 @@
         status int2 not null,
         roleid char(32) not null, 
         userid char(32) not null,
+        userid2 char(32) not null,
         createdate timestamp not null,
         completedate timestamp,
         readmark bool,

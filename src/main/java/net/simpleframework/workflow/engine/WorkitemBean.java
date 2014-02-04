@@ -14,13 +14,20 @@ import net.simpleframework.common.ID;
 @EntityInterceptor(listenerTypes = { "net.simpleframework.module.log.EntityUpdateLogAdapter",
 		"net.simpleframework.module.log.EntityDeleteLogAdapter" }, columns = { "status" })
 public class WorkitemBean extends AbstractWorkflowBean {
+	/* 状态 */
 	private EWorkitemStatus status;
 
+	/* 关联的环节id */
 	private ID activityId;
 
-	// private ID previousId;
+	/* 任务分派的用户id */
+	private ID userId;
 
-	private ID userId, roleId;
+	/* 一务分派的角色id */
+	private ID roleId;
+
+	/* 实际执行的用户id，缺省值=userId */
+	private ID userId2;
 
 	private Date completeDate;
 
@@ -48,6 +55,14 @@ public class WorkitemBean extends AbstractWorkflowBean {
 
 	public void setRoleId(final ID roleId) {
 		this.roleId = roleId;
+	}
+
+	public ID getUserId2() {
+		return userId2;
+	}
+
+	public void setUserId2(ID userId2) {
+		this.userId2 = userId2;
 	}
 
 	public ID getActivityId() {
