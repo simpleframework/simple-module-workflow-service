@@ -9,6 +9,7 @@ import net.simpleframework.ctx.task.ITaskExecutor;
 import net.simpleframework.workflow.engine.DelegationBean;
 import net.simpleframework.workflow.engine.EDelegationSource;
 import net.simpleframework.workflow.engine.EDelegationStatus;
+import net.simpleframework.workflow.engine.EWorkitemStatus;
 import net.simpleframework.workflow.engine.IDelegationService;
 import net.simpleframework.workflow.engine.WorkitemBean;
 
@@ -46,6 +47,8 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 				delegation.setStatus(EDelegationStatus.running);
 				delegation.setRunningDate(n);
 				update(new String[] { "status", "runningDate" }, delegation);
+
+				updateWorkitem(delegation, EWorkitemStatus.delegate);
 			}
 		} else if (status == EDelegationStatus.running) {
 			final Date endDate = delegation.getEndDate();
@@ -54,7 +57,24 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 				delegation.setStatus(EDelegationStatus.abort);
 				delegation.setCompleteDate(n);
 				update(new String[] { "status", "runningDate" }, delegation);
+
+				updateWorkitem(delegation, EWorkitemStatus.running);
 			}
+		}
+	}
+
+	private void updateWorkitem(DelegationBean delegation, EWorkitemStatus status) {
+		// 更新Workitem
+		WorkitemBean workitem;
+		if (delegation.getDelegationSource() == EDelegationSource.workitem
+				&& (workitem = wService.getBean(delegation.getSourceId())) != null) {
+			workitem.setStatus(status);
+			if (status == EWorkitemStatus.delegate) {
+				workitem.setUserId2(delegation.getUserId());
+			} else {
+				workitem.setUserId2(workitem.getUserId());
+			}
+			wService.update(new String[] { "status", "userId2" }, workitem);
 		}
 	}
 
