@@ -27,4 +27,10 @@ public interface IDelegationService extends IDbBeanService<DelegationBean> {
 	 */
 	IDataQuery<DelegationBean> queryWorkitems(Object userId);
 
+	/**
+	 * 放弃当前委托
+	 * 
+	 * @param delegation
+	 */
+	void doAbort(DelegationBean delegation);
 }

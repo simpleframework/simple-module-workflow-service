@@ -95,7 +95,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			final IDataQuery<WorkitemBean> qs = wService.getWorkitemList(activity);
 			WorkitemBean workitem;
 			while ((workitem = qs.next()) != null) {
-				EWorkitemStatus status = workitem.getStatus();
+				final EWorkitemStatus status = workitem.getStatus();
 				if (status == EWorkitemStatus.running || status == EWorkitemStatus.suspended) {
 					workitem.setStatus(EWorkitemStatus.abort);
 					workitem.setCompleteDate(new Date());

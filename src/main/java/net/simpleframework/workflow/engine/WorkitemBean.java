@@ -61,7 +61,7 @@ public class WorkitemBean extends AbstractWorkflowBean {
 		return userId2;
 	}
 
-	public void setUserId2(ID userId2) {
+	public void setUserId2(final ID userId2) {
 		this.userId2 = userId2;
 	}
 

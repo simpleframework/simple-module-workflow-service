@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.simpleframework.ado.bean.AbstractIdBean;
+import net.simpleframework.ado.bean.IIdBeanAware;
 import net.simpleframework.common.BeanUtils;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.ArrayUtils;
@@ -15,7 +16,6 @@ import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.ctx.script.IScriptEval;
 import net.simpleframework.ctx.script.ScriptEvalFactory;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
-import net.simpleframework.workflow.engine.AbstractWorkflowBean;
 import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.IWorkflowContextAware;
 import net.simpleframework.workflow.engine.ProcessBean;
@@ -48,7 +48,7 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 		return variables;
 	}
 
-	public void assertStatus(final AbstractWorkflowBean bean, final Enum<?>... status) {
+	public void assertStatus(final IIdBeanAware bean, final Enum<?>... status) {
 		final Enum<?> status2 = (Enum<?>) BeanUtils.getProperty(bean, "status");
 		if (!ArrayUtils.contains(status, status2)) {
 			throw WorkflowStatusException.of(status2, status);

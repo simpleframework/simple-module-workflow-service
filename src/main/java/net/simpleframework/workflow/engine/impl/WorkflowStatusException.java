@@ -8,6 +8,7 @@ import java.util.List;
 import net.simpleframework.common.StringUtils;
 import net.simpleframework.ctx.ModuleException;
 import net.simpleframework.workflow.engine.EActivityStatus;
+import net.simpleframework.workflow.engine.EDelegationStatus;
 import net.simpleframework.workflow.engine.EProcessModelStatus;
 import net.simpleframework.workflow.engine.EProcessStatus;
 import net.simpleframework.workflow.engine.EWorkitemStatus;
@@ -32,6 +33,7 @@ public class WorkflowStatusException extends ModuleException {
 		BEANCLASS_LIST.add(EProcessStatus.class);
 		BEANCLASS_LIST.add(EActivityStatus.class);
 		BEANCLASS_LIST.add(EWorkitemStatus.class);
+		BEANCLASS_LIST.add(EDelegationStatus.class);
 	}
 
 	public static WorkflowStatusException of(final String msg) {

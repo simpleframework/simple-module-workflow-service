@@ -31,9 +31,12 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	@Override
 	public IDataQuery<DelegationBean> queryWorkitems(final Object userId) {
 		final StringBuilder sb = new StringBuilder();
-		sb.append("select d.* from ").append(getTablename(DelegationBean.class))
-				.append(" d left join ").append(getTablename(WorkitemBean.class))
-				.append(" w on d.sourceid = w.id where w.userId=? and d.delegationsource=?");
+		sb.append("select d.* from ")
+				.append(getTablename(DelegationBean.class))
+				.append(" d left join ")
+				.append(getTablename(WorkitemBean.class))
+				.append(
+						" w on d.sourceid = w.id where w.userId=? and d.delegationsource=? order by createDate desc");
 		return getEntityManager().queryBeans(
 				new SQLValue(sb.toString(), userId, EDelegationSource.workitem));
 	}
@@ -63,7 +66,7 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 		}
 	}
 
-	private void updateWorkitem(DelegationBean delegation, EWorkitemStatus status) {
+	private void updateWorkitem(final DelegationBean delegation, final EWorkitemStatus status) {
 		// 更新Workitem
 		WorkitemBean workitem;
 		if (delegation.getDelegationSource() == EDelegationSource.workitem
@@ -85,6 +88,16 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 		while ((delegation = dq.next()) != null) {
 			doDelegateTask(delegation);
 		}
+	}
+
+	@Override
+	public void doAbort(final DelegationBean delegation) {
+		assertStatus(delegation, EDelegationStatus.ready, EDelegationStatus.running);
+		delegation.setStatus(EDelegationStatus.abort);
+		delegation.setCompleteDate(new Date());
+		dService.update(new String[] { "status", "completeDate" }, delegation);
+
+		updateWorkitem(delegation, EWorkitemStatus.running);
 	}
 
 	@Override
