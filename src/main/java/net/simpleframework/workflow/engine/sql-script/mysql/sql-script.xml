@@ -69,8 +69,7 @@
         enddate datetime,   
         rulehandler varchar(128), 
         description varchar(256),
-        primary key(id),
-        unique(delegationsource, sourceid, userid)
+        primary key(id)
       );
     ]]>
 	</tran-sql>

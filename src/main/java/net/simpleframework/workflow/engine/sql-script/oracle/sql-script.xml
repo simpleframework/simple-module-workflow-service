@@ -69,8 +69,7 @@
         enddate timestamp,   
         rulehandler varchar2(128 char), 
         description varchar2(256 char),
-        primary key(id),
-        unique(delegationsource, sourceid, userid)
+        primary key(id)
       );
     ]]>
 	</tran-sql>

@@ -33,4 +33,6 @@ public interface IDelegationService extends IDbBeanService<DelegationBean> {
 	 * @param delegation
 	 */
 	void doAbort(DelegationBean delegation);
+
+	boolean isFinalStatus(DelegationBean delegation);
 }

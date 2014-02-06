@@ -584,7 +584,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	public void onInit() throws Exception {
 		// 启动子流程监控
 		final IDataQuery<?> qs = query("tasknodeType=? and (status=? or status=?)",
-				AbstractTaskNode.SUBNODE_TYPE, EActivityStatus.running, EActivityStatus.waiting)
+				AbstractTaskNode.TT_SUB, EActivityStatus.running, EActivityStatus.waiting)
 				.setFetchSize(0);
 		ActivityBean activity;
 		while ((activity = (ActivityBean) qs.next()) != null) {
