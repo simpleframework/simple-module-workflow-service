@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.common.object.ObjectEx;
-import net.simpleframework.workflow.engine.IActivityService.PropSequential;
 import net.simpleframework.workflow.engine.participant.ParticipantUtils;
 
 /**

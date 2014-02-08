@@ -15,6 +15,7 @@ import java.util.Properties;
 
 import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
+import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
@@ -34,6 +35,7 @@ import net.simpleframework.workflow.engine.IActivityService;
 import net.simpleframework.workflow.engine.IMappingVal;
 import net.simpleframework.workflow.engine.IWorkflowForm;
 import net.simpleframework.workflow.engine.ProcessBean;
+import net.simpleframework.workflow.engine.PropSequential;
 import net.simpleframework.workflow.engine.WorkitemBean;
 import net.simpleframework.workflow.engine.event.IActivityEventListener;
 import net.simpleframework.workflow.engine.event.IWorkflowEventListener;
@@ -43,6 +45,7 @@ import net.simpleframework.workflow.engine.remote.IProcessRemote;
 import net.simpleframework.workflow.schema.AbstractTaskNode;
 import net.simpleframework.workflow.schema.EVariableMode;
 import net.simpleframework.workflow.schema.EndNode;
+import net.simpleframework.workflow.schema.MergeNode;
 import net.simpleframework.workflow.schema.ProcessNode;
 import net.simpleframework.workflow.schema.SubNode;
 import net.simpleframework.workflow.schema.SubNode.VariableMapping;
@@ -74,6 +77,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				final AbstractTaskNode to = transition.to();
 				if (to instanceof UserNode) {
 					doUserNode(activity, (UserNode) to, activityComplete.getParticipants(transition));
+				} else if (to instanceof MergeNode) {
+					doMergeNode(activity, (MergeNode) to);
 				} else if (to instanceof SubNode) {
 					doSubNode(activity, (SubNode) to);
 				} else if (to instanceof EndNode) {
@@ -142,7 +147,6 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	private void doUserNode(final ActivityBean activity, final UserNode to,
 			final Collection<Participant> _participants) {
-		ActivityBean nActivity = null;
 		final ArrayList<Participant> participants = new ArrayList<Participant>();
 		Iterator<Participant> it = null;
 		if (_participants != null && _participants.size() > 0) {
@@ -156,6 +160,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 		final boolean instanceShared = ParticipantUtils.isInstanceShared(to);
 		final ProcessBean process = getProcessBean(activity);
+		ActivityBean nActivity = null;
 		for (final Participant participant : participants) {
 			if (!instanceShared || nActivity == null) {
 				nActivity = createActivity(process, to, activity);
@@ -163,6 +168,66 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				insert(nActivity);
 			}
 			wService.insert(wService.createWorkitem(nActivity, participant));
+		}
+	}
+
+	private static final String MERGE_PRE_ACTIVITIES = "merge_pre_activities";
+
+	private void doMergeNode(final ActivityBean preActivity, final MergeNode to) {
+		// 合并环节单实例
+		ActivityBean nActivity = getBean("processId=? and tasknodeId=?", preActivity.getProcessId(),
+				to.getId());
+		if (nActivity == null) {
+			nActivity = createActivity(to, preActivity);
+			insert(nActivity);
+		} else {
+			// 更新每次的preActivity
+			final Properties props = nActivity.getProperties();
+			props.setProperty(MERGE_PRE_ACTIVITIES, StringUtils.join(
+					new Object[] { props.getProperty(MERGE_PRE_ACTIVITIES), preActivity.getId() }, ";"));
+			update(new String[] { "properties" }, nActivity);
+		}
+
+		// 判断合并环节之前是否还有活动的
+		ExpressionValue ev = null;
+		for (final TransitionNode t : to.fromTransitions()) {
+			if (ev == null) {
+				ev = new ExpressionValue("processId=? and (");
+				ev.addValues(nActivity.getProcessId());
+			} else {
+				ev.addExpression(" or ");
+			}
+			ev.addExpression("tasknodeId=?");
+			ev.addValues(t.from().getId());
+		}
+		final IDataQuery<ActivityBean> dq = getEntityManager().queryBeans(ev.addExpression(")"));
+		ActivityBean pre;
+		final int count = to.getCount();
+		boolean complete;
+		if (count <= 0 && count >= dq.getCount()) {
+			complete = true;
+			// 查找是否存在有未完成的任务环节
+			while ((pre = dq.next()) != null) {
+				if (!isFinalStatus(pre) && !pre.equals(preActivity)) {
+					complete = false;
+					break;
+				}
+			}
+		} else {
+			complete = false;
+			int completes = 0;
+			while ((pre = dq.next()) != null) {
+				if (pre.equals(preActivity) || isFinalStatus(pre)) {
+					completes++;
+				}
+				if (completes >= count) {
+					complete = true;
+					break;
+				}
+			}
+		}
+		if (complete) {
+			new ActivityComplete(nActivity).complete();
 		}
 	}
 
@@ -535,8 +600,6 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	public Collection<String> getVariableNames(final ActivityBean activity) {
 		return getTaskNode(activity).variables().keySet();
 	}
-
-	// private final KVMap formInstancCache = new KVMap();
 
 	@Override
 	public IWorkflowForm getWorkflowForm(final ActivityBean activity) {

@@ -18,27 +18,11 @@ public enum EActivityStatus {
 		}
 	},
 
-	complete {
-
-		@Override
-		public String toString() {
-			return $m("EActivityStatus.complete");
-		}
-	},
-
 	suspended {
 
 		@Override
 		public String toString() {
 			return $m("EActivityStatus.suspended");
-		}
-	},
-
-	abort {
-
-		@Override
-		public String toString() {
-			return $m("EActivityStatus.abort");
 		}
 	},
 
@@ -55,6 +39,22 @@ public enum EActivityStatus {
 		@Override
 		public String toString() {
 			return $m("EActivityStatus.waiting");
+		}
+	},
+
+	complete {
+
+		@Override
+		public String toString() {
+			return $m("EActivityStatus.complete");
+		}
+	},
+
+	abort {
+
+		@Override
+		public String toString() {
+			return $m("EActivityStatus.abort");
 		}
 	}
 }
