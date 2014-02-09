@@ -52,7 +52,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public ProcessModelBean getProcessModel(final ProcessBean process) {
-		return process != null ? mService.getBean(process.getModelId()) : null;
+		return mService.getBean(process.getModelId());
 	}
 
 	/**
@@ -62,8 +62,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	 * @return
 	 */
 	ProcessNode getProcessNode(final ProcessBean process) {
-		final ProcessDocument doc = mService.getProcessDocument(getProcessModel(process));
-		return doc != null ? doc.getProcessNode() : null;
+		return mService.getProcessDocument(getProcessModel(process)).getProcessNode();
 	}
 
 	@Override

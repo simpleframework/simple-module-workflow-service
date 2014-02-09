@@ -3,6 +3,7 @@ package net.simpleframework.workflow.engine.event;
 import net.simpleframework.workflow.engine.EProcessAbortPolicy;
 import net.simpleframework.workflow.engine.InitiateItem;
 import net.simpleframework.workflow.engine.ProcessBean;
+import net.simpleframework.workflow.engine.ProcessModelBean;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -11,6 +12,14 @@ import net.simpleframework.workflow.engine.ProcessBean;
  *         http://www.simpleframework.net
  */
 public class ProcessEventAdapter implements IProcessEventListener {
+
+	@Override
+	public void onModelDeploy(final ProcessModelBean processModel) {
+	}
+
+	@Override
+	public void onModelResume(final ProcessModelBean processModel) {
+	}
 
 	@Override
 	public void onProcessCreated(final InitiateItem initiateItem, final ProcessBean process) {

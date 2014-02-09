@@ -22,6 +22,8 @@ import net.simpleframework.workflow.engine.InitiateItem;
 import net.simpleframework.workflow.engine.InitiateItems;
 import net.simpleframework.workflow.engine.ProcessModelBean;
 import net.simpleframework.workflow.engine.ProcessModelLobBean;
+import net.simpleframework.workflow.engine.event.IProcessEventListener;
+import net.simpleframework.workflow.engine.event.IWorkflowEventListener;
 import net.simpleframework.workflow.schema.AbstractParticipantType;
 import net.simpleframework.workflow.schema.AbstractParticipantType.BaseRole;
 import net.simpleframework.workflow.schema.AbstractParticipantType.User;
@@ -41,17 +43,11 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 
 	@Override
 	public ProcessDocument getProcessDocument(final ProcessModelBean processModel) {
-		if (processModel == null) {
-			return null;
-		}
 		ProcessDocument doc = (ProcessDocument) processModel.getAttr("processDocument");
 		if (doc == null) {
 			final ProcessModelLobBean lob = getEntityManager(ProcessModelLobBean.class).getBean(
 					processModel.getId());
-			if (lob != null) {
-				processModel.setAttr("processDocument",
-						doc = new ProcessDocument(lob.getProcessSchema()));
-			}
+			processModel.setAttr("processDocument", doc = new ProcessDocument(lob.getProcessSchema()));
 		}
 		return doc;
 	}
@@ -206,6 +202,12 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 
 	@Override
 	public void deploy(final ProcessModelBean processModel) {
+		assertStatus(processModel, EProcessModelStatus.edit);
+		processModel.setStatus(EProcessModelStatus.deploy);
+		update(new String[] { "status" }, processModel);
+		for (final IWorkflowEventListener listener : getEventListeners(processModel)) {
+			((IProcessEventListener) listener).onModelDeploy(processModel);
+		}
 	}
 
 	@Override
@@ -214,6 +216,12 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 
 	@Override
 	public void resume(final ProcessModelBean processModel) {
+		assertStatus(processModel, EProcessModelStatus.deploy, EProcessModelStatus.suspended);
+		processModel.setStatus(EProcessModelStatus.edit);
+		update(new String[] { "status" }, processModel);
+		for (final IWorkflowEventListener listener : getEventListeners(processModel)) {
+			((IProcessEventListener) listener).onModelResume(processModel);
+		}
 	}
 
 	@Override

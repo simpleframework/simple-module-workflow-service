@@ -3,6 +3,7 @@ package net.simpleframework.workflow.engine.event;
 import net.simpleframework.workflow.engine.EProcessAbortPolicy;
 import net.simpleframework.workflow.engine.InitiateItem;
 import net.simpleframework.workflow.engine.ProcessBean;
+import net.simpleframework.workflow.engine.ProcessModelBean;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -12,7 +13,14 @@ import net.simpleframework.workflow.engine.ProcessBean;
  */
 public interface IProcessEventListener extends IWorkflowEventListener {
 
-	// onModelDeploy();
+	/**
+	 * 模型部署时触发
+	 * 
+	 * @param processModel
+	 */
+	void onModelDeploy(ProcessModelBean processModel);
+
+	void onModelResume(ProcessModelBean processModel);
 
 	/**
 	 * 流程创建时触发

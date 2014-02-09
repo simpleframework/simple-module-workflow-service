@@ -274,9 +274,6 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public void subComplete(final ActivityBean activity, final IMappingVal mappingVal) {
-		if (activity == null) {
-			return;
-		}
 		final SubNode sub = (SubNode) getTaskNode(activity);
 		if (sub.isSync()) {
 			// 设置返回的变量，仅在同步方式
@@ -585,17 +582,13 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public ProcessBean getProcessBean(final ActivityBean activity) {
-		return activity != null ? pService.getBean(activity.getProcessId()) : null;
+		return pService.getBean(activity.getProcessId());
 	}
 
 	@Override
 	public AbstractTaskNode getTaskNode(final ActivityBean activity) {
-		if (activity == null) {
-			return null;
-		}
-		final ProcessNode processNode = pService.getProcessNode(getProcessBean(activity));
-		return processNode != null ? (AbstractTaskNode) processNode.getNodeById(activity
-				.getTasknodeId()) : null;
+		return (AbstractTaskNode) pService.getProcessNode(getProcessBean(activity)).getNodeById(
+				activity.getTasknodeId());
 	}
 
 	@Override
@@ -631,9 +624,6 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public IWorkflowForm getWorkflowForm(final ActivityBean activity) {
-		if (activity == null) {
-			return null;
-		}
 		String formClass = null;
 		final AbstractTaskNode tasknode = getTaskNode(activity);
 		if (tasknode instanceof UserNode) {

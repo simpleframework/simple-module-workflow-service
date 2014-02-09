@@ -19,6 +19,7 @@ import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
 import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.IWorkflowContextAware;
 import net.simpleframework.workflow.engine.ProcessBean;
+import net.simpleframework.workflow.engine.ProcessModelBean;
 import net.simpleframework.workflow.engine.event.IWorkflowEventListener;
 
 /**
@@ -59,17 +60,18 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 
 	public Collection<IWorkflowEventListener> getEventListeners(final T bean) {
 		final Set<String> set = new LinkedHashSet<String>();
-		Set<String> set2 = listenerClassMap.get(bean.getId());
-		if (set2 != null) {
-			set.addAll(set2);
-		}
-		set2 = null;
-		if (bean instanceof ProcessBean) {
+		Set<String> set2 = null;
+		if (bean instanceof ProcessModelBean) {
+			set2 = mService.getProcessDocument((ProcessModelBean) bean).getProcessNode().listeners();
+		} else if (bean instanceof ProcessBean) {
 			set2 = pService.getProcessNode((ProcessBean) bean).listeners();
 		} else if (bean instanceof ActivityBean) {
 			set2 = aService.getTaskNode((ActivityBean) bean).listeners();
 		}
 		if (set2 != null) {
+			set.addAll(set2);
+		}
+		if ((set2 = listenerClassMap.get(bean.getId())) != null) {
 			set.addAll(set2);
 		}
 		final ArrayList<IWorkflowEventListener> al = new ArrayList<IWorkflowEventListener>();
