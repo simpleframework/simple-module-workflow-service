@@ -175,16 +175,32 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	private void doMergeNode(final ActivityBean preActivity, final MergeNode to) {
 		// 合并环节单实例
-		ActivityBean nActivity = getBean("processId=? and tasknodeId=?", preActivity.getProcessId(),
-				to.getId());
-		if (nActivity == null) {
-			nActivity = createActivity(to, preActivity);
-			insert(nActivity);
+		ActivityBean nActivity = null;
+		IDataQuery<ActivityBean> dq = query("processId=? and tasknodeId=?",
+				preActivity.getProcessId(), to.getId());
+		if (dq.getCount() == 0) {
+			insert(nActivity = createActivity(to, preActivity));
 		} else {
-			// 更新每次的preActivity
+			// 查找非最终态的实例
+			ActivityBean activity;
+			while ((activity = dq.next()) != null) {
+				if (!isFinalStatus(activity)) {
+					nActivity = activity;
+					break;
+				}
+			}
+			// 如果全部是最终态，则创建，可能由于回退造成
+			if (nActivity == null) {
+				insert(nActivity = createActivity(to, preActivity));
+			}
+		}
+
+		// 更新每次的preActivity
+		final Object preId = preActivity.getId();
+		if (!preId.equals(nActivity.getPreviousId())) {
 			final Properties props = nActivity.getProperties();
 			props.setProperty(MERGE_PRE_ACTIVITIES, StringUtils.join(
-					new Object[] { props.getProperty(MERGE_PRE_ACTIVITIES), preActivity.getId() }, ";"));
+					new Object[] { props.getProperty(MERGE_PRE_ACTIVITIES), preId }, ";"));
 			update(new String[] { "properties" }, nActivity);
 		}
 
@@ -200,9 +216,10 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			ev.addExpression("tasknodeId=?");
 			ev.addValues(t.from().getId());
 		}
-		final IDataQuery<ActivityBean> dq = getEntityManager().queryBeans(ev.addExpression(")"));
+		dq = getEntityManager().queryBeans(ev.addExpression(")"));
 		ActivityBean pre;
 		final int count = to.getCount();
+		final List<ActivityBean> aborts = new ArrayList<ActivityBean>();
 		boolean complete;
 		if (count <= 0 && count >= dq.getCount()) {
 			complete = true;
@@ -219,6 +236,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			while ((pre = dq.next()) != null) {
 				if (pre.equals(preActivity) || isFinalStatus(pre)) {
 					completes++;
+				} else {
+					aborts.add(pre);
 				}
 				if (completes >= count) {
 					complete = true;
@@ -228,6 +247,12 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 		if (complete) {
 			new ActivityComplete(nActivity).complete();
+			if (aborts.size() > 0) {
+				// 放弃未完成的
+				for (final ActivityBean activity : aborts) {
+					_abort(activity, EActivityAbortPolicy.normal, false);
+				}
+			}
 		}
 	}
 
