@@ -241,7 +241,6 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				}
 				if (completes >= count) {
 					complete = true;
-					break;
 				}
 			}
 		}
