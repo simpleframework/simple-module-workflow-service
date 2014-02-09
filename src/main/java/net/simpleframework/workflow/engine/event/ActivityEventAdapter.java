@@ -15,19 +15,23 @@ import net.simpleframework.workflow.engine.WorkitemComplete;
 public class ActivityEventAdapter implements IActivityEventListener {
 
 	@Override
-	public void onCompleted(final ActivityComplete activityComplete) {
+	public void onActivityCompleted(final ActivityComplete activityComplete) {
 	}
 
 	@Override
-	public void onAbort(final ActivityBean activity, final EActivityAbortPolicy policy) {
+	public void onActivityAbort(final ActivityBean activity, final EActivityAbortPolicy policy) {
 	}
 
 	@Override
-	public void onSuspend(final ActivityBean activity) {
+	public void onActivitySuspend(final ActivityBean activity) {
 	}
 
 	@Override
-	public void onFallback(final ActivityBean activity, final String tasknode) {
+	public void onActivityResume(final ActivityBean activity) {
+	}
+
+	@Override
+	public void onActivityFallback(final ActivityBean activity, final String tasknode) {
 	}
 
 	@Override

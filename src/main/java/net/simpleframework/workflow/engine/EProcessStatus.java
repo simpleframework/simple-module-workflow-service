@@ -17,14 +17,6 @@ public enum EProcessStatus {
 		}
 	},
 
-	complete {
-
-		@Override
-		public String toString() {
-			return $m("EProcessStatus.complete");
-		}
-	},
-
 	suspended {
 
 		@Override
@@ -33,19 +25,27 @@ public enum EProcessStatus {
 		}
 	},
 
-	abort {
-
-		@Override
-		public String toString() {
-			return $m("EProcessStatus.abort");
-		}
-	},
-
 	timeout {
 
 		@Override
 		public String toString() {
 			return $m("EProcessStatus.timeout");
+		}
+	},
+
+	complete {
+
+		@Override
+		public String toString() {
+			return $m("EProcessStatus.complete");
+		}
+	},
+
+	abort {
+
+		@Override
+		public String toString() {
+			return $m("EProcessStatus.abort");
 		}
 	}
 }

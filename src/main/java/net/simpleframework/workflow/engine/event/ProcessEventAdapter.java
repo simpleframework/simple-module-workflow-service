@@ -17,14 +17,18 @@ public class ProcessEventAdapter implements IProcessEventListener {
 	}
 
 	@Override
-	public void onAbort(final ProcessBean process, final EProcessAbortPolicy policy) {
+	public void onProcessAbort(final ProcessBean process, final EProcessAbortPolicy policy) {
 	}
 
 	@Override
-	public void onDelete(final ProcessBean process) {
+	public void onProcessDelete(final ProcessBean process) {
 	}
 
 	@Override
-	public void onSuspend(final ProcessBean process) {
+	public void onProcessSuspend(final ProcessBean process) {
+	}
+
+	@Override
+	public void onProcessResume(final ProcessBean process) {
 	}
 }

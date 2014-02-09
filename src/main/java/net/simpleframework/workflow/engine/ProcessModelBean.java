@@ -13,7 +13,8 @@ import net.simpleframework.common.StringUtils;
  *         http://www.simpleframework.net
  */
 @EntityInterceptor(listenerTypes = { "net.simpleframework.module.log.EntityUpdateLogAdapter",
-		"net.simpleframework.module.log.EntityDeleteLogAdapter" }, columns = { "status" })
+		"net.simpleframework.module.log.EntityDeleteLogAdapter" }, columns = { "status",
+		"lastUserId", "lastUpdate" })
 public class ProcessModelBean extends AbstractWorkflowBean {
 	private String modelName, modelText;
 

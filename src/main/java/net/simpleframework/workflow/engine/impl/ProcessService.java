@@ -211,18 +211,22 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
-	public void suspend(final ProcessBean process, final boolean resume) {
-		if (resume) {
-			assertStatus(process, EProcessStatus.suspended);
-			process.setStatus(EProcessStatus.running);
-		} else {
-			assertStatus(process, EProcessStatus.running);
-			process.setStatus(EProcessStatus.suspended);
-		}
+	public void suspend(final ProcessBean process) {
+		assertStatus(process, EProcessStatus.running);
+		process.setStatus(EProcessStatus.suspended);
 		update(new String[] { "status" }, process);
-
 		for (final IWorkflowEventListener listener : getEventListeners(process)) {
-			((IProcessEventListener) listener).onSuspend(process);
+			((IProcessEventListener) listener).onProcessSuspend(process);
+		}
+	}
+
+	@Override
+	public void resume(final ProcessBean process) {
+		assertStatus(process, EProcessStatus.suspended);
+		process.setStatus(EProcessStatus.running);
+		update(new String[] { "status" }, process);
+		for (final IWorkflowEventListener listener : getEventListeners(process)) {
+			((IProcessEventListener) listener).onProcessResume(process);
 		}
 	}
 
@@ -241,7 +245,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		}
 
 		for (final IWorkflowEventListener listener : getEventListeners(process)) {
-			((IProcessEventListener) listener).onAbort(process, policy);
+			((IProcessEventListener) listener).onProcessAbort(process, policy);
 		}
 	}
 
@@ -316,7 +320,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 					final Object id = process.getId();
 					// 触发删除事件
 					for (final IWorkflowEventListener listener : getEventListeners(process)) {
-						((IProcessEventListener) listener).onDelete(process);
+						((IProcessEventListener) listener).onProcessDelete(process);
 					}
 
 					// 删除lob

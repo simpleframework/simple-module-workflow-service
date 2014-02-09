@@ -12,6 +12,8 @@ import net.simpleframework.workflow.engine.ProcessBean;
  */
 public interface IProcessEventListener extends IWorkflowEventListener {
 
+	// onModelDeploy();
+
 	/**
 	 * 流程创建时触发
 	 * 
@@ -26,14 +28,16 @@ public interface IProcessEventListener extends IWorkflowEventListener {
 	 * @param process
 	 * @param policy
 	 */
-	void onAbort(ProcessBean process, EProcessAbortPolicy policy);
+	void onProcessAbort(ProcessBean process, EProcessAbortPolicy policy);
 
-	void onDelete(ProcessBean process);
+	void onProcessDelete(ProcessBean process);
 
 	/**
 	 * 流程挂起或恢复时触发
 	 * 
 	 * @param process
 	 */
-	void onSuspend(ProcessBean process);
+	void onProcessSuspend(ProcessBean process);
+
+	void onProcessResume(ProcessBean process);
 }

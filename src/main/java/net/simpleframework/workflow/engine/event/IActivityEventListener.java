@@ -19,7 +19,7 @@ public interface IActivityEventListener extends IWorkflowEventListener {
 	 * 
 	 * @param activityComplete
 	 */
-	void onCompleted(ActivityComplete activityComplete);
+	void onActivityCompleted(ActivityComplete activityComplete);
 
 	/**
 	 * 环节放弃时触发
@@ -27,14 +27,21 @@ public interface IActivityEventListener extends IWorkflowEventListener {
 	 * @param activity
 	 * @param policy
 	 */
-	void onAbort(ActivityBean activity, EActivityAbortPolicy policy);
+	void onActivityAbort(ActivityBean activity, EActivityAbortPolicy policy);
 
 	/**
-	 * 环节挂起或恢复时触发
+	 * 环节挂起时触发
 	 * 
 	 * @param activity
 	 */
-	void onSuspend(ActivityBean activity);
+	void onActivitySuspend(ActivityBean activity);
+
+	/**
+	 * 环节恢复时触发
+	 * 
+	 * @param activity
+	 */
+	void onActivityResume(ActivityBean activity);
 
 	/**
 	 * 环节回退时触发
@@ -42,7 +49,7 @@ public interface IActivityEventListener extends IWorkflowEventListener {
 	 * @param activity
 	 * @param tasknode
 	 */
-	void onFallback(ActivityBean activity, String tasknode);
+	void onActivityFallback(ActivityBean activity, String tasknode);
 
 	/**
 	 * 

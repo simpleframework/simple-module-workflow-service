@@ -141,7 +141,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 		// 事件
 		for (final IWorkflowEventListener listener : getEventListeners(activity)) {
-			((IActivityEventListener) listener).onCompleted(activityComplete);
+			((IActivityEventListener) listener).onActivityCompleted(activityComplete);
 		}
 	}
 
@@ -435,7 +435,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 		// 触发事件
 		for (final IWorkflowEventListener listener : getEventListeners(activity)) {
-			((IActivityEventListener) listener).onAbort(activity, policy);
+			((IActivityEventListener) listener).onActivityAbort(activity, policy);
 		}
 	}
 
@@ -445,18 +445,22 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	@Override
-	public void suspend(final ActivityBean activity, final boolean resume) {
-		if (resume) {
-			assertStatus(activity, EActivityStatus.suspended);
-			activity.setStatus(EActivityStatus.running);
-		} else {
-			assertStatus(activity, EActivityStatus.running);
-			activity.setStatus(EActivityStatus.suspended);
-		}
+	public void suspend(final ActivityBean activity) {
+		assertStatus(activity, EActivityStatus.running);
+		activity.setStatus(EActivityStatus.suspended);
 		update(new String[] { "status" }, activity);
-
 		for (final IWorkflowEventListener listener : getEventListeners(activity)) {
-			((IActivityEventListener) listener).onSuspend(activity);
+			((IActivityEventListener) listener).onActivitySuspend(activity);
+		}
+	}
+
+	@Override
+	public void resume(final ActivityBean activity) {
+		assertStatus(activity, EActivityStatus.suspended);
+		activity.setStatus(EActivityStatus.running);
+		update(new String[] { "status" }, activity);
+		for (final IWorkflowEventListener listener : getEventListeners(activity)) {
+			((IActivityEventListener) listener).onActivityResume(activity);
 		}
 	}
 
@@ -539,7 +543,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		_abort(activity, EActivityAbortPolicy.normal, true);
 
 		for (final IWorkflowEventListener listener : getEventListeners(activity)) {
-			((IActivityEventListener) listener).onFallback(nActivity, tasknode);
+			((IActivityEventListener) listener).onActivityFallback(nActivity, tasknode);
 		}
 	}
 

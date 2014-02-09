@@ -52,12 +52,19 @@ public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 	IDataQuery<ProcessBean> getProcessList(ProcessModelBean processModel, EProcessStatus... status);
 
 	/**
-	 * 挂起及恢复流程
+	 * 挂起流程
 	 * 
 	 * @param process
 	 * @param resume
 	 */
-	void suspend(ProcessBean process, boolean resume);
+	void suspend(ProcessBean process);
+
+	/**
+	 * 恢复流程
+	 * 
+	 * @param process
+	 */
+	void resume(ProcessBean process);
 
 	/**
 	 * 放弃流程实例

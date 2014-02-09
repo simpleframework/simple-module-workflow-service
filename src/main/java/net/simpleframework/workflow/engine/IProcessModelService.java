@@ -66,4 +66,25 @@ public interface IProcessModelService extends IDbBeanService<ProcessModelBean>,
 	 * @return
 	 */
 	boolean isStartProcess(ID userId, Object model);
+
+	/**
+	 * 部署
+	 * 
+	 * @param processModel
+	 */
+	void deploy(ProcessModelBean processModel);
+
+	/**
+	 * 挂起
+	 * 
+	 * @param processModel
+	 */
+	void suspend(ProcessModelBean processModel);
+
+	/**
+	 * 恢复
+	 * 
+	 * @param processModel
+	 */
+	void resume(ProcessModelBean processModel);
 }

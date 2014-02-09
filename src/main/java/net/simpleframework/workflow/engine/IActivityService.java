@@ -77,11 +77,19 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	void complete(ActivityComplete activityCallback);
 
 	/**
+	 * 挂起当前环节
 	 * 
 	 * @param activity
 	 * @param resume
 	 */
-	void suspend(ActivityBean activity, boolean resume);
+	void suspend(ActivityBean activity);
+
+	/**
+	 * 恢复当前环节
+	 * 
+	 * @param activity
+	 */
+	void resume(ActivityBean activity);
 
 	/**
 	 * 

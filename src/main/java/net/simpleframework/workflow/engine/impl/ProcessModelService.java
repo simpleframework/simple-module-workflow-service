@@ -86,6 +86,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 
 	@Override
 	public void updateModel(final ProcessModelBean processModel, final ID userId, final char[] model) {
+		assertStatus(processModel, EProcessModelStatus.edit);
 		try {
 			final ProcessDocument document = new ProcessDocument(model);
 			final ProcessNode processNode = document.getProcessNode();
@@ -201,6 +202,18 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 		final Map<String, Object> variables = super.createVariables(model);
 		variables.put("model", model);
 		return variables;
+	}
+
+	@Override
+	public void deploy(final ProcessModelBean processModel) {
+	}
+
+	@Override
+	public void suspend(final ProcessModelBean processModel) {
+	}
+
+	@Override
+	public void resume(final ProcessModelBean processModel) {
 	}
 
 	@Override
