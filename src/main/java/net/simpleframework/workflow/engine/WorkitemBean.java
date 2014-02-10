@@ -90,7 +90,7 @@ public class WorkitemBean extends AbstractWorkflowBean {
 		return endDate;
 	}
 
-	public void setEndDate(Date endDate) {
+	public void setEndDate(final Date endDate) {
 		this.endDate = endDate;
 	}
 

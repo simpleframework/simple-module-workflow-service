@@ -87,7 +87,7 @@ public class ProcessModelBean extends AbstractWorkflowBean {
 		return processCount;
 	}
 
-	public void setProcessCount(int processCount) {
+	public void setProcessCount(final int processCount) {
 		this.processCount = processCount;
 	}
 

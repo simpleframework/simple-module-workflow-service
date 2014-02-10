@@ -311,6 +311,29 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		addListener(new DbEntityAdapterEx() {
 
 			@Override
+			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans) {
+				super.onAfterInsert(manager, beans);
+
+				for (final Object bean : beans) {
+					// 更新流程实例计数
+					final ProcessModelBean processModel = getProcessModel((ProcessBean) bean);
+					processModel.setProcessCount(getProcessList(processModel).getCount());
+					mService.update(new String[] { "processCount" }, processModel);
+				}
+			}
+
+			@Override
+			public void onAfterDelete(IDbEntityManager<?> manager, IParamsValue paramsValue) {
+				super.onAfterDelete(manager, paramsValue);
+				for (final ProcessBean process : coll(paramsValue)) {
+					// 更新流程实例计数
+					final ProcessModelBean processModel = getProcessModel(process);
+					processModel.setProcessCount(getProcessList(processModel).getCount());
+					mService.update(new String[] { "processCount" }, processModel);
+				}
+			}
+
+			@Override
 			public void onBeforeDelete(final IDbEntityManager<?> manager,
 					final IParamsValue paramsValue) {
 				super.onBeforeDelete(manager, paramsValue);
