@@ -49,6 +49,13 @@ public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 	ProcessBean startProcess(ProcessModelBean processModel, KVMap variables, Properties properties,
 			String topic);
 
+	/**
+	 * 获取流程实例列表
+	 * 
+	 * @param processModel
+	 * @param status
+	 * @return
+	 */
 	IDataQuery<ProcessBean> getProcessList(ProcessModelBean processModel, EProcessStatus... status);
 
 	/**

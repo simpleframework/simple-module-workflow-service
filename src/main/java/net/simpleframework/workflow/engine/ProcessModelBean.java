@@ -16,18 +16,24 @@ import net.simpleframework.common.StringUtils;
 		"net.simpleframework.module.log.EntityDeleteLogAdapter" }, columns = { "status",
 		"lastUserId", "lastUpdate" })
 public class ProcessModelBean extends AbstractWorkflowBean {
+
+	/* 模型名称、显示名称 */
 	private String modelName, modelText;
 
+	/* 状态 */
 	private EProcessModelStatus status;
 
-	/**
-	 * 模型创建者
-	 */
+	/* 模型创建者 */
 	private ID userId;
 
+	/* 最后一次修改用户 */
 	private ID lastUserId;
 
+	/* 最后一次修改时间 */
 	private Date lastUpdate;
+
+	/* 统计，流程实例数 */
+	private int processCount;
 
 	public String getModelName() {
 		return modelName;
@@ -75,6 +81,14 @@ public class ProcessModelBean extends AbstractWorkflowBean {
 
 	public void setLastUpdate(final Date lastUpdate) {
 		this.lastUpdate = lastUpdate;
+	}
+
+	public int getProcessCount() {
+		return processCount;
+	}
+
+	public void setProcessCount(int processCount) {
+		this.processCount = processCount;
 	}
 
 	@Override

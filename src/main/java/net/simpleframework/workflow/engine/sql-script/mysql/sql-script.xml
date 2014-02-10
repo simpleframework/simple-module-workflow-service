@@ -14,6 +14,7 @@
         createdate datetime not null,
         lastuserid varchar(32),
         lastupdate datetime,
+        processcount int not null,
         unique(modelname),
         primary key(id)
       );
@@ -99,6 +100,7 @@
         userid char(32) not null,
         userid2 char(32) not null,
         createdate datetime not null,
+        enddate datetime,
         completedate datetime,
         readmark bit,
         primary key(id)

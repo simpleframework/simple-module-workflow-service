@@ -29,8 +29,13 @@ public class WorkitemBean extends AbstractWorkflowBean {
 	/* 实际执行的用户id，缺省值=userId */
 	private ID userId2;
 
+	/* 实际完成时间 */
 	private Date completeDate;
 
+	/* 计划完成时间 */
+	private Date endDate;
+
+	/* 是否已读 */
 	private boolean readMark;
 
 	public EWorkitemStatus getStatus() {
@@ -79,6 +84,14 @@ public class WorkitemBean extends AbstractWorkflowBean {
 
 	public void setCompleteDate(final Date completeDate) {
 		this.completeDate = completeDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 
 	public boolean isReadMark() {
