@@ -141,7 +141,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 		// 事件
 		for (final IWorkflowEventListener listener : getEventListeners(activity)) {
-			((IActivityEventListener) listener).onActivityCompleted(activityComplete);
+			((IActivityEventListener) listener).onCompleted(activityComplete);
 		}
 	}
 
@@ -432,7 +432,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 		// 触发事件
 		for (final IWorkflowEventListener listener : getEventListeners(activity)) {
-			((IActivityEventListener) listener).onActivityAbort(activity, policy);
+			((IActivityEventListener) listener).onAbort(activity, policy);
 		}
 	}
 
@@ -447,7 +447,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		activity.setStatus(EActivityStatus.suspended);
 		update(new String[] { "status" }, activity);
 		for (final IWorkflowEventListener listener : getEventListeners(activity)) {
-			((IActivityEventListener) listener).onActivitySuspend(activity);
+			((IActivityEventListener) listener).onSuspend(activity);
 		}
 	}
 
@@ -457,7 +457,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		activity.setStatus(EActivityStatus.running);
 		update(new String[] { "status" }, activity);
 		for (final IWorkflowEventListener listener : getEventListeners(activity)) {
-			((IActivityEventListener) listener).onActivityResume(activity);
+			((IActivityEventListener) listener).onResume(activity);
 		}
 	}
 
@@ -540,7 +540,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		_abort(activity, EActivityAbortPolicy.normal, true);
 
 		for (final IWorkflowEventListener listener : getEventListeners(activity)) {
-			((IActivityEventListener) listener).onActivityFallback(nActivity, tasknode);
+			((IActivityEventListener) listener).onFallback(nActivity, tasknode);
 		}
 	}
 
@@ -630,7 +630,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			formClass = ((UserNode) tasknode).getFormClass();
 		}
 		if (formClass == null) {
-			formClass = ((ProcessNode) tasknode.parent()).getFormClass();
+			formClass = ((ProcessNode) tasknode.getParent()).getFormClass();
 		}
 		return (IWorkflowForm) (formClass != null ? singleton(formClass) : null);
 	}

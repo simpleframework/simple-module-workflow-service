@@ -3,8 +3,6 @@ package net.simpleframework.workflow.engine.event;
 import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.ActivityComplete;
 import net.simpleframework.workflow.engine.EActivityAbortPolicy;
-import net.simpleframework.workflow.engine.WorkitemBean;
-import net.simpleframework.workflow.engine.WorkitemComplete;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -19,7 +17,7 @@ public interface IActivityEventListener extends IWorkflowEventListener {
 	 * 
 	 * @param activityComplete
 	 */
-	void onActivityCompleted(ActivityComplete activityComplete);
+	void onCompleted(ActivityComplete activityComplete);
 
 	/**
 	 * 环节放弃时触发
@@ -27,21 +25,21 @@ public interface IActivityEventListener extends IWorkflowEventListener {
 	 * @param activity
 	 * @param policy
 	 */
-	void onActivityAbort(ActivityBean activity, EActivityAbortPolicy policy);
+	void onAbort(ActivityBean activity, EActivityAbortPolicy policy);
 
 	/**
 	 * 环节挂起时触发
 	 * 
 	 * @param activity
 	 */
-	void onActivitySuspend(ActivityBean activity);
+	void onSuspend(ActivityBean activity);
 
 	/**
 	 * 环节恢复时触发
 	 * 
 	 * @param activity
 	 */
-	void onActivityResume(ActivityBean activity);
+	void onResume(ActivityBean activity);
 
 	/**
 	 * 环节回退时触发
@@ -49,17 +47,5 @@ public interface IActivityEventListener extends IWorkflowEventListener {
 	 * @param activity
 	 * @param tasknode
 	 */
-	void onActivityFallback(ActivityBean activity, String tasknode);
-
-	/**
-	 * 
-	 * @param workitemComplete
-	 */
-	void onWorkitemCompleted(WorkitemComplete workitemComplete);
-
-	/**
-	 * 
-	 * @param workitem
-	 */
-	void onWorkitemRetake(WorkitemBean workitem);
+	void onFallback(ActivityBean activity, String tasknode);
 }

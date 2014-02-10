@@ -25,8 +25,8 @@ import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.PropSequential;
 import net.simpleframework.workflow.engine.WorkitemBean;
 import net.simpleframework.workflow.engine.WorkitemComplete;
-import net.simpleframework.workflow.engine.event.IActivityEventListener;
 import net.simpleframework.workflow.engine.event.IWorkflowEventListener;
+import net.simpleframework.workflow.engine.event.IWorkitemEventListener;
 import net.simpleframework.workflow.engine.participant.Participant;
 import net.simpleframework.workflow.engine.participant.ParticipantUtils;
 import net.simpleframework.workflow.schema.AbstractTaskNode;
@@ -116,7 +116,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 			// 事件
 			for (final IWorkflowEventListener listener : aService.getEventListeners(activity)) {
-				((IActivityEventListener) listener).onWorkitemCompleted(workitemComplete);
+				((IWorkitemEventListener) listener).onCompleted(workitemComplete);
 			}
 		} finally {
 			workitemComplete.reset();
@@ -182,7 +182,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 		// 事件
 		for (final IWorkflowEventListener listener : aService.getEventListeners(activity)) {
-			((IActivityEventListener) listener).onWorkitemRetake(workitem);
+			((IWorkitemEventListener) listener).onRetake(workitem);
 		}
 	}
 

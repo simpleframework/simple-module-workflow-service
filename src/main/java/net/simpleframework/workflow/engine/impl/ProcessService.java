@@ -80,7 +80,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 				initiateItem.getVariables(), null, topic);
 		// 事件
 		for (final IWorkflowEventListener listener : getEventListeners(process)) {
-			((IProcessEventListener) listener).onProcessCreated(initiateItem, process);
+			((IProcessEventListener) listener).onCreated(initiateItem, process);
 		}
 		createStartNode(process, initiateItem.getTransitions());
 		return process;
@@ -97,7 +97,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		final ProcessBean process = startProcess(processModel, null, null, variables, properties,
 				topic);
 		for (final IWorkflowEventListener listener : getEventListeners(process)) {
-			((IProcessEventListener) listener).onProcessCreated(null, process);
+			((IProcessEventListener) listener).onCreated(null, process);
 		}
 		createStartNode(process, null);
 		return process;
@@ -215,7 +215,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		process.setStatus(EProcessStatus.suspended);
 		update(new String[] { "status" }, process);
 		for (final IWorkflowEventListener listener : getEventListeners(process)) {
-			((IProcessEventListener) listener).onProcessSuspend(process);
+			((IProcessEventListener) listener).onSuspend(process);
 		}
 	}
 
@@ -225,7 +225,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		process.setStatus(EProcessStatus.running);
 		update(new String[] { "status" }, process);
 		for (final IWorkflowEventListener listener : getEventListeners(process)) {
-			((IProcessEventListener) listener).onProcessResume(process);
+			((IProcessEventListener) listener).onResume(process);
 		}
 	}
 
@@ -244,7 +244,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		}
 
 		for (final IWorkflowEventListener listener : getEventListeners(process)) {
-			((IProcessEventListener) listener).onProcessAbort(process, policy);
+			((IProcessEventListener) listener).onAbort(process, policy);
 		}
 	}
 
@@ -319,7 +319,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 					final Object id = process.getId();
 					// 触发删除事件
 					for (final IWorkflowEventListener listener : getEventListeners(process)) {
-						((IProcessEventListener) listener).onProcessDelete(process);
+						((IProcessEventListener) listener).onDelete(process);
 					}
 
 					// 删除lob

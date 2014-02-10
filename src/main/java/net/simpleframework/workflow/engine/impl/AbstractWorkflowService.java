@@ -20,7 +20,14 @@ import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.IWorkflowContextAware;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.ProcessModelBean;
+import net.simpleframework.workflow.engine.WorkitemBean;
+import net.simpleframework.workflow.engine.event.IActivityEventListener;
+import net.simpleframework.workflow.engine.event.IProcessEventListener;
+import net.simpleframework.workflow.engine.event.IProcessModelEventListener;
 import net.simpleframework.workflow.engine.event.IWorkflowEventListener;
+import net.simpleframework.workflow.engine.event.IWorkitemEventListener;
+import net.simpleframework.workflow.schema.AbstractTaskNode;
+import net.simpleframework.workflow.schema.ProcessNode;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -60,23 +67,41 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 
 	public Collection<IWorkflowEventListener> getEventListeners(final T bean) {
 		final Set<String> set = new LinkedHashSet<String>();
-		Set<String> set2 = null;
+		Set<String> _set = null;
 		if (bean instanceof ProcessModelBean) {
-			set2 = mService.getProcessDocument((ProcessModelBean) bean).getProcessNode().listeners();
+			_set = mService.getProcessDocument((ProcessModelBean) bean).getProcessNode().listeners();
 		} else if (bean instanceof ProcessBean) {
-			set2 = pService.getProcessNode((ProcessBean) bean).listeners();
-		} else if (bean instanceof ActivityBean) {
-			set2 = aService.getTaskNode((ActivityBean) bean).listeners();
+			_set = pService.getProcessNode((ProcessBean) bean).listeners();
+		} else {
+			AbstractTaskNode taskNode = null;
+			if (bean instanceof ActivityBean) {
+				taskNode = aService.getTaskNode((ActivityBean) bean);
+			} else if (bean instanceof WorkitemBean) {
+				taskNode = aService.getTaskNode(wService.getActivity((WorkitemBean) bean));
+			}
+			if (taskNode != null) {
+				_set = ((ProcessNode) taskNode.getParent()).listeners();
+				if (_set != null) {
+					set.addAll(_set);
+				}
+				_set = taskNode.listeners();
+			}
 		}
-		if (set2 != null) {
-			set.addAll(set2);
+		if (_set != null) {
+			set.addAll(_set);
 		}
-		if ((set2 = listenerClassMap.get(bean.getId())) != null) {
-			set.addAll(set2);
+		if ((_set = listenerClassMap.get(bean.getId())) != null) {
+			set.addAll(_set);
 		}
 		final ArrayList<IWorkflowEventListener> al = new ArrayList<IWorkflowEventListener>();
 		for (final String listenerClass : set) {
-			al.add((IWorkflowEventListener) singleton(listenerClass));
+			final IWorkflowEventListener l = (IWorkflowEventListener) singleton(listenerClass);
+			if ((bean instanceof ProcessModelBean && l instanceof IProcessModelEventListener)
+					|| (bean instanceof ProcessBean && l instanceof IProcessEventListener)
+					|| (bean instanceof ActivityBean && l instanceof IActivityEventListener)
+					|| (bean instanceof WorkitemBean && l instanceof IWorkitemEventListener)) {
+				al.add(l);
+			}
 		}
 		return al;
 	}

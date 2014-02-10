@@ -22,7 +22,7 @@ import net.simpleframework.workflow.engine.InitiateItem;
 import net.simpleframework.workflow.engine.InitiateItems;
 import net.simpleframework.workflow.engine.ProcessModelBean;
 import net.simpleframework.workflow.engine.ProcessModelLobBean;
-import net.simpleframework.workflow.engine.event.IProcessEventListener;
+import net.simpleframework.workflow.engine.event.IProcessModelEventListener;
 import net.simpleframework.workflow.engine.event.IWorkflowEventListener;
 import net.simpleframework.workflow.schema.AbstractParticipantType;
 import net.simpleframework.workflow.schema.AbstractParticipantType.BaseRole;
@@ -206,7 +206,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 		processModel.setStatus(EProcessModelStatus.deploy);
 		update(new String[] { "status" }, processModel);
 		for (final IWorkflowEventListener listener : getEventListeners(processModel)) {
-			((IProcessEventListener) listener).onModelDeploy(processModel);
+			((IProcessModelEventListener) listener).onDeploy(processModel);
 		}
 	}
 
@@ -220,7 +220,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 		processModel.setStatus(EProcessModelStatus.edit);
 		update(new String[] { "status" }, processModel);
 		for (final IWorkflowEventListener listener : getEventListeners(processModel)) {
-			((IProcessEventListener) listener).onModelResume(processModel);
+			((IProcessModelEventListener) listener).onResume(processModel);
 		}
 	}
 
