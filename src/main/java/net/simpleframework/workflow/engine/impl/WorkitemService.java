@@ -154,11 +154,6 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			nActivity = aService.createActivity(aService.getTaskNode(activity),
 					aService.getBean(activity.getPreviousId()));
 			aService.insert(nActivity);
-
-			// activity.setStatus(EActivityStatus.running);
-			// activity.setCompleteDate(null);
-			// aService.update(new String[] { "status", "completeDate" },
-			// activity);
 		} else if (status == EActivityStatus.running) {
 			// 顺序，单实例
 			if (ParticipantUtils.isSequential(aService.getTaskNode(activity))) {
@@ -182,12 +177,6 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			throw WorkflowStatusException
 					.of(status, EActivityStatus.running, EActivityStatus.complete);
 		}
-		// if (status == EActivityStatus.complete || status ==
-		// EActivityStatus.running) {
-		// workitem.setStatus(EWorkitemStatus.running);
-		// workitem.setCompleteDate(null);
-		// update(new String[] { "status", "completeDate" }, workitem);
-		// }
 
 		if (nActivity != null) {
 			workitem.setStatus(EWorkitemStatus.retake);
