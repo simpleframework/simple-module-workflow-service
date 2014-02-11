@@ -41,6 +41,7 @@
         createdate datetime not null,
         roleid char(32),
         completedate datetime,
+        lastupdate datetime,
         properties text,
         primary key(id)
       );
@@ -85,6 +86,7 @@
         status tinyint not null,
         createdate datetime not null,
         completedate datetime,
+        lastupdate datetime,
         properties text,
         primary key(id)
       );
@@ -102,6 +104,7 @@
         createdate datetime not null,
         enddate datetime,
         completedate datetime,
+        lastupdate datetime,
         readmark bit,
         primary key(id)
       );

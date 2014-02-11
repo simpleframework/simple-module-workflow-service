@@ -18,4 +18,15 @@ public interface IProcessModelEventListener extends IWorkflowEventListener {
 	void onDeploy(ProcessModelBean processModel);
 
 	void onResume(ProcessModelBean processModel);
+
+	public static abstract class ProcessModelAdapter implements IProcessModelEventListener {
+
+		@Override
+		public void onDeploy(final ProcessModelBean processModel) {
+		}
+
+		@Override
+		public void onResume(final ProcessModelBean processModel) {
+		}
+	}
 }

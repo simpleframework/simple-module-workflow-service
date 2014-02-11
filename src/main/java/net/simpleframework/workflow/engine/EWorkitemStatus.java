@@ -47,5 +47,12 @@ public enum EWorkitemStatus {
 		public String toString() {
 			return $m("EWorkitemStatus.abort");
 		}
+	},
+
+	retake {
+		@Override
+		public String toString() {
+			return $m("EWorkitemStatus.retake");
+		}
 	}
 }

@@ -38,4 +38,27 @@ public interface IProcessEventListener extends IWorkflowEventListener {
 	void onSuspend(ProcessBean process);
 
 	void onResume(ProcessBean process);
+
+	public static abstract class ProcessAdapter implements IProcessEventListener {
+
+		@Override
+		public void onCreated(final InitiateItem initiateItem, final ProcessBean process) {
+		}
+
+		@Override
+		public void onAbort(final ProcessBean process, final EProcessAbortPolicy policy) {
+		}
+
+		@Override
+		public void onDelete(final ProcessBean process) {
+		}
+
+		@Override
+		public void onSuspend(final ProcessBean process) {
+		}
+
+		@Override
+		public void onResume(final ProcessBean process) {
+		}
+	}
 }

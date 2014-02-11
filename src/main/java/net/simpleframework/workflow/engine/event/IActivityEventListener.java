@@ -48,4 +48,27 @@ public interface IActivityEventListener extends IWorkflowEventListener {
 	 * @param tasknode
 	 */
 	void onFallback(ActivityBean activity, String tasknode);
+
+	public static abstract class ActivityAdapter implements IActivityEventListener {
+
+		@Override
+		public void onCompleted(final ActivityComplete activityComplete) {
+		}
+
+		@Override
+		public void onAbort(final ActivityBean activity, final EActivityAbortPolicy policy) {
+		}
+
+		@Override
+		public void onSuspend(final ActivityBean activity) {
+		}
+
+		@Override
+		public void onResume(final ActivityBean activity) {
+		}
+
+		@Override
+		public void onFallback(final ActivityBean activity, final String tasknode) {
+		}
+	}
 }

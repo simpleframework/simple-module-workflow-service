@@ -22,4 +22,15 @@ public interface IWorkitemEventListener extends IWorkflowEventListener {
 	 * @param workitem
 	 */
 	void onRetake(WorkitemBean workitem);
+
+	public static abstract class WorkitemAdapter implements IWorkitemEventListener {
+
+		@Override
+		public void onCompleted(final WorkitemComplete workitemComplete) {
+		}
+
+		@Override
+		public void onRetake(final WorkitemBean workitem) {
+		}
+	}
 }
