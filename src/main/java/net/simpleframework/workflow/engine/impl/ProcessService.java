@@ -232,8 +232,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	@Override
 	public void abort(final ProcessBean process, final EProcessAbortPolicy policy) {
 		process.setStatus(EProcessStatus.abort);
-		process.setCompleteDate(new Date());
-		update(new String[] { "status", "completeDate" }, process);
+		update(new String[] { "status" }, process);
 
 		if (policy == EProcessAbortPolicy.allActivities) {
 			final IDataQuery<ActivityBean> qs = aService.getActivities(process);

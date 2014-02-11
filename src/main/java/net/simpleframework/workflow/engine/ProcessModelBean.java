@@ -1,5 +1,7 @@
 package net.simpleframework.workflow.engine;
 
+import java.util.Date;
+
 import net.simpleframework.ado.db.common.EntityInterceptor;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
@@ -26,6 +28,9 @@ public class ProcessModelBean extends AbstractWorkflowBean {
 
 	/* 最后一次操作用户 */
 	private ID lastUserId;
+
+	/* 最后一次操作时间 */
+	private Date lastUpdate;
 
 	/* 统计，流程实例数 */
 	private int processCount;
@@ -68,6 +73,14 @@ public class ProcessModelBean extends AbstractWorkflowBean {
 
 	public void setLastUserId(final ID lastUserId) {
 		this.lastUserId = lastUserId;
+	}
+
+	public Date getLastUpdate() {
+		return lastUpdate;
+	}
+
+	public void setLastUpdate(final Date lastUpdate) {
+		this.lastUpdate = lastUpdate;
 	}
 
 	public int getProcessCount() {

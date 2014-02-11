@@ -2,7 +2,8 @@ package net.simpleframework.workflow.engine;
 
 import java.util.Date;
 
-import net.simpleframework.ado.bean.AbstractDescriptionBean;
+import net.simpleframework.ado.ColumnMeta;
+import net.simpleframework.ado.bean.IDescriptionBeanAware;
 import net.simpleframework.ado.db.common.EntityInterceptor;
 import net.simpleframework.common.ID;
 
@@ -14,7 +15,7 @@ import net.simpleframework.common.ID;
  */
 @EntityInterceptor(listenerTypes = { "net.simpleframework.module.log.EntityUpdateLogAdapter",
 		"net.simpleframework.module.log.EntityDeleteLogAdapter" }, columns = { "status" })
-public class DelegationBean extends AbstractDescriptionBean {
+public class DelegationBean extends AbstractWorkflowBean implements IDescriptionBeanAware {
 
 	/* 委托的对象 */
 	private EDelegationSource delegationSource;
@@ -27,9 +28,6 @@ public class DelegationBean extends AbstractDescriptionBean {
 	/* 委托的用户id */
 	private ID userId;
 
-	/* 创建时间 */
-	private Date createDate;
-
 	/* 委托的实际开始时间和结束时间 */
 	private Date runningDate, completeDate;
 
@@ -38,6 +36,9 @@ public class DelegationBean extends AbstractDescriptionBean {
 
 	/* 定义该委托类，参考IDelegationHandler */
 	private String ruleHandler;
+
+	@ColumnMeta(columnText = "#(Description)")
+	private String description;
 
 	public EDelegationSource getDelegationSource() {
 		return delegationSource;
@@ -69,17 +70,6 @@ public class DelegationBean extends AbstractDescriptionBean {
 
 	public void setUserId(final ID userId) {
 		this.userId = userId;
-	}
-
-	public Date getCreateDate() {
-		if (createDate == null) {
-			createDate = new Date();
-		}
-		return createDate;
-	}
-
-	public void setCreateDate(final Date createDate) {
-		this.createDate = createDate;
 	}
 
 	public Date getRunningDate() {
@@ -120,6 +110,16 @@ public class DelegationBean extends AbstractDescriptionBean {
 
 	public void setRuleHandler(final String ruleHandler) {
 		this.ruleHandler = ruleHandler;
+	}
+
+	@Override
+	public String getDescription() {
+		return description;
+	}
+
+	@Override
+	public void setDescription(final String description) {
+		this.description = description;
 	}
 
 	private static final long serialVersionUID = -642924978376103383L;

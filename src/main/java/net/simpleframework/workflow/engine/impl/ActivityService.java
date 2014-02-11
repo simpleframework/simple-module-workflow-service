@@ -103,8 +103,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				final EWorkitemStatus status = workitem.getStatus();
 				if (status == EWorkitemStatus.running || status == EWorkitemStatus.suspended) {
 					workitem.setStatus(EWorkitemStatus.abort);
-					workitem.setCompleteDate(new Date());
-					wService.update(new String[] { "completeDate", "status" }, workitem);
+					wService.update(new String[] { "status" }, workitem);
 				}
 			}
 
@@ -413,14 +412,12 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		while ((workitem = qs.next()) != null) {
 			if (!wService.isFinalStatus(workitem)) {
 				workitem.setStatus(EWorkitemStatus.abort);
-				workitem.setCompleteDate(new Date());
-				wService.update(new String[] { "status", "completeDate" }, workitem);
+				wService.update(new String[] { "status" }, workitem);
 			}
 		}
 
 		activity.setStatus(EActivityStatus.abort);
-		activity.setCompleteDate(new Date());
-		update(new String[] { "status", "completeDate" }, activity);
+		update(new String[] { "status" }, activity);
 
 		if (policy == EActivityAbortPolicy.nextActivities) {
 			final IDataQuery<ActivityBean> qs2 = getNextActivities(activity);

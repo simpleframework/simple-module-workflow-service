@@ -58,8 +58,7 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 			final Date n = new Date();
 			if (endDate != null && endDate.after(n)) {
 				delegation.setStatus(EDelegationStatus.abort);
-				delegation.setCompleteDate(n);
-				update(new String[] { "status", "runningDate" }, delegation);
+				update(new String[] { "status" }, delegation);
 
 				updateWorkitem(delegation, EWorkitemStatus.running);
 			}
@@ -94,8 +93,7 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	public void doAbort(final DelegationBean delegation) {
 		assertStatus(delegation, EDelegationStatus.ready, EDelegationStatus.running);
 		delegation.setStatus(EDelegationStatus.abort);
-		delegation.setCompleteDate(new Date());
-		dService.update(new String[] { "status", "completeDate" }, delegation);
+		dService.update(new String[] { "status" }, delegation);
 
 		updateWorkitem(delegation, EWorkitemStatus.running);
 	}

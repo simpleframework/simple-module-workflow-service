@@ -15,22 +15,14 @@ public abstract class AbstractWorkflowBean extends AbstractIdBean {
 
 	private Date createDate;
 
-	/* 最后一次操作时间 */
-	private Date lastUpdate;
-
 	public Date getCreateDate() {
+		if (createDate == null) {
+			createDate = new Date();
+		}
 		return createDate;
 	}
 
 	public void setCreateDate(final Date createDate) {
 		this.createDate = createDate;
-	}
-
-	public Date getLastUpdate() {
-		return lastUpdate;
-	}
-
-	public void setLastUpdate(final Date lastUpdate) {
-		this.lastUpdate = lastUpdate;
 	}
 }

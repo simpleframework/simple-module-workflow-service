@@ -41,7 +41,6 @@
         createdate timestamp not null,
         roleid char(32),
         completedate timestamp,
-        lastupdate timestamp,
         properties clob,
         primary key(id)
       );
@@ -86,7 +85,6 @@
         status number(4) not null,
         createdate timestamp not null,
         completedate timestamp,
-        lastupdate timestamp,
         properties clob,
         primary key(id)
       );
@@ -104,7 +102,6 @@
         createdate timestamp not null,
         enddate timestamp,
         completedate timestamp,
-        lastupdate timestamp,
         readmark number(1),
         primary key(id)
       );

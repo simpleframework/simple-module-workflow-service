@@ -169,8 +169,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 						throw WorkflowException.of($m("WorkitemService.1"));
 					}
 					workitem2.setStatus(EWorkitemStatus.abort);
-					workitem2.setCompleteDate(new Date());
-					update(new String[] { "status", "completeDate" }, workitem2);
+					update(new String[] { "status" }, workitem2);
 
 					PropSequential.push(activity,
 							new Participant(workitem2.getUserId(), workitem2.getRoleId()));
@@ -192,8 +191,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 		if (nActivity != null) {
 			workitem.setStatus(EWorkitemStatus.retake);
-			workitem.setCompleteDate(new Date());
-			update(new String[] { "status", "completeDate" }, workitem);
+			update(new String[] { "status" }, workitem);
 
 			insert(createWorkitem(nActivity,
 					new Participant(workitem.getUserId(), workitem.getRoleId())));
