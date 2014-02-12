@@ -322,7 +322,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 			}
 
 			@Override
-			public void onAfterDelete(IDbEntityManager<?> manager, IParamsValue paramsValue) {
+			public void onAfterDelete(final IDbEntityManager<?> manager, final IParamsValue paramsValue) {
 				super.onAfterDelete(manager, paramsValue);
 				for (final ProcessBean process : coll(paramsValue)) {
 					// 更新流程实例计数

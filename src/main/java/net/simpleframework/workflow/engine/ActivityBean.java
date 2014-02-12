@@ -88,16 +88,10 @@ public class ActivityBean extends AbstractWorkflowBean {
 		this.properties = properties;
 	}
 
-	// private AbstractTaskNode taskNode;
-	//
-	// public AbstractTaskNode taskNode() {
-	// if (taskNode == null) {
-	// // taskNode = (AbstractTaskNode)
-	// // process().processNode().getNodeById(getTasknodeId());
-	// }
-	// assert taskNode != null;
-	// return taskNode;
-	// }
+	@Override
+	public String toString() {
+		return super.toString();
+	}
 
 	private static final long serialVersionUID = 5146309554672912773L;
 }
