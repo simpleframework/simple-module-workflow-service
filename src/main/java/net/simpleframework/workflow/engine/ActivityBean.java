@@ -3,6 +3,7 @@ package net.simpleframework.workflow.engine;
 import java.util.Date;
 import java.util.Properties;
 
+import net.simpleframework.ado.ColumnMeta;
 import net.simpleframework.ado.db.common.EntityInterceptor;
 import net.simpleframework.common.ID;
 
@@ -23,6 +24,7 @@ public class ActivityBean extends AbstractWorkflowBean {
 
 	private short tasknodeType;
 
+	@ColumnMeta(columnText = "#(AbstractWorkflowBean.0)")
 	private EActivityStatus status;
 
 	private Date completeDate;

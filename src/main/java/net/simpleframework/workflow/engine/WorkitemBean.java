@@ -2,6 +2,7 @@ package net.simpleframework.workflow.engine;
 
 import java.util.Date;
 
+import net.simpleframework.ado.ColumnMeta;
 import net.simpleframework.ado.db.common.EntityInterceptor;
 import net.simpleframework.common.ID;
 
@@ -15,6 +16,7 @@ import net.simpleframework.common.ID;
 		"net.simpleframework.module.log.EntityDeleteLogAdapter" }, columns = { "status" })
 public class WorkitemBean extends AbstractWorkflowBean {
 	/* 状态 */
+	@ColumnMeta(columnText = "#(AbstractWorkflowBean.0)")
 	private EWorkitemStatus status;
 
 	/* 关联的环节id */

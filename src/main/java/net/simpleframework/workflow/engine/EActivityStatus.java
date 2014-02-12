@@ -56,5 +56,12 @@ public enum EActivityStatus {
 		public String toString() {
 			return $m("EActivityStatus.abort");
 		}
+	},
+
+	fallback {
+		@Override
+		public String toString() {
+			return $m("EActivityStatus.fallback");
+		}
 	}
 }

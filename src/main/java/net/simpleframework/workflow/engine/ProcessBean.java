@@ -3,6 +3,7 @@ package net.simpleframework.workflow.engine;
 import java.util.Date;
 import java.util.Properties;
 
+import net.simpleframework.ado.ColumnMeta;
 import net.simpleframework.ado.db.common.EntityInterceptor;
 import net.simpleframework.common.ID;
 
@@ -21,6 +22,7 @@ public class ProcessBean extends AbstractWorkflowBean {
 
 	private String title;
 
+	@ColumnMeta(columnText = "#(AbstractWorkflowBean.0)")
 	private EProcessStatus status;
 
 	/**

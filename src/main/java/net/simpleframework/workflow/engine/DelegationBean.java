@@ -23,6 +23,7 @@ public class DelegationBean extends AbstractWorkflowBean implements IDescription
 	/* 委托的对象id */
 	private ID sourceId;
 
+	@ColumnMeta(columnText = "#(AbstractWorkflowBean.0)")
 	private EDelegationStatus status;
 
 	/* 委托的用户id */
