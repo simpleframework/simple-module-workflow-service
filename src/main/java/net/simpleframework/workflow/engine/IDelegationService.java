@@ -1,6 +1,6 @@
 package net.simpleframework.workflow.engine;
 
-import java.util.Iterator;
+import net.simpleframework.ado.query.IDataQuery;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -24,7 +24,7 @@ public interface IDelegationService extends IWorkflowService<DelegationBean> {
 	 * @param userId
 	 * @return
 	 */
-	Iterator<DelegationBean> queryWorkitems(Object userId);
+	IDataQuery<DelegationBean> queryWorkitems(Object userId);
 
 	/**
 	 * 放弃当前委托

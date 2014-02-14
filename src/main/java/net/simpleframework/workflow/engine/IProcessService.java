@@ -1,8 +1,8 @@
 package net.simpleframework.workflow.engine;
 
-import java.util.Iterator;
 import java.util.Properties;
 
+import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.coll.KVMap;
 
 /**
@@ -55,7 +55,7 @@ public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 	 * @param status
 	 * @return
 	 */
-	Iterator<ProcessBean> getProcessList(ProcessModelBean processModel, EProcessStatus... status);
+	IDataQuery<ProcessBean> getProcessList(ProcessModelBean processModel, EProcessStatus... status);
 
 	/**
 	 * 挂起流程
