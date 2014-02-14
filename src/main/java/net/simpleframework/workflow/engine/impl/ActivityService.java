@@ -97,9 +97,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		final AbstractTaskNode tasknode = getTaskNode(activity);
 		if (tasknode instanceof UserNode) {
 			// 放弃未完成的工作项
-			final IDataQuery<WorkitemBean> qs = wService.getWorkitemList(activity);
-			WorkitemBean workitem;
-			while ((workitem = qs.next()) != null) {
+			for (final WorkitemBean workitem : wService.getWorkitemList(activity)) {
 				final EWorkitemStatus status = workitem.getStatus();
 				if (status == EWorkitemStatus.running || status == EWorkitemStatus.suspended) {
 					workitem.setStatus(EWorkitemStatus.abort);
@@ -111,10 +109,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 					&& !ParticipantUtils.isSequential(tasknode)) {
 				// 多实例，响应数
 				final ArrayList<ActivityBean> al = new ArrayList<ActivityBean>();
-				final IDataQuery<ActivityBean> qs2 = getNextActivities(getPreActivity(activity));
-				ActivityBean activity2;
 				int complete = 0;
-				while ((activity2 = qs2.next()) != null) {
+				for (final ActivityBean activity2 : getNextActivities(getPreActivity(activity))) {
 					if (activity2.getTasknodeId().equals(tasknode.getId())) {
 						al.add(activity2);
 						if (activity2.getStatus() == EActivityStatus.complete) {
@@ -233,7 +229,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			complete = false;
 			int completes = 0;
 			while ((pre = dq.next()) != null) {
-				if (pre.equals(preActivity) || isFinalStatus(pre)) {
+				if (pre.equals(preActivity) || pre.getStatus() == EActivityStatus.complete) {
 					completes++;
 				} else {
 					aborts.add(pre);
@@ -407,14 +403,10 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		if (isFinalStatus(activity)) {
 			if (throwThrowable) {
 				throw WorkflowStatusException.of($m("ActivityService.3", activity.getStatus()));
-			} else {
-				return;
 			}
 		}
 
-		final IDataQuery<WorkitemBean> qs = wService.getWorkitemList(activity);
-		WorkitemBean workitem;
-		while ((workitem = qs.next()) != null) {
+		for (final WorkitemBean workitem : wService.getWorkitemList(activity)) {
 			if (!wService.isFinalStatus(workitem)) {
 				workitem.setStatus(EWorkitemStatus.abort);
 				wService.update(new String[] { "status" }, workitem);
@@ -425,9 +417,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		update(new String[] { "status" }, activity);
 
 		if (policy == EActivityAbortPolicy.nextActivities) {
-			final IDataQuery<ActivityBean> qs2 = getNextActivities(activity);
-			ActivityBean nextActivity;
-			while ((nextActivity = qs2.next()) != null) {
+			for (final ActivityBean nextActivity : getNextActivities(activity)) {
 				_abort(nextActivity, EActivityAbortPolicy.nextActivities, status, false);
 			}
 		}
@@ -441,6 +431,11 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	@Override
 	public void abort(final ActivityBean activity, final EActivityAbortPolicy policy) {
 		_abort(activity, policy, true);
+	}
+
+	@Override
+	public void abort(final ActivityBean activity) {
+		abort(activity, EActivityAbortPolicy.normal);
 	}
 
 	@Override
@@ -463,11 +458,12 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public IDataQuery<ActivityBean> getActivities(final ProcessBean processBean,
+	public List<ActivityBean> getActivities(final ProcessBean processBean,
 			final EActivityStatus... status) {
 		if (processBean == null) {
-			return DataQueryUtils.nullQuery();
+			return Collections.EMPTY_LIST;
 		}
 		final StringBuilder sql = new StringBuilder();
 		final ArrayList<Object> params = new ArrayList<Object>();
@@ -486,7 +482,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			sql.append(")");
 		}
 		sql.append(" order by createDate asc");
-		return query(sql.toString(), params.toArray());
+		return DataQueryUtils.toList(query(sql.toString(), params.toArray()));
 	}
 
 	@Override
@@ -503,7 +499,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	public void fallback(final ActivityBean activity, final String tasknode) {
 		assertStatus(activity, EActivityStatus.running);
 		// 验证是否存在已完成的工作
-		if (wService.getWorkitemList(activity, EWorkitemStatus.complete).getCount() > 0) {
+		if (wService.getWorkitemList(activity, EWorkitemStatus.complete).size() > 0) {
 			throw WorkflowException.of($m("ActivityService.0"));
 		}
 
@@ -515,19 +511,18 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 		final ActivityBean nActivity = createActivity(to, getBean(preActivity.getPreviousId()));
 
-		final IDataQuery<WorkitemBean> workitems = wService.getWorkitemList(preActivity,
+		final List<WorkitemBean> workitems = wService.getWorkitemList(preActivity,
 				EWorkitemStatus.complete);
 		if (ParticipantUtils.isSequential(to)) {
 			// 先按日期排序，之后创建第一个工作项
-			final List<WorkitemBean> list = DataQueryUtils.toList(workitems);
-			Collections.sort(list, new Comparator<WorkitemBean>() {
+			Collections.sort(workitems, new Comparator<WorkitemBean>() {
 				@Override
 				public int compare(final WorkitemBean item1, final WorkitemBean item2) {
 					return item1.getCreateDate().compareTo(item2.getCreateDate());
 				}
 			});
 			final ArrayList<Participant> al = new ArrayList<Participant>();
-			for (final WorkitemBean item : list) {
+			for (final WorkitemBean item : workitems) {
 				al.add(new Participant(item.getUserId(), item.getRoleId()));
 			}
 			final Iterator<Participant> it = al.iterator();
@@ -537,17 +532,14 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			wService.insert(wService.createWorkitem(nActivity, first));
 		} else {
 			insert(nActivity);
-			WorkitemBean workitem;
-			while ((workitem = workitems.next()) != null) {
+			for (final WorkitemBean workitem : workitems) {
 				final Participant p = new Participant(workitem.getUserId(), workitem.getRoleId());
 				wService.insert(wService.createWorkitem(nActivity, p));
 			}
 		}
 
 		// 放弃后续
-		ActivityBean _activity;
-		final IDataQuery<ActivityBean> dq = getNextActivities(preActivity);
-		while ((_activity = dq.next()) != null) {
+		for (final ActivityBean _activity : getNextActivities(preActivity)) {
 			_abort(_activity, EActivityAbortPolicy.normal, EActivityStatus.fallback, true);
 		}
 
@@ -566,12 +558,13 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		return getBean("processId=? and previousId is null", processBean.getId());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public IDataQuery<ActivityBean> getNextActivities(final ActivityBean preActivity) {
+	public List<ActivityBean> getNextActivities(final ActivityBean preActivity) {
 		if (preActivity == null) {
-			return DataQueryUtils.nullQuery();
+			return Collections.EMPTY_LIST;
 		}
-		return query("previousId=?", preActivity.getId());
+		return DataQueryUtils.toList(query("previousId=?", preActivity.getId()));
 	}
 
 	@Override

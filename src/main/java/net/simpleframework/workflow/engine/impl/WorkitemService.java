@@ -3,8 +3,10 @@ package net.simpleframework.workflow.engine.impl;
 import static net.simpleframework.common.I18n.$m;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import net.simpleframework.ado.db.common.ExpressionValue;
@@ -30,6 +32,7 @@ import net.simpleframework.workflow.engine.event.IWorkitemEventListener;
 import net.simpleframework.workflow.engine.participant.Participant;
 import net.simpleframework.workflow.engine.participant.ParticipantUtils;
 import net.simpleframework.workflow.schema.AbstractTaskNode;
+import net.simpleframework.workflow.schema.MergeNode;
 import net.simpleframework.workflow.schema.StartNode;
 import net.simpleframework.workflow.schema.UserNode;
 
@@ -41,6 +44,7 @@ import net.simpleframework.workflow.schema.UserNode;
  */
 public class WorkitemService extends AbstractWorkflowService<WorkitemBean> implements
 		IWorkitemService {
+
 	@Override
 	public ActivityBean getActivity(final WorkitemBean workitem) {
 		return aService.getBean(workitem.getActivityId());
@@ -133,33 +137,43 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		ActivityBean nActivity = null;
 		final EActivityStatus status = activity.getStatus();
 		if (status == EActivityStatus.complete) {
-			// 检测后续环节是否合法
-			final IDataQuery<ActivityBean> qs = aService.getNextActivities(activity);
-			ActivityBean nextActivity;
-			while ((nextActivity = qs.next()) != null) {
-				if (!(aService.getTaskNode(nextActivity) instanceof UserNode)) {
+			// 检测后续环节
+			for (final ActivityBean nextActivity : aService.getNextActivities(activity)) {
+				aService.assertStatus(nextActivity, EActivityStatus.running);
+				final AbstractTaskNode tasknode = aService.getTaskNode(nextActivity);
+				if (tasknode instanceof UserNode) {
+					// 如果用户环节，则不能出现已读和完成
+					for (final WorkitemBean workitem2 : getWorkitemList(nextActivity)) {
+						if (workitem2.isReadMark() || workitem2.getStatus() != EWorkitemStatus.running) {
+							throw WorkflowException.of($m("WorkitemService.1"));
+						}
+					}
+					// 放弃
+					aService.abort(nextActivity);
+				} else if (tasknode instanceof MergeNode) {
+					// 如果是前一任务创建,则放弃
+					if (activity.getId().equals(nextActivity.getPreviousId())) {
+						aService._abort(nextActivity, EActivityAbortPolicy.nextActivities, false);
+					}
+				} else {
+					// 其他环节，不允许取回
 					throw WorkflowException.of($m("WorkitemService.0"));
 				}
-				WorkitemBean workitem2;
-				final IDataQuery<WorkitemBean> qs2 = getWorkitemList(nextActivity);
-				while ((workitem2 = qs2.next()) != null) {
-					if (workitem2.isReadMark() || workitem2.getStatus() != EWorkitemStatus.running) {
-						throw WorkflowException.of($m("WorkitemService.1"));
-					}
-				}
-				// 放弃
-				aService.abort(nextActivity, EActivityAbortPolicy.nextActivities);
 			}
 
+			// 放弃该环节
+			aService._abort(activity, EActivityAbortPolicy.normal, false);
+			// 创建新的环节
 			nActivity = aService.createActivity(aService.getTaskNode(activity),
 					aService.getBean(activity.getPreviousId()));
 			aService.insert(nActivity);
 		} else if (status == EActivityStatus.running) {
+			nActivity = activity;
 			// 顺序，单实例
 			if (ParticipantUtils.isSequential(aService.getTaskNode(activity))) {
-				final IDataQuery<WorkitemBean> qs = getWorkitemList(activity, EWorkitemStatus.running);
-				WorkitemBean workitem2;
-				if ((workitem2 = qs.next()) != null) {
+				final List<WorkitemBean> list = getWorkitemList(activity, EWorkitemStatus.running);
+				if (list.size() > 0) {
+					final WorkitemBean workitem2 = list.get(0);
 					if (workitem2.isReadMark()) {
 						throw WorkflowException.of($m("WorkitemService.1"));
 					}
@@ -169,8 +183,6 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 					PropSequential.push(activity,
 							new Participant(workitem2.getUserId(), workitem2.getRoleId()));
 					aService.update(new String[] { "properties" }, activity);
-
-					nActivity = activity;
 				}
 			}
 		} else {
@@ -216,25 +228,27 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		dService.doDelegateTask(delegation);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public IDataQuery<WorkitemBean> getWorkitemList(final ActivityBean activity,
+	public List<WorkitemBean> getWorkitemList(final ActivityBean activity,
 			final EWorkitemStatus... status) {
 		if (activity == null) {
-			return DataQueryUtils.nullQuery();
+			return Collections.EMPTY_LIST;
 		}
 		final ExpressionValue ev = new ExpressionValue("activityId=?", activity.getId());
 		addStatusVal(ev, status);
-		return getEntityManager().queryBeans(ev);
+		return DataQueryUtils.toList(getEntityManager().queryBeans(ev));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public IDataQuery<WorkitemBean> getWorkitemList(final ID userId, final EWorkitemStatus... status) {
+	public List<WorkitemBean> getWorkitemList(final ID userId, final EWorkitemStatus... status) {
 		if (userId == null) {
-			return DataQueryUtils.nullQuery();
+			return Collections.EMPTY_LIST;
 		}
 		final ExpressionValue ev = new ExpressionValue("userId2=?", userId);
 		addStatusVal(ev, status);
-		return getEntityManager().queryBeans(ev);
+		return DataQueryUtils.toList(getEntityManager().queryBeans(ev));
 	}
 
 	private void addStatusVal(final ExpressionValue ev, final EWorkitemStatus... status) {

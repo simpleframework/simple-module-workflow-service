@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
 import net.simpleframework.ctx.script.IScriptEval;
@@ -58,7 +57,7 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 			} else if (rType == ERelativeType.preNamedActivityParticipant) {
 			}
 			if (preActivity != null) {
-				WorkitemBean workitem = workitemComplete.getWorkitem();
+				final WorkitemBean workitem = workitemComplete.getWorkitem();
 				if (StringUtils.hasText(relative)) {
 					final Collection<Participant> _participants = permission.getRelativeParticipants(
 							workitem.getUserId(), workitem.getRoleId(), relative, variables);
@@ -68,10 +67,9 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 				} else {
 					participants.add(new Participant(workitem.getUserId(), workitem.getRoleId()));
 					// 其它已完成任务项
-					final IDataQuery<WorkitemBean> qs = wService.getWorkitemList(preActivity,
-							EWorkitemStatus.complete);
-					while ((workitem = qs.next()) != null) {
-						participants.add(new Participant(workitem.getUserId(), workitem.getRoleId()));
+					for (final WorkitemBean workitem2 : wService.getWorkitemList(preActivity,
+							EWorkitemStatus.complete)) {
+						participants.add(new Participant(workitem2.getUserId(), workitem2.getRoleId()));
 					}
 				}
 			}

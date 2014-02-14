@@ -16,11 +16,13 @@ import net.simpleframework.workflow.engine.participant.Participant;
  */
 public abstract class PropSequential {
 
-	private static final String KEY = "sequential_participants";
+	/* 保存顺序执行的参与者 */
+	static final String SEQUENTIAL_PARTICIPANTS = "sequential_participants";
 
 	public static Collection<Participant> list(final ActivityBean activity) {
 		final ArrayList<Participant> participants = new ArrayList<Participant>();
-		final String[] pArr = StringUtils.split(activity.getProperties().getProperty(KEY), ";");
+		final String[] pArr = StringUtils.split(
+				activity.getProperties().getProperty(SEQUENTIAL_PARTICIPANTS), ";");
 		if (pArr != null) {
 			Participant participant;
 			for (final String str : pArr) {
@@ -49,19 +51,19 @@ public abstract class PropSequential {
 
 		final Properties properties = activity.getProperties();
 		if (sb.length() > 0) {
-			properties.put(KEY, sb.toString());
+			properties.put(SEQUENTIAL_PARTICIPANTS, sb.toString());
 		} else {
-			properties.remove(KEY);
+			properties.remove(SEQUENTIAL_PARTICIPANTS);
 		}
 	}
 
 	public static void push(final ActivityBean activity, final Participant participant) {
 		String nstr = participant.toString();
 		final Properties properties = activity.getProperties();
-		final String ostr = properties.getProperty(KEY);
+		final String ostr = properties.getProperty(SEQUENTIAL_PARTICIPANTS);
 		if (StringUtils.hasText(ostr)) {
 			nstr += ";" + ostr;
 		}
-		properties.setProperty(KEY, nstr);
+		properties.setProperty(SEQUENTIAL_PARTICIPANTS, nstr);
 	}
 }

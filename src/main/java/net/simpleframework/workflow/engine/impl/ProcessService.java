@@ -5,6 +5,7 @@ import static net.simpleframework.common.I18n.$m;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -235,9 +236,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		update(new String[] { "status" }, process);
 
 		if (policy == EProcessAbortPolicy.allActivities) {
-			final IDataQuery<ActivityBean> qs = aService.getActivities(process);
-			ActivityBean activity;
-			while ((activity = qs.next()) != null) {
+			for (final ActivityBean activity : aService.getActivities(process)) {
 				aService._abort(activity, EActivityAbortPolicy.normal, false);
 			}
 		}
@@ -281,13 +280,11 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	@Override
 	public WorkitemBean getFirstWorkitem(final ProcessBean process) {
 		final ActivityBean startActivity = aService.getStartActivity(process);
-		final IDataQuery<ActivityBean> qs = aService.getNextActivities(startActivity);
-		ActivityBean activity;
-		while ((activity = qs.next()) != null) {
-			final WorkitemBean workitem = wService.getWorkitemList(activity, EWorkitemStatus.running)
-					.next();
-			if (workitem != null) {
-				return workitem;
+		for (final ActivityBean activity : aService.getNextActivities(startActivity)) {
+			final List<WorkitemBean> list = wService
+					.getWorkitemList(activity, EWorkitemStatus.running);
+			if (list.size() > 0) {
+				return list.get(0);
 			}
 		}
 		throw WorkflowException.of($m("ProcessService.0"));

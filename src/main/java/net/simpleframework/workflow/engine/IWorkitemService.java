@@ -1,8 +1,8 @@
 package net.simpleframework.workflow.engine;
 
 import java.util.Date;
+import java.util.List;
 
-import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 
 /**
@@ -28,7 +28,7 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	 * @param activity
 	 * @return
 	 */
-	IDataQuery<WorkitemBean> getWorkitemList(ActivityBean activity, EWorkitemStatus... status);
+	List<WorkitemBean> getWorkitemList(ActivityBean activity, EWorkitemStatus... status);
 
 	/**
 	 * 获取指定用户的工作列表
@@ -37,7 +37,7 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	 * @param status
 	 * @return
 	 */
-	IDataQuery<WorkitemBean> getWorkitemList(ID userId, EWorkitemStatus... status);
+	List<WorkitemBean> getWorkitemList(ID userId, EWorkitemStatus... status);
 
 	/**
 	 * 完成当前的工作项

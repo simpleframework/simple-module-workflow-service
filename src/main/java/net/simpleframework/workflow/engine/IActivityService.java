@@ -1,6 +1,7 @@
 package net.simpleframework.workflow.engine;
 
-import net.simpleframework.ado.query.IDataQuery;
+import java.util.List;
+
 import net.simpleframework.workflow.schema.AbstractTaskNode;
 
 /**
@@ -35,7 +36,7 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * @param processBean
 	 * @return
 	 */
-	IDataQuery<ActivityBean> getActivities(ProcessBean processBean, EActivityStatus... status);
+	List<ActivityBean> getActivities(ProcessBean processBean, EActivityStatus... status);
 
 	/**
 	 * 获取指定环节的后续环节实例
@@ -43,7 +44,7 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * @param preActivity
 	 * @return
 	 */
-	IDataQuery<ActivityBean> getNextActivities(ActivityBean preActivity);
+	List<ActivityBean> getNextActivities(ActivityBean preActivity);
 
 	/**
 	 * 
@@ -97,6 +98,8 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 *           放弃策略
 	 */
 	void abort(ActivityBean activity, EActivityAbortPolicy policy);
+
+	void abort(ActivityBean activity);
 
 	/**
 	 * 跳转到指定的任务环节
