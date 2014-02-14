@@ -1,8 +1,10 @@
 package net.simpleframework.workflow.engine.impl;
 
 import java.util.Date;
+import java.util.Iterator;
 
 import net.simpleframework.ado.db.common.SQLValue;
+import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.ctx.task.ExecutorRunnable;
 import net.simpleframework.ctx.task.ITaskExecutor;
@@ -29,7 +31,7 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	}
 
 	@Override
-	public IDataQuery<DelegationBean> queryWorkitems(final Object userId) {
+	public Iterator<DelegationBean> queryWorkitems(final Object userId) {
 		final StringBuilder sb = new StringBuilder();
 		sb.append("select d.* from ")
 				.append(getTablename(DelegationBean.class))
@@ -37,8 +39,8 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 				.append(getTablename(WorkitemBean.class))
 				.append(
 						" w on d.sourceid = w.id where w.userId=? and d.delegationsource=? order by createDate desc");
-		return getEntityManager().queryBeans(
-				new SQLValue(sb.toString(), userId, EDelegationSource.workitem));
+		return DataQueryUtils.toIterator(getEntityManager().queryBeans(
+				new SQLValue(sb.toString(), userId, EDelegationSource.workitem)));
 	}
 
 	public void doDelegateTask(final DelegationBean delegation) {

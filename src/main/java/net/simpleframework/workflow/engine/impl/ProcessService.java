@@ -5,6 +5,7 @@ import static net.simpleframework.common.I18n.$m;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -13,9 +14,10 @@ import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.query.DataQueryUtils;
-import net.simpleframework.ado.query.IDataQuery;
+import net.simpleframework.ado.query.DataQueryUtils.DataQueryIterator;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
+import net.simpleframework.common.coll.CollectionUtils;
 import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.ctx.task.ExecutorRunnable;
 import net.simpleframework.ctx.task.ITaskExecutor;
@@ -184,11 +186,12 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		});
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public IDataQuery<ProcessBean> getProcessList(final ProcessModelBean processModel,
+	public Iterator<ProcessBean> getProcessList(final ProcessModelBean processModel,
 			final EProcessStatus... status) {
 		if (processModel == null) {
-			return DataQueryUtils.nullQuery();
+			return CollectionUtils.EMPTY_ITERATOR;
 		}
 		final StringBuilder sql = new StringBuilder();
 		final ArrayList<Object> params = new ArrayList<Object>();
@@ -207,7 +210,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 			sql.append(")");
 		}
 		sql.append(" order by createDate desc");
-		return query(sql.toString(), params.toArray());
+		return DataQueryUtils.toIterator(query(sql.toString(), params.toArray()));
 	}
 
 	@Override
@@ -312,7 +315,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 				for (final Object bean : beans) {
 					// 更新流程实例计数
 					final ProcessModelBean processModel = getProcessModel((ProcessBean) bean);
-					processModel.setProcessCount(getProcessList(processModel).getCount());
+					final int c = ((DataQueryIterator<?>) getProcessList(processModel)).getCount();
+					processModel.setProcessCount(c);
 					mService.update(new String[] { "processCount" }, processModel);
 				}
 			}
@@ -323,7 +327,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 				for (final ProcessBean process : coll(paramsValue)) {
 					// 更新流程实例计数
 					final ProcessModelBean processModel = getProcessModel(process);
-					processModel.setProcessCount(getProcessList(processModel).getCount());
+					final int c = ((DataQueryIterator<?>) getProcessList(processModel)).getCount();
+					processModel.setProcessCount(c);
 					mService.update(new String[] { "processCount" }, processModel);
 				}
 			}
