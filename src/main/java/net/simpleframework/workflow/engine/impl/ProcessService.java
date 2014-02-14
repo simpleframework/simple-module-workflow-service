@@ -294,9 +294,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
-	public boolean isFinalStatus(final ProcessBean process) {
-		final EProcessStatus status = process.getStatus();
-		return status == EProcessStatus.complete || status == EProcessStatus.abort;
+	public boolean isFinalStatus(final ProcessBean t) {
+		return t.getStatus().ordinal() >= EProcessStatus.complete.ordinal();
 	}
 
 	@Override

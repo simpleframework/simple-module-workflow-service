@@ -4,7 +4,6 @@ import java.util.Date;
 
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
-import net.simpleframework.ctx.service.ado.db.IDbBeanService;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -12,7 +11,7 @@ import net.simpleframework.ctx.service.ado.db.IDbBeanService;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public interface IWorkitemService extends IDbBeanService<WorkitemBean>,
+public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 		IEventListenerAware<WorkitemBean>, IWorkflowScriptAware<WorkitemBean> {
 
 	/**
@@ -89,12 +88,4 @@ public interface IWorkitemService extends IDbBeanService<WorkitemBean>,
 	 * @param workitem
 	 */
 	void deleteProcess(WorkitemBean workitem);
-
-	/**
-	 * 是否最终状态，不可状态转换
-	 * 
-	 * @param workitem
-	 * @return
-	 */
-	boolean isFinalStatus(WorkitemBean workitem);
 }

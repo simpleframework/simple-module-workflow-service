@@ -1,7 +1,6 @@
 package net.simpleframework.workflow.engine;
 
 import net.simpleframework.ado.query.IDataQuery;
-import net.simpleframework.ctx.service.ado.db.IDbBeanService;
 import net.simpleframework.workflow.schema.AbstractTaskNode;
 
 /**
@@ -11,7 +10,7 @@ import net.simpleframework.workflow.schema.AbstractTaskNode;
  *         http://www.simpleframework.net
  */
 public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
-		IDbBeanService<ActivityBean>, IEventListenerAware<ActivityBean>,
+		IWorkflowService<ActivityBean>, IEventListenerAware<ActivityBean>,
 		IWorkflowScriptAware<ActivityBean> {
 
 	/**
@@ -143,12 +142,4 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * @return
 	 */
 	IWorkflowForm getWorkflowForm(ActivityBean activity);
-
-	/**
-	 * 是否最终状态，不可状态转换
-	 * 
-	 * @param activity
-	 * @return
-	 */
-	boolean isFinalStatus(ActivityBean activity);
 }

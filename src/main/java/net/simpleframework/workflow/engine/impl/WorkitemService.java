@@ -261,9 +261,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	@Override
-	public boolean isFinalStatus(final WorkitemBean workitem) {
-		final EWorkitemStatus status = workitem.getStatus();
-		return status == EWorkitemStatus.complete || status == EWorkitemStatus.abort;
+	public boolean isFinalStatus(final WorkitemBean t) {
+		return t.getStatus().ordinal() >= EWorkitemStatus.complete.ordinal();
 	}
 
 	@Override

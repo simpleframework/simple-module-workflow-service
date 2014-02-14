@@ -267,4 +267,9 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 			}
 		});
 	}
+
+	@Override
+	public boolean isFinalStatus(final ProcessModelBean t) {
+		return t.getStatus().ordinal() >= EProcessModelStatus.abort.ordinal();
+	}
 }

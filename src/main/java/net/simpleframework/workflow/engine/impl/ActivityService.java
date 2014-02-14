@@ -648,9 +648,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	@Override
-	public boolean isFinalStatus(final ActivityBean activity) {
-		final EActivityStatus status = activity.getStatus();
-		return status == EActivityStatus.complete || status == EActivityStatus.abort;
+	public boolean isFinalStatus(final ActivityBean t) {
+		return t.getStatus().ordinal() >= EActivityStatus.complete.ordinal();
 	}
 
 	ActivityBean createActivity(final AbstractTaskNode tasknode, final ActivityBean preActivity) {

@@ -112,8 +112,7 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	}
 
 	@Override
-	public boolean isFinalStatus(final DelegationBean delegation) {
-		final EDelegationStatus status = delegation.getStatus();
-		return status == EDelegationStatus.abort || status == EDelegationStatus.complete;
+	public boolean isFinalStatus(final DelegationBean t) {
+		return t.getStatus().ordinal() >= EDelegationStatus.complete.ordinal();
 	}
 }

@@ -4,7 +4,6 @@ import java.util.Properties;
 
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.coll.KVMap;
-import net.simpleframework.ctx.service.ado.db.IDbBeanService;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -14,7 +13,7 @@ import net.simpleframework.ctx.service.ado.db.IDbBeanService;
  */
 public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 		IEventListenerAware<ProcessBean>, IWorkflowScriptAware<ProcessBean>,
-		IDbBeanService<ProcessBean> {
+		IWorkflowService<ProcessBean> {
 
 	/**
 	 * 获取流程模型
@@ -95,14 +94,6 @@ public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 	 * @return
 	 */
 	WorkitemBean getFirstWorkitem(ProcessBean process);
-
-	/**
-	 * 是否最终状态，不可状态转换
-	 * 
-	 * @param process
-	 * @return
-	 */
-	boolean isFinalStatus(ProcessBean process);
 
 	/**
 	 * 设置流程标题

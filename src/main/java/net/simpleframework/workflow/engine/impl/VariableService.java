@@ -8,9 +8,11 @@ import net.simpleframework.common.Convert;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.JsonUtils;
 import net.simpleframework.common.coll.ArrayUtils;
+import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
 import net.simpleframework.workflow.engine.AbstractWorkflowBean;
 import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.EVariableSource;
+import net.simpleframework.workflow.engine.IWorkflowContextAware;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.VariableBean;
 import net.simpleframework.workflow.schema.EVariableType;
@@ -22,7 +24,8 @@ import net.simpleframework.workflow.schema.VariableNode;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class VariableService extends AbstractWorkflowService<VariableBean> {
+public class VariableService extends AbstractDbBeanService<VariableBean> implements
+		IWorkflowContextAware {
 
 	VariableBean createVariableBean(final AbstractWorkflowBean bean,
 			final VariableNode variableNode, final Object value) {
@@ -137,8 +140,8 @@ public class VariableService extends AbstractWorkflowService<VariableBean> {
 		for (int i = 0; i < length; i++) {
 			VariableNode variableNode = null;
 			if (bean instanceof ProcessBean) {
-				variableNode = pService.getProcessNode((ProcessBean) bean).getVariableNodeByName(
-						names[i]);
+				variableNode = ((ProcessService) pService).getProcessNode((ProcessBean) bean)
+						.getVariableNodeByName(names[i]);
 			} else if (bean instanceof ActivityBean) {
 				variableNode = aService.getTaskNode((ActivityBean) bean)
 						.getVariableNodeByName(names[i]);

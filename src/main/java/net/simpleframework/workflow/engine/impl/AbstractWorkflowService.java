@@ -18,6 +18,7 @@ import net.simpleframework.ctx.script.ScriptEvalFactory;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
 import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.IWorkflowContextAware;
+import net.simpleframework.workflow.engine.IWorkflowService;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.ProcessModelBean;
 import net.simpleframework.workflow.engine.WorkitemBean;
@@ -36,7 +37,7 @@ import net.simpleframework.workflow.schema.ProcessNode;
  *         http://www.simpleframework.net
  */
 public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
-		AbstractDbBeanService<T> implements IWorkflowContextAware {
+		AbstractDbBeanService<T> implements IWorkflowService<T>, IWorkflowContextAware {
 	static Collection<String> defaultExpr;
 	static {
 		defaultExpr = new ArrayList<String>();
