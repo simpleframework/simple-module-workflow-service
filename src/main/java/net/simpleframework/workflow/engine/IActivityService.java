@@ -1,7 +1,9 @@
 package net.simpleframework.workflow.engine;
 
 import java.util.List;
+import java.util.Set;
 
+import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.workflow.schema.AbstractTaskNode;
 
 /**
@@ -145,4 +147,20 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * @return
 	 */
 	IWorkflowForm getWorkflowForm(ActivityBean activity);
+
+	/**
+	 * 获取定义参与者
+	 * 
+	 * @param activity
+	 * @return
+	 */
+	Set<PermissionUser> getParticipants(ActivityBean activity);
+
+	/**
+	 * 获取实际参与者
+	 * 
+	 * @param activity
+	 * @return
+	 */
+	Set<PermissionUser> getParticipants2(ActivityBean activity);
 }

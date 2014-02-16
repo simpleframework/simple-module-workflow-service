@@ -2,16 +2,14 @@ package net.simpleframework.workflow.engine.impl;
 
 import static net.simpleframework.common.I18n.$m;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import net.simpleframework.ado.db.IDbEntityManager;
-import net.simpleframework.ado.db.common.ExpressionValue;
-import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.ArrayUtils;
@@ -157,9 +155,6 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 					throw WorkflowException.of($m("WorkitemService.0"));
 				}
 			}
-
-			// 放弃该环节
-			// aService._abort(activity);
 			// 创建新的环节
 			nActivity = aService.createActivity(aService.getTaskNode(activity),
 					aService.getBean(activity.getPreviousId()));
@@ -220,41 +215,31 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		dService.doDelegateTask(delegation);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<WorkitemBean> getWorkitemList(final ActivityBean activity,
 			final EWorkitemStatus... status) {
-		if (activity == null) {
-			return Collections.EMPTY_LIST;
+		final List<WorkitemBean> list = new ArrayList<WorkitemBean>();
+		if (activity != null) {
+			_setWorkitemList(list, query("activityId=?", activity.getId()), status);
 		}
-		final ExpressionValue ev = new ExpressionValue("activityId=?", activity.getId());
-		addStatusVal(ev, status);
-		return DataQueryUtils.toList(getEntityManager().queryBeans(ev));
+		return list;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<WorkitemBean> getWorkitemList(final ID userId, final EWorkitemStatus... status) {
-		if (userId == null) {
-			return Collections.EMPTY_LIST;
+		final List<WorkitemBean> list = new ArrayList<WorkitemBean>();
+		if (userId != null) {
+			_setWorkitemList(list, query("userId2=?", userId), status);
 		}
-		final ExpressionValue ev = new ExpressionValue("userId2=?", userId);
-		addStatusVal(ev, status);
-		return DataQueryUtils.toList(getEntityManager().queryBeans(ev));
+		return list;
 	}
 
-	private void addStatusVal(final ExpressionValue ev, final EWorkitemStatus... status) {
-		if (status.length > 0) {
-			final StringBuilder sb = new StringBuilder();
-			for (final EWorkitemStatus s : status) {
-				if (sb.length() > 0) {
-					sb.append(" or ");
-				}
-				sb.append("status=?");
-				ev.addValues(s);
-			}
-			if (sb.length() > 0) {
-				ev.addExpression(" and (").addExpression(sb).addExpression(")");
+	private void _setWorkitemList(List<WorkitemBean> list, final IDataQuery<WorkitemBean> dq,
+			final EWorkitemStatus... status) {
+		WorkitemBean workitem;
+		while ((workitem = dq.next()) != null) {
+			if (ArrayUtils.isEmpty(status) || ArrayUtils.contains(status, workitem.getStatus())) {
+				list.add(workitem);
 			}
 		}
 	}
