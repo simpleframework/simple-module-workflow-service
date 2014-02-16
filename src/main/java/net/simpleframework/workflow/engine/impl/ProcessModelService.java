@@ -13,6 +13,7 @@ import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
+import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.EProcessModelStatus;
@@ -205,9 +206,6 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 		assertStatus(processModel, EProcessModelStatus.edit);
 		processModel.setStatus(EProcessModelStatus.deploy);
 		update(new String[] { "status" }, processModel);
-		for (final IWorkflowEventListener listener : getEventListeners(processModel)) {
-			((IProcessModelEventListener) listener).onDeploy(processModel);
-		}
 	}
 
 	@Override
@@ -219,24 +217,32 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 		assertStatus(processModel, EProcessModelStatus.deploy, EProcessModelStatus.suspended);
 		processModel.setStatus(EProcessModelStatus.edit);
 		update(new String[] { "status" }, processModel);
-		for (final IWorkflowEventListener listener : getEventListeners(processModel)) {
-			((IProcessModelEventListener) listener).onResume(processModel);
-		}
 	}
 
 	@Override
 	public void onInit() throws Exception {
+		super.onInit();
+
 		addListener(new DbEntityAdapterEx() {
 
 			@Override
-			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] objects) {
+			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans) {
 				itemsCache.clear();
 			}
 
 			@Override
 			public void onAfterUpdate(final IDbEntityManager<?> manager, final String[] columns,
-					final Object[] objects) {
+					final Object[] beans) {
 				itemsCache.clear();
+
+				if (ArrayUtils.contains(columns, "status")) {
+					for (final Object bean : beans) {
+						final ProcessModelBean processModel = (ProcessModelBean) bean;
+						for (final IWorkflowEventListener listener : getEventListeners(processModel)) {
+							((IProcessModelEventListener) listener).onStatusChange(processModel);
+						}
+					}
+				}
 			}
 
 			@Override

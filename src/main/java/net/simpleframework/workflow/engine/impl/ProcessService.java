@@ -16,13 +16,13 @@ import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
+import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.ctx.task.ExecutorRunnable;
 import net.simpleframework.ctx.task.ITaskExecutor;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.ActivityComplete;
-import net.simpleframework.workflow.engine.EActivityAbortPolicy;
 import net.simpleframework.workflow.engine.EProcessAbortPolicy;
 import net.simpleframework.workflow.engine.EProcessModelStatus;
 import net.simpleframework.workflow.engine.EProcessStatus;
@@ -215,9 +215,6 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		assertStatus(process, EProcessStatus.running);
 		process.setStatus(EProcessStatus.suspended);
 		update(new String[] { "status" }, process);
-		for (final IWorkflowEventListener listener : getEventListeners(process)) {
-			((IProcessEventListener) listener).onSuspend(process);
-		}
 	}
 
 	@Override
@@ -225,25 +222,18 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		assertStatus(process, EProcessStatus.suspended);
 		process.setStatus(EProcessStatus.running);
 		update(new String[] { "status" }, process);
-		for (final IWorkflowEventListener listener : getEventListeners(process)) {
-			((IProcessEventListener) listener).onResume(process);
-		}
 	}
 
 	@Override
 	public void abort(final ProcessBean process, final EProcessAbortPolicy policy) {
-		process.setStatus(EProcessStatus.abort);
-		update(new String[] { "status" }, process);
-
 		if (policy == EProcessAbortPolicy.allActivities) {
 			for (final ActivityBean activity : aService.getActivities(process)) {
-				aService._abort(activity, EActivityAbortPolicy.normal, false);
+				aService._abort(activity);
 			}
 		}
 
-		for (final IWorkflowEventListener listener : getEventListeners(process)) {
-			((IProcessEventListener) listener).onAbort(process, policy);
-		}
+		process.setStatus(EProcessStatus.abort);
+		update(new String[] { "status" }, process);
 	}
 
 	@Override
@@ -303,6 +293,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public void onInit() throws Exception {
+		super.onInit();
+
 		addListener(new DbEntityAdapterEx() {
 
 			@Override
@@ -348,6 +340,21 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 					// 删除流程变量
 					vService.deleteVariables(EVariableSource.process, id);
+				}
+			}
+
+			@Override
+			public void onAfterUpdate(final IDbEntityManager<?> manager, final String[] columns,
+					final Object[] beans) {
+				super.onAfterUpdate(manager, columns, beans);
+
+				if (ArrayUtils.contains(columns, "status")) {
+					for (final Object bean : beans) {
+						final ProcessBean process = (ProcessBean) bean;
+						for (final IWorkflowEventListener listener : getEventListeners(process)) {
+							((IProcessEventListener) listener).onStatusChange(process);
+						}
+					}
 				}
 			}
 		});

@@ -18,8 +18,10 @@ import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
+import net.simpleframework.common.Convert;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
+import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.ctx.task.ExecutorRunnable;
 import net.simpleframework.ctx.task.ITaskExecutor;
@@ -120,7 +122,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				}
 				if (complete >= ParticipantUtils.getResponseValue(tasknode, al.size())) {
 					for (int i = 0; i < al.size(); i++) {
-						_abort(al.get(i), EActivityAbortPolicy.normal, false);
+						_abort(al.get(i));
 					}
 				}
 			}
@@ -132,11 +134,6 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			pService.update(new String[] { "completeDate", "status" }, process);
 
 			backToProcess(process);
-		}
-
-		// 事件
-		for (final IWorkflowEventListener listener : getEventListeners(activity)) {
-			((IActivityEventListener) listener).onCompleted(activityComplete);
 		}
 	}
 
@@ -169,7 +166,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	private static final String MERGE_PRE_ACTIVITIES = "merge_pre_activities";
 
 	private void doMergeNode(final ActivityBean preActivity, final MergeNode to) {
-		// 合并环节单实例
+		// 当前的合并环节，单实例
 		ActivityBean nActivity = null;
 		IDataQuery<ActivityBean> dq = query("processId=? and tasknodeId=?",
 				preActivity.getProcessId(), to.getId());
@@ -229,7 +226,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			complete = false;
 			int completes = 0;
 			while ((pre = dq.next()) != null) {
-				if (pre.equals(preActivity) || pre.getStatus() == EActivityStatus.complete) {
+				if (pre.getId().equals(nActivity.getPreviousId())
+						|| isPreviousOfMergeActivity(nActivity, pre)) {
 					completes++;
 				} else {
 					aborts.add(pre);
@@ -244,10 +242,16 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			if (aborts.size() > 0) {
 				// 放弃未完成的
 				for (final ActivityBean activity : aborts) {
-					_abort(activity, EActivityAbortPolicy.normal, false);
+					_abort(activity);
 				}
 			}
 		}
+	}
+
+	private boolean isPreviousOfMergeActivity(final ActivityBean merge, final ActivityBean pre) {
+		return ArrayUtils.contains(
+				StringUtils.split(merge.getProperties().getProperty(MERGE_PRE_ACTIVITIES), ";"),
+				Convert.toString(pre.getId()));
 	}
 
 	private void backToProcess(final ProcessBean sProcess) {
@@ -393,19 +397,16 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		});
 	}
 
-	void _abort(final ActivityBean activity, final EActivityAbortPolicy policy,
-			final boolean throwThrowable) {
-		_abort(activity, policy, EActivityStatus.abort, throwThrowable);
+	void _abort(final ActivityBean activity) {
+		_abort(activity, EActivityAbortPolicy.normal);
+	}
+
+	void _abort(final ActivityBean activity, final EActivityAbortPolicy policy) {
+		_abort(activity, policy, false);
 	}
 
 	void _abort(final ActivityBean activity, final EActivityAbortPolicy policy,
-			final EActivityStatus status, final boolean throwThrowable) {
-		if (isFinalStatus(activity)) {
-			if (throwThrowable) {
-				throw WorkflowStatusException.of($m("ActivityService.3", activity.getStatus()));
-			}
-		}
-
+			final boolean fallback) {
 		for (final WorkitemBean workitem : wService.getWorkitemList(activity)) {
 			if (!wService.isFinalStatus(workitem)) {
 				workitem.setStatus(EWorkitemStatus.abort);
@@ -413,24 +414,25 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			}
 		}
 
-		activity.setStatus(status);
-		update(new String[] { "status" }, activity);
-
 		if (policy == EActivityAbortPolicy.nextActivities) {
 			for (final ActivityBean nextActivity : getNextActivities(activity)) {
-				_abort(nextActivity, EActivityAbortPolicy.nextActivities, status, false);
+				_abort(nextActivity, policy);
 			}
 		}
 
-		// 触发事件
-		for (final IWorkflowEventListener listener : getEventListeners(activity)) {
-			((IActivityEventListener) listener).onAbort(activity, policy);
+		if (!isFinalStatus(activity)) {
+			// fallback可以理解为abort
+			activity.setStatus(fallback ? EActivityStatus.fallback : EActivityStatus.abort);
+			update(new String[] { "status" }, activity);
 		}
 	}
 
 	@Override
 	public void abort(final ActivityBean activity, final EActivityAbortPolicy policy) {
-		_abort(activity, policy, true);
+		if (isFinalStatus(activity)) {
+			throw WorkflowStatusException.of($m("ActivityService.3", activity.getStatus()));
+		}
+		_abort(activity, policy);
 	}
 
 	@Override
@@ -443,9 +445,6 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		assertStatus(activity, EActivityStatus.running);
 		activity.setStatus(EActivityStatus.suspended);
 		update(new String[] { "status" }, activity);
-		for (final IWorkflowEventListener listener : getEventListeners(activity)) {
-			((IActivityEventListener) listener).onSuspend(activity);
-		}
 	}
 
 	@Override
@@ -453,9 +452,6 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		assertStatus(activity, EActivityStatus.suspended);
 		activity.setStatus(EActivityStatus.running);
 		update(new String[] { "status" }, activity);
-		for (final IWorkflowEventListener listener : getEventListeners(activity)) {
-			((IActivityEventListener) listener).onResume(activity);
-		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -498,11 +494,13 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	@Override
 	public void fallback(final ActivityBean activity, final String tasknode) {
 		assertStatus(activity, EActivityStatus.running);
+
 		// 验证是否存在已完成的工作
 		if (wService.getWorkitemList(activity, EWorkitemStatus.complete).size() > 0) {
 			throw WorkflowException.of($m("ActivityService.0"));
 		}
 
+		// 退回前一指定任务
 		final ActivityBean preActivity = getPreActivity(activity, tasknode);
 		AbstractTaskNode to;
 		if (preActivity == null || !((to = getTaskNode(preActivity)) instanceof UserNode)) {
@@ -540,11 +538,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 		// 放弃后续
 		for (final ActivityBean _activity : getNextActivities(preActivity)) {
-			_abort(_activity, EActivityAbortPolicy.normal, EActivityStatus.fallback, true);
-		}
-
-		for (final IWorkflowEventListener listener : getEventListeners(activity)) {
-			((IActivityEventListener) listener).onFallback(nActivity, tasknode);
+			_abort(_activity, EActivityAbortPolicy.nextActivities,
+					_activity.getId().equals(activity.getId()));
 		}
 	}
 
@@ -564,7 +559,20 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		if (preActivity == null) {
 			return Collections.EMPTY_LIST;
 		}
-		return DataQueryUtils.toList(query("previousId=?", preActivity.getId()));
+
+		final List<ActivityBean> list = DataQueryUtils.toList(query("previousId=?",
+				preActivity.getId()));
+
+		// 查找合并节点
+		final IDataQuery<ActivityBean> dq = query("processId=? and tasknodeType=?",
+				preActivity.getProcessId(), AbstractTaskNode.TT_MERGE);
+		ActivityBean activity;
+		while ((activity = dq.next()) != null) {
+			if (isPreviousOfMergeActivity(activity, preActivity)) {
+				list.add(activity);
+			}
+		}
+		return list;
 	}
 
 	@Override
@@ -667,6 +675,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public void onInit() throws Exception {
+		super.onInit();
+
 		// 启动子流程监控
 		final IDataQuery<?> qs = query("tasknodeType=? and (status=? or status=?)",
 				AbstractTaskNode.TT_SUB, EActivityStatus.running, EActivityStatus.waiting)
@@ -688,6 +698,22 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 					wService.deleteWith("activityId=?", id);
 					// 删除环节变量
 					vService.deleteVariables(EVariableSource.activity, id);
+				}
+			}
+
+			@Override
+			public void onAfterUpdate(final IDbEntityManager<?> manager, final String[] columns,
+					final Object[] beans) {
+				super.onAfterUpdate(manager, columns, beans);
+
+				// 事件
+				if (ArrayUtils.contains(columns, "status")) {
+					for (final Object bean : beans) {
+						final ActivityBean activity = (ActivityBean) bean;
+						for (final IWorkflowEventListener listener : getEventListeners(activity)) {
+							((IActivityEventListener) listener).onStatusChange(activity);
+						}
+					}
 				}
 			}
 		});

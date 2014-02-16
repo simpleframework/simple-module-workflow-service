@@ -9,10 +9,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
+import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.DelegationBean;
@@ -58,8 +60,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	@Override
 	public void complete(final WorkitemComplete workitemComplete) {
 		final WorkitemBean workitem = workitemComplete.getWorkitem();
+		assertStatus(workitem, EWorkitemStatus.running, EWorkitemStatus.delegate);
 		try {
-			assertStatus(workitem, EWorkitemStatus.running, EWorkitemStatus.delegate);
 			final ActivityBean activity = getActivity(workitem);
 			assertStatus(activity, EActivityStatus.running);
 			final ProcessBean process = aService.getProcessBean(activity);
@@ -117,11 +119,6 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			}
 
 			workitemComplete.done();
-
-			// 事件
-			for (final IWorkflowEventListener listener : aService.getEventListeners(activity)) {
-				((IWorkitemEventListener) listener).onCompleted(workitemComplete);
-			}
 		} finally {
 			workitemComplete.reset();
 		}
@@ -153,7 +150,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 				} else if (tasknode instanceof MergeNode) {
 					// 如果是前一任务创建,则放弃
 					if (activity.getId().equals(nextActivity.getPreviousId())) {
-						aService._abort(nextActivity, EActivityAbortPolicy.nextActivities, false);
+						aService._abort(nextActivity, EActivityAbortPolicy.nextActivities);
 					}
 				} else {
 					// 其他环节，不允许取回
@@ -162,7 +159,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			}
 
 			// 放弃该环节
-			aService._abort(activity, EActivityAbortPolicy.normal, false);
+			// aService._abort(activity);
 			// 创建新的环节
 			nActivity = aService.createActivity(aService.getTaskNode(activity),
 					aService.getBean(activity.getPreviousId()));
@@ -196,11 +193,6 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 			insert(createWorkitem(nActivity,
 					new Participant(workitem.getUserId(), workitem.getRoleId())));
-		}
-
-		// 事件
-		for (final IWorkflowEventListener listener : aService.getEventListeners(activity)) {
-			((IWorkitemEventListener) listener).onRetake(workitem);
 		}
 	}
 
@@ -305,5 +297,28 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		workitem.setRoleId(participant.roleId);
 		workitem.setUserId2(participant.userId);
 		return workitem;
+	}
+
+	@Override
+	public void onInit() throws Exception {
+		super.onInit();
+
+		addListener(new DbEntityAdapterEx() {
+
+			@Override
+			public void onAfterUpdate(final IDbEntityManager<?> manager, final String[] columns,
+					final Object[] beans) {
+				super.onAfterUpdate(manager, columns, beans);
+
+				if (ArrayUtils.contains(columns, "status")) {
+					for (final Object bean : beans) {
+						final WorkitemBean workitem = (WorkitemBean) bean;
+						for (final IWorkflowEventListener listener : getEventListeners(workitem)) {
+							((IWorkitemEventListener) listener).onStatusChange(workitem);
+						}
+					}
+				}
+			}
+		});
 	}
 }

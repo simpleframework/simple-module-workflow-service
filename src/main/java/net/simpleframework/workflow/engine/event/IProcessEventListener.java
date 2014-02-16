@@ -1,6 +1,5 @@
 package net.simpleframework.workflow.engine.event;
 
-import net.simpleframework.workflow.engine.EProcessAbortPolicy;
 import net.simpleframework.workflow.engine.InitiateItem;
 import net.simpleframework.workflow.engine.ProcessBean;
 
@@ -21,23 +20,13 @@ public interface IProcessEventListener extends IWorkflowEventListener {
 	void onCreated(InitiateItem initiateItem, ProcessBean process);
 
 	/**
-	 * 流程被放弃时触发
+	 * 流程删除时触发
 	 * 
 	 * @param process
-	 * @param policy
 	 */
-	void onAbort(ProcessBean process, EProcessAbortPolicy policy);
-
 	void onDelete(ProcessBean process);
 
-	/**
-	 * 流程挂起或恢复时触发
-	 * 
-	 * @param process
-	 */
-	void onSuspend(ProcessBean process);
-
-	void onResume(ProcessBean process);
+	void onStatusChange(ProcessBean process);
 
 	public static abstract class ProcessAdapter implements IProcessEventListener {
 
@@ -46,19 +35,11 @@ public interface IProcessEventListener extends IWorkflowEventListener {
 		}
 
 		@Override
-		public void onAbort(final ProcessBean process, final EProcessAbortPolicy policy) {
-		}
-
-		@Override
 		public void onDelete(final ProcessBean process) {
 		}
 
 		@Override
-		public void onSuspend(final ProcessBean process) {
-		}
-
-		@Override
-		public void onResume(final ProcessBean process) {
+		public void onStatusChange(final ProcessBean process) {
 		}
 	}
 }

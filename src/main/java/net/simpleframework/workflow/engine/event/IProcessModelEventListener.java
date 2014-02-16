@@ -11,22 +11,17 @@ import net.simpleframework.workflow.engine.ProcessModelBean;
 public interface IProcessModelEventListener extends IWorkflowEventListener {
 
 	/**
-	 * 模型部署时触发
 	 * 
 	 * @param processModel
+	 * @param source
+	 * @param evn
 	 */
-	void onDeploy(ProcessModelBean processModel);
-
-	void onResume(ProcessModelBean processModel);
+	void onStatusChange(ProcessModelBean processModel);
 
 	public static abstract class ProcessModelAdapter implements IProcessModelEventListener {
 
 		@Override
-		public void onDeploy(final ProcessModelBean processModel) {
-		}
-
-		@Override
-		public void onResume(final ProcessModelBean processModel) {
+		public void onStatusChange(final ProcessModelBean processModel) {
 		}
 	}
 }
