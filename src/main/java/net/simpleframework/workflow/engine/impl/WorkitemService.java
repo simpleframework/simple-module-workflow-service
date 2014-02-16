@@ -234,7 +234,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		return list;
 	}
 
-	private void _setWorkitemList(List<WorkitemBean> list, final IDataQuery<WorkitemBean> dq,
+	private void _setWorkitemList(final List<WorkitemBean> list, final IDataQuery<WorkitemBean> dq,
 			final EWorkitemStatus... status) {
 		WorkitemBean workitem;
 		while ((workitem = dq.next()) != null) {
