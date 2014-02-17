@@ -193,10 +193,11 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		// 更新每次的preActivity
 		final ID preId = preActivity.getId();
 		if (!preId.equals(nActivity.getPreviousId())) {
-			updateMergePreActivities(
+			setMergePreActivities(
 					nActivity,
 					new String[] { nActivity.getProperties().getProperty(MERGE_PRE_ACTIVITIES),
 							preId.toString() });
+			update(new String[] { "properties" }, nActivity);
 		}
 
 		// 判断合并环节之前是否还有活动的
@@ -251,10 +252,9 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 	}
 
-	void updateMergePreActivities(final ActivityBean mActivity, final Object[] preActivities) {
+	void setMergePreActivities(final ActivityBean mActivity, final Object[] preActivities) {
 		mActivity.getProperties().setProperty(MERGE_PRE_ACTIVITIES,
 				StringUtils.join(preActivities, ";"));
-		update(new String[] { "properties" }, mActivity);
 	}
 
 	List<String> getMergePreActivities(final ActivityBean mActivity) {
