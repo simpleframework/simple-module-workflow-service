@@ -286,6 +286,9 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public void subComplete(final ActivityBean activity, final IMappingVal mappingVal) {
+		if (activity == null) {
+			return;
+		}
 		final SubNode sub = (SubNode) getTaskNode(activity);
 		if (sub.isSync()) {
 			// 设置返回的变量，仅在同步方式
