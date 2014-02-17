@@ -251,7 +251,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 	}
 
-	void updateMergePreActivities(final ActivityBean mActivity, final String[] preActivities) {
+	void updateMergePreActivities(final ActivityBean mActivity, final Object[] preActivities) {
 		mActivity.getProperties().setProperty(MERGE_PRE_ACTIVITIES,
 				StringUtils.join(preActivities, ";"));
 		update(new String[] { "properties" }, mActivity);

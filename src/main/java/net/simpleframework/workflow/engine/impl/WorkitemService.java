@@ -147,14 +147,12 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 					// 如果是前一任务创建,则放弃
 					final EActivityStatus status2 = nextActivity.getStatus();
 					if (status2 == EActivityStatus.complete) {
-
 					} else if (status2 == EActivityStatus.running) {
 						final List<String> preActivities = aService.getMergePreActivities(nextActivity);
 						int size;
 						if (preActivities != null && (size = preActivities.size()) > 0) {
-							if (activity.getId().toString().equals(preActivities.get(size - 1))) {
-								// System.arraycopy(src, srcPos, dest, destPos, length);
-								// aService.updateMergePreActivities(nextActivity, );
+							if (activity.getId().toString().equals(preActivities.remove(size - 1))) {
+								aService.updateMergePreActivities(nextActivity, preActivities.toArray());
 							} else {
 								throw WorkflowException.of($m("WorkitemService.1"));
 							}
