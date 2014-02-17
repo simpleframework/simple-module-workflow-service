@@ -19,9 +19,19 @@ public interface IWorkflowVariableAware<T extends AbstractWorkflowBean> {
 	 */
 	Object getVariable(T bean, String name);
 
+	byte getByteVariable(T bean, String name);
+
+	short getShortVariable(T bean, String name);
+
 	int getIntVariable(T bean, String name);
 
+	long getLongVariable(T bean, String name);
+
 	boolean getBoolVariable(T bean, String name);
+
+	float getFloatVariable(T bean, String name);
+
+	double getDoubleVariable(T bean, String name);
 
 	/**
 	 * 设置变量的值

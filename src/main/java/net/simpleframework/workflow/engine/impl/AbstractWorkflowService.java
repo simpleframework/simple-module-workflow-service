@@ -62,8 +62,28 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 		return null;
 	}
 
+	public byte getByteVariable(final T bean, final String name) {
+		return Convert.toByte(getVariable(bean, name));
+	}
+
+	public short getShortVariable(final T bean, final String name) {
+		return Convert.toShort(getVariable(bean, name));
+	}
+
 	public int getIntVariable(final T bean, final String name) {
 		return Convert.toInt(getVariable(bean, name));
+	}
+
+	public long getLongVariable(final T bean, final String name) {
+		return Convert.toLong(getVariable(bean, name));
+	}
+
+	public float getFloatVariable(final T bean, final String name) {
+		return Convert.toFloat(getVariable(bean, name));
+	}
+
+	public double getDoubleVariable(final T bean, final String name) {
+		return Convert.toDouble(getVariable(bean, name));
 	}
 
 	public boolean getBoolVariable(final T bean, final String name) {
