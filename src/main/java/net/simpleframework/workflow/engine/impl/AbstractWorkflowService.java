@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.simpleframework.ado.bean.AbstractIdBean;
 import net.simpleframework.ado.bean.IIdBeanAware;
 import net.simpleframework.common.BeanUtils;
+import net.simpleframework.common.Convert;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.common.coll.KVMap;
@@ -55,6 +56,18 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 	public Map<String, Object> createVariables(final T bean) {
 		final KVMap variables = new KVMap();
 		return variables;
+	}
+
+	public Object getVariable(final T bean, final String name) {
+		return null;
+	}
+
+	public int getIntVariable(final T bean, final String name) {
+		return Convert.toInt(getVariable(bean, name));
+	}
+
+	public boolean getBoolVariable(final T bean, final String name) {
+		return Convert.toBool(getVariable(bean, name));
 	}
 
 	public void assertStatus(final IIdBeanAware bean, final Enum<?>... status) {

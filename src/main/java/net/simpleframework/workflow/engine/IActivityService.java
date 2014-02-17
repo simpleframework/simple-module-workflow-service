@@ -152,9 +152,11 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * 获取定义参与者
 	 * 
 	 * @param activity
+	 * @param all
+	 *           包含废止的
 	 * @return
 	 */
-	Set<PermissionUser> getParticipants(ActivityBean activity);
+	Set<PermissionUser> getParticipants(ActivityBean activity, boolean all);
 
 	/**
 	 * 获取实际参与者

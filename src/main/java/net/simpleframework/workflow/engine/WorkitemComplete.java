@@ -30,7 +30,7 @@ public class WorkitemComplete extends ObjectEx implements Serializable, IWorkflo
 		if (PropSequential.list(activity).size() > 0) {
 			allCompleted = false;
 		} else {
-			final int allParticipants = aService.getParticipants(activity).size();
+			final int allParticipants = aService.getParticipants(activity, false).size();
 			// 完成的工作项
 			final int complete = aService.getParticipants2(activity).size();
 			if (complete + 1 < ParticipantUtils.getResponseValue(aService.getTaskNode(activity),

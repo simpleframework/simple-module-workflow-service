@@ -16,7 +16,6 @@ import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.DelegationBean;
-import net.simpleframework.workflow.engine.EActivityAbortPolicy;
 import net.simpleframework.workflow.engine.EActivityStatus;
 import net.simpleframework.workflow.engine.EDelegationSource;
 import net.simpleframework.workflow.engine.EDelegationStatus;
@@ -134,7 +133,6 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		if (status == EActivityStatus.complete) {
 			// 检测后续环节
 			for (final ActivityBean nextActivity : aService.getNextActivities(activity)) {
-				aService.assertStatus(nextActivity, EActivityStatus.running);
 				final AbstractTaskNode tasknode = aService.getTaskNode(nextActivity);
 				if (tasknode instanceof UserNode) {
 					// 如果用户环节，则不能出现已读和完成
@@ -147,8 +145,22 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 					aService.abort(nextActivity);
 				} else if (tasknode instanceof MergeNode) {
 					// 如果是前一任务创建,则放弃
-					if (activity.getId().equals(nextActivity.getPreviousId())) {
-						aService._abort(nextActivity, EActivityAbortPolicy.nextActivities);
+					final EActivityStatus status2 = nextActivity.getStatus();
+					if (status2 == EActivityStatus.complete) {
+
+					} else if (status2 == EActivityStatus.running) {
+						final List<String> preActivities = aService.getMergePreActivities(nextActivity);
+						int size;
+						if (preActivities != null && (size = preActivities.size()) > 0) {
+							if (activity.getId().toString().equals(preActivities.get(size - 1))) {
+								// System.arraycopy(src, srcPos, dest, destPos, length);
+								// aService.updateMergePreActivities(nextActivity, );
+							} else {
+								throw WorkflowException.of($m("WorkitemService.1"));
+							}
+						} else {
+							aService._abort(nextActivity);
+						}
 					}
 				} else {
 					// 其他环节，不允许取回

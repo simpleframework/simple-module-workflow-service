@@ -20,10 +20,10 @@ import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
-import net.simpleframework.common.Convert;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
 import net.simpleframework.common.coll.ArrayUtils;
+import net.simpleframework.common.coll.CollectionUtils;
 import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.ctx.task.ExecutorRunnable;
@@ -191,12 +191,12 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 
 		// 更新每次的preActivity
-		final Object preId = preActivity.getId();
+		final ID preId = preActivity.getId();
 		if (!preId.equals(nActivity.getPreviousId())) {
-			final Properties props = nActivity.getProperties();
-			props.setProperty(MERGE_PRE_ACTIVITIES, StringUtils.join(
-					new Object[] { props.getProperty(MERGE_PRE_ACTIVITIES), preId }, ";"));
-			update(new String[] { "properties" }, nActivity);
+			updateMergePreActivities(
+					nActivity,
+					new String[] { nActivity.getProperties().getProperty(MERGE_PRE_ACTIVITIES),
+							preId.toString() });
 		}
 
 		// 判断合并环节之前是否还有活动的
@@ -229,8 +229,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			complete = false;
 			int completes = 0;
 			while ((pre = dq.next()) != null) {
-				if (pre.getId().equals(nActivity.getPreviousId())
-						|| isPreviousOfMergeActivity(nActivity, pre)) {
+				// 如果合并环节含有前一环节的记录，则认为是完成的
+				if (isPreviousOfMergeActivity(nActivity, pre)) {
 					completes++;
 				} else {
 					aborts.add(pre);
@@ -251,10 +251,20 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 	}
 
-	private boolean isPreviousOfMergeActivity(final ActivityBean merge, final ActivityBean pre) {
-		return ArrayUtils.contains(
-				StringUtils.split(merge.getProperties().getProperty(MERGE_PRE_ACTIVITIES), ";"),
-				Convert.toString(pre.getId()));
+	void updateMergePreActivities(final ActivityBean mActivity, final String[] preActivities) {
+		mActivity.getProperties().setProperty(MERGE_PRE_ACTIVITIES,
+				StringUtils.join(preActivities, ";"));
+		update(new String[] { "properties" }, mActivity);
+	}
+
+	List<String> getMergePreActivities(final ActivityBean mActivity) {
+		return ArrayUtils.asList(StringUtils.split(
+				mActivity.getProperties().getProperty(MERGE_PRE_ACTIVITIES), ";"));
+	}
+
+	boolean isPreviousOfMergeActivity(final ActivityBean mActivity, final ActivityBean preActivity) {
+		return preActivity.getId().equals(mActivity.getPreviousId())
+				|| getMergePreActivities(mActivity).contains(preActivity.getId().toString());
 	}
 
 	private void backToProcess(final ProcessBean sProcess) {
@@ -457,12 +467,11 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		update(new String[] { "status" }, activity);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<ActivityBean> getActivities(final ProcessBean processBean,
 			final EActivityStatus... status) {
 		if (processBean == null) {
-			return Collections.EMPTY_LIST;
+			return CollectionUtils.EMPTY_LIST();
 		}
 		final StringBuilder sql = new StringBuilder();
 		final ArrayList<Object> params = new ArrayList<Object>();
@@ -556,22 +565,19 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		return getBean("processId=? and previousId is null", processBean.getId());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<ActivityBean> getNextActivities(final ActivityBean preActivity) {
 		if (preActivity == null) {
-			return Collections.EMPTY_LIST;
+			return CollectionUtils.EMPTY_LIST();
 		}
-
 		final List<ActivityBean> list = DataQueryUtils.toList(query("previousId=?",
 				preActivity.getId()));
-
 		// 查找合并节点
 		final IDataQuery<ActivityBean> dq = query("processId=? and tasknodeType=?",
 				preActivity.getProcessId(), AbstractTaskNode.TT_MERGE);
 		ActivityBean activity;
 		while ((activity = dq.next()) != null) {
-			if (isPreviousOfMergeActivity(activity, preActivity)) {
+			if (isPreviousOfMergeActivity(activity, preActivity) && !list.contains(activity)) {
 				list.add(activity);
 			}
 		}
@@ -657,10 +663,10 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	@Override
-	public Set<PermissionUser> getParticipants(final ActivityBean activity) {
+	public Set<PermissionUser> getParticipants(final ActivityBean activity, final boolean all) {
 		final Set<PermissionUser> set = new LinkedHashSet<PermissionUser>();
 		for (final WorkitemBean workitem : wService.getWorkitemList(activity)) {
-			if (workitem.getStatus().ordinal() > EWorkitemStatus.complete.ordinal()) {
+			if (!all && workitem.getStatus().ordinal() > EWorkitemStatus.complete.ordinal()) {
 				continue;
 			}
 			set.add(permission.getUser(workitem.getUserId()));
