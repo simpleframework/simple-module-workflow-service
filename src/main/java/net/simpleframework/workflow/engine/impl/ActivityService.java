@@ -499,7 +499,6 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	@Override
 	public void jump(final ActivityBean activity, final String tasknode) {
 		assertStatus(activity, EActivityStatus.running);
-
 		// final ProcessNode processNode = (ProcessNode)
 		// activity.taskNode().parent();
 		//
@@ -509,53 +508,78 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	@Override
 	public void fallback(final ActivityBean activity, final String tasknode) {
 		assertStatus(activity, EActivityStatus.running);
-
 		// 验证是否存在已完成的工作
 		if (wService.getWorkitemList(activity, EWorkitemStatus.complete).size() > 0) {
 			throw WorkflowException.of($m("ActivityService.0"));
 		}
-
 		// 退回前一指定任务
 		final ActivityBean preActivity = getPreActivity(activity, tasknode);
-		AbstractTaskNode to;
-		if (preActivity == null || !((to = getTaskNode(preActivity)) instanceof UserNode)) {
+		// 验证是否存在已完成的后续任务
+		for (final ActivityBean next : getNextActivities(preActivity)) {
+			if (next.getStatus() == EActivityStatus.complete) {
+				throw WorkflowException.of($m("ActivityService.0"));
+			}
+		}
+
+		final AbstractTaskNode to = getTaskNode(preActivity);
+		if (to instanceof UserNode) {
+			_clone(preActivity);
+		} else if (to instanceof MergeNode) {
+			_clone(getBean(preActivity.getPreviousId()));
+			for (final String id : getMergePreActivities(preActivity)) {
+				_clone(getBean(id));
+			}
+		} else {
 			throw WorkflowException.of($m("ActivityService.1"));
 		}
 
-		final ActivityBean nActivity = createActivity(to, getBean(preActivity.getPreviousId()));
-
-		final List<WorkitemBean> workitems = wService.getWorkitemList(preActivity,
-				EWorkitemStatus.complete);
-		if (ParticipantUtils.isSequential(to)) {
-			// 先按日期排序，之后创建第一个工作项
-			Collections.sort(workitems, new Comparator<WorkitemBean>() {
-				@Override
-				public int compare(final WorkitemBean item1, final WorkitemBean item2) {
-					return item1.getCreateDate().compareTo(item2.getCreateDate());
-				}
-			});
-			final ArrayList<Participant> al = new ArrayList<Participant>();
-			for (final WorkitemBean item : workitems) {
-				al.add(new Participant(item.getUserId(), item.getRoleId()));
-			}
-			final Iterator<Participant> it = al.iterator();
-			final Participant first = it.next();
-			PropSequential.set(nActivity, it);
-			insert(nActivity);
-			wService.insert(wService.createWorkitem(nActivity, first));
-		} else {
-			insert(nActivity);
-			for (final WorkitemBean workitem : workitems) {
-				final Participant p = new Participant(workitem.getUserId(), workitem.getRoleId());
-				wService.insert(wService.createWorkitem(nActivity, p));
-			}
-		}
-
-		// 放弃后续
+		// 放弃所有后续
 		for (final ActivityBean _activity : getNextActivities(preActivity)) {
 			_abort(_activity, EActivityAbortPolicy.nextActivities,
 					_activity.getId().equals(activity.getId()));
 		}
+	}
+
+	private ActivityBean _clone(final ActivityBean oActivity) {
+		// 复制某一个环节实例
+		final AbstractTaskNode to = getTaskNode(oActivity);
+		final ActivityBean preActivity = getBean(oActivity.getPreviousId());
+
+		// 新建一个克隆节点
+		final ActivityBean nActivity = createActivity(to, preActivity);
+		insert(nActivity);
+		if (to instanceof UserNode) {
+			// 克隆工作项
+			final List<WorkitemBean> workitems = wService.getWorkitemList(oActivity,
+					EWorkitemStatus.complete);
+			if (ParticipantUtils.isSequential(to)) {
+				// 先按日期排序，之后创建第一个工作项
+				Collections.sort(workitems, new Comparator<WorkitemBean>() {
+					@Override
+					public int compare(final WorkitemBean item1, final WorkitemBean item2) {
+						return item1.getCreateDate().compareTo(item2.getCreateDate());
+					}
+				});
+
+				final ArrayList<Participant> al = new ArrayList<Participant>();
+				for (final WorkitemBean item : workitems) {
+					al.add(new Participant(item.getUserId(), item.getRoleId()));
+				}
+				// 仅创建第一个工作项
+				final Iterator<Participant> it = al.iterator();
+				final Participant first = it.next();
+				wService.insert(wService.createWorkitem(nActivity, first));
+				// 设置后续参与者
+				PropSequential.set(nActivity, it);
+				update(new String[] { "properties" }, nActivity);
+			} else {
+				for (final WorkitemBean workitem : workitems) {
+					final Participant p = new Participant(workitem.getUserId(), workitem.getRoleId());
+					wService.insert(wService.createWorkitem(nActivity, p));
+				}
+			}
+		}
+		return nActivity;
 	}
 
 	@Override
