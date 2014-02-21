@@ -52,6 +52,11 @@ import net.simpleframework.workflow.schema.VariableNode;
 public class ProcessService extends AbstractWorkflowService<ProcessBean> implements IProcessService {
 
 	@Override
+	public ProcessDocument getProcessDocument(final ProcessBean process) {
+		return mService.getProcessDocument(getProcessModel(process));
+	}
+
+	@Override
 	public ProcessModelBean getProcessModel(final ProcessBean process) {
 		return mService.getBean(process.getModelId());
 	}

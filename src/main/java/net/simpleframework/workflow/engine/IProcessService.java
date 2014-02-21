@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.coll.KVMap;
+import net.simpleframework.workflow.schema.ProcessDocument;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -14,6 +15,8 @@ import net.simpleframework.common.coll.KVMap;
 public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 		IEventListenerAware<ProcessBean>, IWorkflowScriptAware<ProcessBean>,
 		IWorkflowService<ProcessBean> {
+
+	ProcessDocument getProcessDocument(ProcessBean process);
 
 	/**
 	 * 获取流程模型

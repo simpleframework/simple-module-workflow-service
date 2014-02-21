@@ -497,6 +497,13 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	@Override
+	public List<ActivityBean> getActivities(final ProcessBean processBean, final Object tasknodeId) {
+		return DataQueryUtils.toList(query("processId=? and tasknodeId=?", processBean.getId(),
+				tasknodeId instanceof AbstractTaskNode ? ((AbstractTaskNode) tasknodeId).getId()
+						: tasknodeId));
+	}
+
+	@Override
 	public void jump(final ActivityBean activity, final String tasknode) {
 		assertStatus(activity, EActivityStatus.running);
 		// final ProcessNode processNode = (ProcessNode)

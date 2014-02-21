@@ -41,6 +41,15 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	List<ActivityBean> getActivities(ProcessBean processBean, EActivityStatus... status);
 
 	/**
+	 * 获取指定taskNode的环节实例
+	 * 
+	 * @param processBean
+	 * @param tasknodeId
+	 * @return
+	 */
+	List<ActivityBean> getActivities(ProcessBean processBean, Object tasknodeId);
+
+	/**
 	 * 获取指定环节的后续环节实例
 	 * 
 	 * @param preActivity
