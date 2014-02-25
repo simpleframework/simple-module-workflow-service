@@ -528,30 +528,31 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			}
 		}
 
-		final AbstractTaskNode to = getTaskNode(preActivity);
-		if (to instanceof UserNode) {
-			_clone(preActivity);
-		} else if (to instanceof MergeNode) {
-			_clone(getBean(preActivity.getPreviousId()));
-			for (final String id : getMergePreActivities(preActivity)) {
-				_clone(getBean(id));
-			}
-		} else {
-			throw WorkflowException.of($m("ActivityService.1"));
-		}
-
 		// 放弃所有后续
 		for (final ActivityBean _activity : getNextActivities(preActivity)) {
 			_abort(_activity, EActivityAbortPolicy.nextActivities,
 					_activity.getId().equals(activity.getId()));
 		}
+
+		final AbstractTaskNode to = getTaskNode(preActivity);
+		if (to instanceof UserNode) {
+			_clone(preActivity, activity);
+		} else if (to instanceof MergeNode) {
+			_clone(getBean(preActivity.getPreviousId()), activity);
+			for (final String id : getMergePreActivities(preActivity)) {
+				_clone(getBean(id), activity);
+			}
+		} else {
+			throw WorkflowException.of($m("ActivityService.1"));
+		}
 	}
 
-	private ActivityBean _clone(final ActivityBean oActivity) {
+	private ActivityBean _clone(final ActivityBean oActivity, ActivityBean preActivity) {
 		// 复制某一个环节实例
 		final AbstractTaskNode to = getTaskNode(oActivity);
-		final ActivityBean preActivity = getBean(oActivity.getPreviousId());
-
+		if (preActivity == null) {
+			preActivity = getBean(oActivity.getPreviousId());
+		}
 		// 新建一个克隆节点
 		final ActivityBean nActivity = createActivity(to, preActivity);
 		insert(nActivity);
