@@ -29,6 +29,8 @@ public class ActivityBean extends AbstractWorkflowBean {
 
 	private Date completeDate;
 
+	private Date timeoutDate;
+
 	private Properties properties;
 
 	public ID getProcessId() {
@@ -77,6 +79,14 @@ public class ActivityBean extends AbstractWorkflowBean {
 
 	public void setCompleteDate(final Date completeDate) {
 		this.completeDate = completeDate;
+	}
+
+	public Date getTimeoutDate() {
+		return timeoutDate;
+	}
+
+	public void setTimeoutDate(Date timeoutDate) {
+		this.timeoutDate = timeoutDate;
 	}
 
 	public Properties getProperties() {
