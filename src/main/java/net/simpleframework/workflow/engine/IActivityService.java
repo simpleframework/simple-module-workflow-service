@@ -136,19 +136,12 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	void fallback(ActivityBean activity);
 
 	/**
-	 * 运行远程子流程
-	 * 
-	 * @param activity
-	 */
-	void doRemoteSubTask(ActivityBean activity);
-
-	/**
 	 * 完成子流程环节
 	 * 
 	 * @param activity
 	 * @param mappingVal
 	 */
-	void subComplete(ActivityBean activity, IMappingVal mappingVal);
+	void doSubComplete(ActivityBean activity, IMappingVal mappingVal);
 
 	/**
 	 * 获取表单实例

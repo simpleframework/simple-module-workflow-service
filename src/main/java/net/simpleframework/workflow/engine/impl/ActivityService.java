@@ -275,7 +275,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		} else {
 			final ActivityBean nActivity = getBean(properties
 					.getProperty(IProcessRemote.SUB_ACTIVITYID));
-			subComplete(nActivity, new IMappingVal() {
+			doSubComplete(nActivity, new IMappingVal() {
 				@Override
 				public Object val(final String mapping) {
 					return pService.getVariable(sProcess, mapping);
@@ -285,7 +285,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	@Override
-	public void subComplete(final ActivityBean activity, final IMappingVal mappingVal) {
+	public void doSubComplete(final ActivityBean activity, final IMappingVal mappingVal) {
 		if (activity == null) {
 			return;
 		}
@@ -340,8 +340,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 	}
 
-	@Override
-	public void doRemoteSubTask(final ActivityBean activity) {
+	void doRemoteSubTask(final ActivityBean activity) {
 		final ID activityId = activity.getId();
 		final ITaskExecutor taskExecutor = context.getTaskExecutor();
 		taskExecutor.addScheduledTask(settings.getSubTaskPeriod(), new ExecutorRunnable() {
@@ -725,6 +724,16 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		update(new String[] { "timeoutDate" }, activity);
 	}
 
+	void doTimeoutTask() {
+		final IDataQuery<ActivityBean> dq = query("timeoutDate<? and status<>?", new Date(),
+				EActivityStatus.timeout);
+		ActivityBean activity;
+		while ((activity = dq.next()) != null) {
+			activity.setStatus(EActivityStatus.timeout);
+			update(new String[] { "timeoutDate" }, activity);
+		}
+	}
+
 	ActivityBean createActivity(final AbstractTaskNode tasknode, final ActivityBean preActivity) {
 		return createActivity(null, tasknode, preActivity);
 	}
@@ -758,7 +767,16 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			doRemoteSubTask(activity);
 		}
 
-		// 添加监听器
+		// 启动过期监控
+		final ITaskExecutor taskExecutor = context.getTaskExecutor();
+		taskExecutor.addScheduledTask(settings.getTimeoutPeriod(), new ExecutorRunnable() {
+			@Override
+			protected void task() throws Exception {
+				doTimeoutTask();
+			}
+		});
+
+		// 添加任务过期监控
 		addListener(new DbEntityAdapterEx() {
 			@Override
 			public void onBeforeDelete(final IDbEntityManager<?> manager,

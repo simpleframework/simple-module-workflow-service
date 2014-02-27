@@ -31,4 +31,8 @@ public class WorkflowSettings extends PropertiesContextSettings {
 	public long getDelegatePeriod() {
 		return 60 * 5; // 单位秒
 	}
+
+	public long getTimeoutPeriod() {
+		return 60 * 5; // 单位秒
+	}
 }
