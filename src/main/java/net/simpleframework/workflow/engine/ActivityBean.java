@@ -16,8 +16,11 @@ import net.simpleframework.common.ID;
 @EntityInterceptor(listenerTypes = { "net.simpleframework.module.log.EntityUpdateLogAdapter",
 		"net.simpleframework.module.log.EntityDeleteLogAdapter" }, columns = { "status" })
 public class ActivityBean extends AbstractWorkflowBean {
+
+	/* 流程实例id */
 	private ID processId;
 
+	/* 前一环节id */
 	private ID previousId;
 
 	private String tasknodeId;
@@ -27,10 +30,13 @@ public class ActivityBean extends AbstractWorkflowBean {
 	@ColumnMeta(columnText = "#(AbstractWorkflowBean.0)")
 	private EActivityStatus status;
 
+	/* 完成时间 */
 	private Date completeDate;
 
+	/* 过期时间 */
 	private Date timeoutDate;
 
+	/* 运行期属性 */
 	private Properties properties;
 
 	public ID getProcessId() {
@@ -85,7 +91,7 @@ public class ActivityBean extends AbstractWorkflowBean {
 		return timeoutDate;
 	}
 
-	public void setTimeoutDate(Date timeoutDate) {
+	public void setTimeoutDate(final Date timeoutDate) {
 		this.timeoutDate = timeoutDate;
 	}
 

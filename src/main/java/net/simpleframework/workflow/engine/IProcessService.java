@@ -104,5 +104,5 @@ public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 	 * @param process
 	 * @param title
 	 */
-	void saveProcessTitle(ProcessBean process, String title);
+	void updateTitle(ProcessBean process, String title);
 }

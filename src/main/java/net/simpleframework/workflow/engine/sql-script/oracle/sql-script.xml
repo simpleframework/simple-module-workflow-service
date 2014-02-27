@@ -85,6 +85,7 @@
         status number(4) not null,
         createdate timestamp not null,
         completedate timestamp,
+        timeoutdate timestamp,
         properties clob,
         primary key(id)
       );

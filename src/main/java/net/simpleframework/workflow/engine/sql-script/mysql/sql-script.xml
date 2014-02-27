@@ -85,6 +85,7 @@
         status tinyint not null,
         createdate datetime not null,
         completedate datetime,
+        timeoutdate datetime,
         properties text,
         primary key(id)
       );

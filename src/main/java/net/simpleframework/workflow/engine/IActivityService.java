@@ -1,5 +1,6 @@
 package net.simpleframework.workflow.engine;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -174,4 +175,12 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * @return
 	 */
 	Set<PermissionUser> getParticipants2(ActivityBean activity);
+
+	/**
+	 * 更新环节的过期时间
+	 * 
+	 * @param activity
+	 * @param timeoutDate
+	 */
+	void updateTimeoutDate(ActivityBean activity, Date timeoutDate);
 }

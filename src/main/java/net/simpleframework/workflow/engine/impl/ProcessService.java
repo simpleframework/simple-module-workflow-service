@@ -291,7 +291,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
-	public void saveProcessTitle(final ProcessBean process, final String title) {
+	public void updateTitle(final ProcessBean process, final String title) {
 		process.setTitle(title);
 		update(new String[] { "title" }, process);
 	}

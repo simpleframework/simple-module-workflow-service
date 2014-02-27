@@ -85,6 +85,7 @@
         status int2 not null,
         createdate timestamp not null,
         completedate timestamp,
+        timeoutdate timestamp,
         properties text,
         primary key(id)
       );

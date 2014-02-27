@@ -719,6 +719,12 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		return set;
 	}
 
+	@Override
+	public void updateTimeoutDate(final ActivityBean activity, final Date timeoutDate) {
+		activity.setTimeoutDate(timeoutDate);
+		update(new String[] { "timeoutDate" }, activity);
+	}
+
 	ActivityBean createActivity(final AbstractTaskNode tasknode, final ActivityBean preActivity) {
 		return createActivity(null, tasknode, preActivity);
 	}
