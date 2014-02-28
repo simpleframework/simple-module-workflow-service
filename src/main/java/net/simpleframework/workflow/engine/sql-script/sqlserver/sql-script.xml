@@ -38,8 +38,10 @@
         title varchar(128),
         status tinyint not null,
         userid char(32),
+        usertext varchar(32),
         createdate datetime not null,
         roleid char(32),
+        roletext varchar(32),
         completedate datetime,
         properties text,
         primary key(id)
@@ -64,6 +66,7 @@
         status tinyint not null,
         createdate datetime not null,
         userid char(32) not null,
+        usertext varchar(32) not null,
         runningdate datetime,
         completedate datetime,
         startdate datetime, 

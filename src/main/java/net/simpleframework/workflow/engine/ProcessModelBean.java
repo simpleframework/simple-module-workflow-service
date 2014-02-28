@@ -18,8 +18,11 @@ import net.simpleframework.common.StringUtils;
 		"lastUserId", "lastUpdate" })
 public class ProcessModelBean extends AbstractWorkflowBean {
 
-	/* 模型名称、显示名称 */
-	private String modelName, modelText;
+	/* 模型名称 */
+	private String modelName;
+
+	/* 显示名称 */
+	private String modelText;
 
 	/* 状态 */
 	@ColumnMeta(columnText = "#(AbstractWorkflowBean.0)")

@@ -38,8 +38,10 @@
         title varchar2(128 char),
         status number(4) not null,
         userid char(32),
+        usertext varchar2(32),
         createdate timestamp not null,
         roleid char(32),
+        roletext varchar2(32),
         completedate timestamp,
         properties clob,
         primary key(id)
@@ -64,6 +66,7 @@
         status number(4) not null,
         createdate timestamp not null,
         userid char(32) not null,
+        usertext varchar2(32) not null,
         runningdate timestamp,
         completedate timestamp,
         startdate timestamp, 

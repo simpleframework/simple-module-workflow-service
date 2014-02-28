@@ -38,8 +38,10 @@
         title varchar(128),
         status tinyint not null,
         userid char(32),
+        usertext varchar(32),
         createdate timestamp not null,
         roleid char(32),
+        roletext varchar(32),
         completedate timestamp,
         properties clob,
         primary key(id)
@@ -64,6 +66,7 @@
         status tinyint not null,
         createdate timestamp not null,
         userid char(32) not null,
+        usertext varchar(32) not null,
         runningdate timestamp,
         completedate timestamp,
         startdate timestamp, 

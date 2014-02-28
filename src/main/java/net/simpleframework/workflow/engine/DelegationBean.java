@@ -29,6 +29,8 @@ public class DelegationBean extends AbstractWorkflowBean implements IDescription
 	/* 委托的用户id */
 	private ID userId;
 
+	private String userText;
+
 	/* 委托的实际开始时间和结束时间 */
 	private Date runningDate, completeDate;
 
@@ -71,6 +73,14 @@ public class DelegationBean extends AbstractWorkflowBean implements IDescription
 
 	public void setUserId(final ID userId) {
 		this.userId = userId;
+	}
+
+	public String getUserText() {
+		return userText;
+	}
+
+	public void setUserText(final String userText) {
+		this.userText = userText;
 	}
 
 	public Date getRunningDate() {

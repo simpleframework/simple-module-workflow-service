@@ -239,6 +239,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		delegation.setDelegationSource(EDelegationSource.workitem);
 		delegation.setSourceId(workitem.getId());
 		delegation.setUserId(userId);
+		delegation.setUserText(permission.getUser(userId).toString());
 		delegation.setStartDate(startDate);
 		delegation.setEndDate(endDate);
 		delegation.setDescription(description);
