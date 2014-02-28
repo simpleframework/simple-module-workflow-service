@@ -2,6 +2,7 @@ package net.simpleframework.workflow.engine;
 
 import java.util.Date;
 
+import net.simpleframework.ado.ColumnMeta;
 import net.simpleframework.ado.bean.AbstractIdBean;
 
 /**
@@ -13,6 +14,7 @@ import net.simpleframework.ado.bean.AbstractIdBean;
 @SuppressWarnings("serial")
 public abstract class AbstractWorkflowBean extends AbstractIdBean {
 
+	@ColumnMeta(columnText = "#(AbstractWorkflowBean.1)")
 	private Date createDate;
 
 	public Date getCreateDate() {

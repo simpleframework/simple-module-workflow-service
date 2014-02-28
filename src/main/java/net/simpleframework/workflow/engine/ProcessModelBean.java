@@ -95,7 +95,8 @@ public class ProcessModelBean extends AbstractWorkflowBean {
 
 	@Override
 	public String toString() {
-		return StringUtils.text(getModelText(), getModelName());
+		final String txt = getModelText();
+		return StringUtils.hasText(txt) ? txt : getModelName();
 	}
 
 	private static final long serialVersionUID = 6413648325601228584L;

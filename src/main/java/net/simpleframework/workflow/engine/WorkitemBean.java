@@ -5,6 +5,7 @@ import java.util.Date;
 import net.simpleframework.ado.ColumnMeta;
 import net.simpleframework.ado.db.common.EntityInterceptor;
 import net.simpleframework.common.ID;
+import net.simpleframework.common.StringUtils;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -25,17 +26,20 @@ public class WorkitemBean extends AbstractWorkflowBean {
 	/* 任务分派的用户id */
 	private ID userId;
 
-	/* 一务分派的角色id */
+	/* 任务分派的角色id */
 	private ID roleId;
+
+	/* 用户和角色显示名 */
+	private String userText, roleText;
 
 	/* 实际执行的用户id，缺省值=userId */
 	private ID userId2;
 
+	/* 实际执行用户显示名 */
+	private String userText2;
+
 	/* 实际完成时间 */
 	private Date completeDate;
-
-	/* 计划完成时间 */
-	private Date endDate;
 
 	/* 是否已读 */
 	private boolean readMark;
@@ -64,12 +68,36 @@ public class WorkitemBean extends AbstractWorkflowBean {
 		this.roleId = roleId;
 	}
 
+	public String getUserText() {
+		return userText;
+	}
+
+	public void setUserText(final String userText) {
+		this.userText = userText;
+	}
+
+	public String getRoleText() {
+		return roleText;
+	}
+
+	public void setRoleText(final String roleText) {
+		this.roleText = roleText;
+	}
+
 	public ID getUserId2() {
 		return userId2;
 	}
 
 	public void setUserId2(final ID userId2) {
 		this.userId2 = userId2;
+	}
+
+	public String getUserText2() {
+		return StringUtils.hasText(userText2) ? userText2 : getUserText();
+	}
+
+	public void setUserText2(final String userText2) {
+		this.userText2 = userText2;
 	}
 
 	public ID getActivityId() {
@@ -86,14 +114,6 @@ public class WorkitemBean extends AbstractWorkflowBean {
 
 	public void setCompleteDate(final Date completeDate) {
 		this.completeDate = completeDate;
-	}
-
-	public Date getEndDate() {
-		return endDate;
-	}
-
-	public void setEndDate(final Date endDate) {
-		this.endDate = endDate;
 	}
 
 	public boolean isReadMark() {

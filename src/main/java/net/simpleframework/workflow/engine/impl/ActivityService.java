@@ -9,11 +9,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
@@ -25,7 +24,6 @@ import net.simpleframework.common.StringUtils;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.common.coll.CollectionUtils;
 import net.simpleframework.common.coll.KVMap;
-import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.ctx.task.ExecutorRunnable;
 import net.simpleframework.ctx.task.ITaskExecutor;
 import net.simpleframework.workflow.WorkflowException;
@@ -697,25 +695,25 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	@Override
-	public Set<PermissionUser> getParticipants(final ActivityBean activity, final boolean all) {
-		final Set<PermissionUser> set = new LinkedHashSet<PermissionUser>();
+	public Map<ID, String> getParticipants(final ActivityBean activity, final boolean all) {
+		final Map<ID, String> m = new LinkedHashMap<ID, String>();
 		for (final WorkitemBean workitem : wService.getWorkitemList(activity)) {
 			if (!all && workitem.getStatus().ordinal() > EWorkitemStatus.complete.ordinal()) {
 				continue;
 			}
-			set.add(permission.getUser(workitem.getUserId()));
+			m.put(workitem.getUserId(), workitem.getUserText());
 		}
-		return set;
+		return m;
 	}
 
 	@Override
-	public Set<PermissionUser> getParticipants2(final ActivityBean activity) {
-		final Set<PermissionUser> set = new LinkedHashSet<PermissionUser>();
+	public Map<ID, String> getParticipants2(final ActivityBean activity) {
+		final Map<ID, String> m = new LinkedHashMap<ID, String>();
 		for (final WorkitemBean workitem : wService.getWorkitemList(activity,
 				EWorkitemStatus.complete)) {
-			set.add(permission.getUser(workitem.getUserId2()));
+			m.put(workitem.getUserId2(), workitem.getUserText2());
 		}
-		return set;
+		return m;
 	}
 
 	@Override
@@ -749,6 +747,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			activity.setPreviousId(preActivity.getId());
 		}
 		activity.setTasknodeId(tasknode.getId());
+		activity.setTasknodeText(tasknode.toString());
 		activity.setTasknodeType(tasknode.getTasknodeType());
 		activity.setCreateDate(new Date());
 		return activity;

@@ -52,7 +52,7 @@ public abstract class TransitionUtils {
 				}
 			} else if (tt instanceof AbstractTransitionType.Interface) {
 				final ITransitionHandler handler = (ITransitionHandler) ObjectFactory
-						.singleton(((AbstractTransitionType.Interface) tt).getHandleClass());
+						.singleton(((AbstractTransitionType.Interface) tt).getHandlerClass());
 				if (handler.isPass(transition)) {
 					_transitions.put(transition.getId(), transition);
 				}

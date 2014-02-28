@@ -20,14 +20,13 @@ public class ProcessBean extends AbstractWorkflowBean {
 
 	private Date completeDate;
 
+	@ColumnMeta(columnText = "#(AbstractWorkflowBean.2)")
 	private String title;
 
 	@ColumnMeta(columnText = "#(AbstractWorkflowBean.0)")
 	private EProcessStatus status;
 
-	/**
-	 * 流程启动者及启动角色
-	 */
+	/* 流程启动者及启动角色 */
 	private ID userId, roleId;
 
 	private Properties properties;

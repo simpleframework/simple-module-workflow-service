@@ -25,6 +25,9 @@ public class ActivityBean extends AbstractWorkflowBean {
 
 	private String tasknodeId;
 
+	/* 任务显示文本 */
+	private String tasknodeText;
+
 	private short tasknodeType;
 
 	@ColumnMeta(columnText = "#(AbstractWorkflowBean.0)")
@@ -61,6 +64,14 @@ public class ActivityBean extends AbstractWorkflowBean {
 
 	public void setTasknodeId(final String tasknodeId) {
 		this.tasknodeId = tasknodeId.trim();
+	}
+
+	public String getTasknodeText() {
+		return tasknodeText;
+	}
+
+	public void setTasknodeText(final String tasknodeText) {
+		this.tasknodeText = tasknodeText;
 	}
 
 	public short getTasknodeType() {
@@ -108,7 +119,7 @@ public class ActivityBean extends AbstractWorkflowBean {
 
 	@Override
 	public String toString() {
-		return super.toString();
+		return getTasknodeText();
 	}
 
 	private static final long serialVersionUID = 5146309554672912773L;
