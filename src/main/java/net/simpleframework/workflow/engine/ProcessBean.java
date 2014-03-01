@@ -86,7 +86,7 @@ public class ProcessBean extends AbstractWorkflowBean {
 		return userText;
 	}
 
-	public void setUserText(String userText) {
+	public void setUserText(final String userText) {
 		this.userText = userText;
 	}
 
@@ -94,7 +94,7 @@ public class ProcessBean extends AbstractWorkflowBean {
 		return roleText;
 	}
 
-	public void setRoleText(String roleText) {
+	public void setRoleText(final String roleText) {
 		this.roleText = roleText;
 	}
 
