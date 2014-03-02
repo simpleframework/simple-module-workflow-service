@@ -12,7 +12,6 @@ import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
-import net.simpleframework.common.StringUtils;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.workflow.WorkflowException;
@@ -62,9 +61,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 		final ProcessNode processNode = document.getProcessNode();
 		if (userId != null) {
 			bean.setUserId(userId);
-			if (!StringUtils.hasText(processNode.getAuthor())) {
-				processNode.setAuthor(permission.getUser(userId).getText());
-			}
+			bean.setUserText(permission.getUser(userId).toString());
 		}
 		bean.setModelName(processNode.getName());
 		bean.setModelText(processNode.getText());
@@ -82,17 +79,13 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 	}
 
 	@Override
-	public void updateModel(final ProcessModelBean processModel, final ID userId, final char[] model) {
+	public void updateModel(final ProcessModelBean processModel, final char[] model) {
 		assertStatus(processModel, EProcessModelStatus.edit);
 		try {
 			final ProcessDocument document = new ProcessDocument(model);
 			final ProcessNode processNode = document.getProcessNode();
 			processModel.setModelName(processNode.getName());
 			processModel.setModelText(processNode.getText());
-			if (userId != null) {
-				processModel.setLastUserId(userId);
-			}
-			processModel.setLastUpdate(new Date());
 			update(processModel);
 
 			final ProcessModelLobBean lob = getEntityManager(ProcessModelLobBean.class).getBean(

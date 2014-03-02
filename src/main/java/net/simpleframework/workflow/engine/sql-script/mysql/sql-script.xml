@@ -11,9 +11,8 @@
         modeltext varchar(128),
         status tinyint not null,
         userid char(32) not null,
+        usertext varchar(32) not null,
         createdate datetime not null,
-        lastuserid varchar(32),
-        lastupdate datetime,
         processcount int not null,
         unique(modelname),
         primary key(id)

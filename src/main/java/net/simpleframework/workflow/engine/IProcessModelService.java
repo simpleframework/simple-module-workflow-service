@@ -23,7 +23,13 @@ public interface IProcessModelService extends IWorkflowService<ProcessModelBean>
 
 	ProcessModelBean addModel(ID userId, ProcessDocument processDocument);
 
-	void updateModel(ProcessModelBean processModel, ID userId, char[] model);
+	/**
+	 * 更新
+	 * 
+	 * @param processModel
+	 * @param model
+	 */
+	void updateModel(ProcessModelBean processModel, char[] model);
 
 	/**
 	 * 根据名称获取ProcessModelBean实例
