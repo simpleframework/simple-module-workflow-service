@@ -8,7 +8,7 @@ import net.simpleframework.workflow.engine.ActivityBean;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public interface IActivityEventListener extends IWorkflowEventListener {
+public interface IActivityListener extends IWorkflowListener {
 
 	/**
 	 * 过期检查
@@ -24,7 +24,7 @@ public interface IActivityEventListener extends IWorkflowEventListener {
 	 */
 	void onStatusChange(ActivityBean activity);
 
-	public static abstract class ActivityAdapter implements IActivityEventListener {
+	public static abstract class ActivityAdapter implements IActivityListener {
 
 		@Override
 		public void onStatusChange(final ActivityBean activity) {

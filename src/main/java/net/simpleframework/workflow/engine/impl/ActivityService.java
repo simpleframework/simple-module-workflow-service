@@ -40,8 +40,8 @@ import net.simpleframework.workflow.engine.IWorkflowForm;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.PropSequential;
 import net.simpleframework.workflow.engine.WorkitemBean;
-import net.simpleframework.workflow.engine.event.IActivityEventListener;
-import net.simpleframework.workflow.engine.event.IWorkflowEventListener;
+import net.simpleframework.workflow.engine.event.IActivityListener;
+import net.simpleframework.workflow.engine.event.IWorkflowListener;
 import net.simpleframework.workflow.engine.participant.Participant;
 import net.simpleframework.workflow.engine.participant.ParticipantUtils;
 import net.simpleframework.workflow.engine.remote.IProcessRemote;
@@ -737,8 +737,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				update(new String[] { "timeoutDate" }, activity);
 			}
 			// 触发超期检测事件，比如一些通知
-			for (final IWorkflowEventListener listener : getEventListeners(activity)) {
-				((IActivityEventListener) listener).onTimeoutCheck(activity);
+			for (final IWorkflowListener listener : getEventListeners(activity)) {
+				((IActivityListener) listener).onTimeoutCheck(activity);
 			}
 		}
 	}
@@ -810,8 +810,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				if (ArrayUtils.contains(columns, "status")) {
 					for (final Object bean : beans) {
 						final ActivityBean activity = (ActivityBean) bean;
-						for (final IWorkflowEventListener listener : getEventListeners(activity)) {
-							((IActivityEventListener) listener).onStatusChange(activity);
+						for (final IWorkflowListener listener : getEventListeners(activity)) {
+							((IActivityListener) listener).onStatusChange(activity);
 						}
 					}
 				}

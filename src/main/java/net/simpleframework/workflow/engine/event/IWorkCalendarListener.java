@@ -6,5 +6,5 @@ package net.simpleframework.workflow.engine.event;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public interface IWorkflowEventListener {
+public interface IWorkCalendarListener extends IWorkflowListener {
 }

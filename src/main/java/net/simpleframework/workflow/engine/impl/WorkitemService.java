@@ -27,8 +27,8 @@ import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.PropSequential;
 import net.simpleframework.workflow.engine.WorkitemBean;
 import net.simpleframework.workflow.engine.WorkitemComplete;
-import net.simpleframework.workflow.engine.event.IWorkflowEventListener;
-import net.simpleframework.workflow.engine.event.IWorkitemEventListener;
+import net.simpleframework.workflow.engine.event.IWorkflowListener;
+import net.simpleframework.workflow.engine.event.IWorkitemListener;
 import net.simpleframework.workflow.engine.participant.Participant;
 import net.simpleframework.workflow.engine.participant.ParticipantUtils;
 import net.simpleframework.workflow.schema.AbstractTaskNode;
@@ -334,8 +334,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 				if (ArrayUtils.contains(columns, "status")) {
 					for (final Object bean : beans) {
 						final WorkitemBean workitem = (WorkitemBean) bean;
-						for (final IWorkflowEventListener listener : getEventListeners(workitem)) {
-							((IWorkitemEventListener) listener).onStatusChange(workitem);
+						for (final IWorkflowListener listener : getEventListeners(workitem)) {
+							((IWorkitemListener) listener).onStatusChange(workitem);
 						}
 					}
 				}

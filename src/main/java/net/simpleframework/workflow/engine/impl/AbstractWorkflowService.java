@@ -23,11 +23,12 @@ import net.simpleframework.workflow.engine.IWorkflowService;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.ProcessModelBean;
 import net.simpleframework.workflow.engine.WorkitemBean;
-import net.simpleframework.workflow.engine.event.IActivityEventListener;
-import net.simpleframework.workflow.engine.event.IProcessEventListener;
-import net.simpleframework.workflow.engine.event.IProcessModelEventListener;
-import net.simpleframework.workflow.engine.event.IWorkflowEventListener;
-import net.simpleframework.workflow.engine.event.IWorkitemEventListener;
+import net.simpleframework.workflow.engine.event.IActivityListener;
+import net.simpleframework.workflow.engine.event.IProcessListener;
+import net.simpleframework.workflow.engine.event.IProcessModelListener;
+import net.simpleframework.workflow.engine.event.IWorkCalendarListener;
+import net.simpleframework.workflow.engine.event.IWorkflowListener;
+import net.simpleframework.workflow.engine.event.IWorkitemListener;
 import net.simpleframework.workflow.schema.AbstractTaskNode;
 import net.simpleframework.workflow.schema.ProcessNode;
 
@@ -97,9 +98,13 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 		}
 	}
 
+	public IWorkCalendarListener getWorkCalendarListener(final T bean) {
+		return null;
+	}
+
 	private final Map<ID, Set<String>> listenerClassMap = new ConcurrentHashMap<ID, Set<String>>();
 
-	public Collection<IWorkflowEventListener> getEventListeners(final T bean) {
+	public Collection<IWorkflowListener> getEventListeners(final T bean) {
 		final Set<String> set = new LinkedHashSet<String>();
 		Set<String> _set = null;
 		if (bean instanceof ProcessModelBean) {
@@ -127,21 +132,20 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 		if ((_set = listenerClassMap.get(bean.getId())) != null) {
 			set.addAll(_set);
 		}
-		final ArrayList<IWorkflowEventListener> al = new ArrayList<IWorkflowEventListener>();
+		final ArrayList<IWorkflowListener> al = new ArrayList<IWorkflowListener>();
 		for (final String listenerClass : set) {
-			final IWorkflowEventListener l = (IWorkflowEventListener) singleton(listenerClass);
-			if ((bean instanceof ProcessModelBean && l instanceof IProcessModelEventListener)
-					|| (bean instanceof ProcessBean && l instanceof IProcessEventListener)
-					|| (bean instanceof ActivityBean && l instanceof IActivityEventListener)
-					|| (bean instanceof WorkitemBean && l instanceof IWorkitemEventListener)) {
+			final IWorkflowListener l = (IWorkflowListener) singleton(listenerClass);
+			if ((bean instanceof ProcessModelBean && l instanceof IProcessModelListener)
+					|| (bean instanceof ProcessBean && l instanceof IProcessListener)
+					|| (bean instanceof ActivityBean && l instanceof IActivityListener)
+					|| (bean instanceof WorkitemBean && l instanceof IWorkitemListener)) {
 				al.add(l);
 			}
 		}
 		return al;
 	}
 
-	public void addEventListener(final T bean,
-			final Class<? extends IWorkflowEventListener> listenerClass) {
+	public void addEventListener(final T bean, final Class<? extends IWorkflowListener> listenerClass) {
 		final ID id = bean.getId();
 		Set<String> set = listenerClassMap.get(id);
 		if (set == null) {
@@ -151,7 +155,7 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 	}
 
 	public boolean removeEventListener(final T bean,
-			final Class<? extends IWorkflowEventListener> listenerClass) {
+			final Class<? extends IWorkflowListener> listenerClass) {
 		final Set<String> set = listenerClassMap.get(bean.getId());
 		if (set != null) {
 			return set.remove(listenerClass.getName());

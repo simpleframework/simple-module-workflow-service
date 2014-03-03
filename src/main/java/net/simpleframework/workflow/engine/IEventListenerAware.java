@@ -2,7 +2,7 @@ package net.simpleframework.workflow.engine;
 
 import java.util.Collection;
 
-import net.simpleframework.workflow.engine.event.IWorkflowEventListener;
+import net.simpleframework.workflow.engine.event.IWorkflowListener;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -17,7 +17,7 @@ public interface IEventListenerAware<T extends AbstractWorkflowBean> {
 	 * @param bean
 	 * @param listenerClass
 	 */
-	void addEventListener(T bean, Class<? extends IWorkflowEventListener> listenerClass);
+	void addEventListener(T bean, Class<? extends IWorkflowListener> listenerClass);
 
 	/**
 	 * 
@@ -25,12 +25,12 @@ public interface IEventListenerAware<T extends AbstractWorkflowBean> {
 	 * @param listenerClass
 	 * @return
 	 */
-	boolean removeEventListener(T bean, Class<? extends IWorkflowEventListener> listenerClass);
+	boolean removeEventListener(T bean, Class<? extends IWorkflowListener> listenerClass);
 
 	/**
 	 * 
 	 * @param bean
 	 * @return
 	 */
-	Collection<IWorkflowEventListener> getEventListeners(T bean);
+	Collection<IWorkflowListener> getEventListeners(T bean);
 }

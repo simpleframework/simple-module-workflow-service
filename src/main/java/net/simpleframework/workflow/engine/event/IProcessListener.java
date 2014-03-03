@@ -9,7 +9,7 @@ import net.simpleframework.workflow.engine.ProcessBean;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public interface IProcessEventListener extends IWorkflowEventListener {
+public interface IProcessListener extends IWorkflowListener {
 
 	/**
 	 * 流程创建时触发
@@ -28,7 +28,7 @@ public interface IProcessEventListener extends IWorkflowEventListener {
 
 	void onStatusChange(ProcessBean process);
 
-	public static abstract class ProcessAdapter implements IProcessEventListener {
+	public static abstract class ProcessAdapter implements IProcessListener {
 
 		@Override
 		public void onCreated(final InitiateItem initiateItem, final ProcessBean process) {

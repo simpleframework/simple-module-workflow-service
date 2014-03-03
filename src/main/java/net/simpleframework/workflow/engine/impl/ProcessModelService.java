@@ -22,8 +22,8 @@ import net.simpleframework.workflow.engine.InitiateItem;
 import net.simpleframework.workflow.engine.InitiateItems;
 import net.simpleframework.workflow.engine.ProcessModelBean;
 import net.simpleframework.workflow.engine.ProcessModelLobBean;
-import net.simpleframework.workflow.engine.event.IProcessModelEventListener;
-import net.simpleframework.workflow.engine.event.IWorkflowEventListener;
+import net.simpleframework.workflow.engine.event.IProcessModelListener;
+import net.simpleframework.workflow.engine.event.IWorkflowListener;
 import net.simpleframework.workflow.schema.AbstractParticipantType;
 import net.simpleframework.workflow.schema.AbstractParticipantType.BaseRole;
 import net.simpleframework.workflow.schema.AbstractParticipantType.User;
@@ -231,8 +231,8 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 				if (ArrayUtils.contains(columns, "status")) {
 					for (final Object bean : beans) {
 						final ProcessModelBean processModel = (ProcessModelBean) bean;
-						for (final IWorkflowEventListener listener : getEventListeners(processModel)) {
-							((IProcessModelEventListener) listener).onStatusChange(processModel);
+						for (final IWorkflowListener listener : getEventListeners(processModel)) {
+							((IProcessModelListener) listener).onStatusChange(processModel);
 						}
 					}
 				}

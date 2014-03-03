@@ -34,8 +34,8 @@ import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.ProcessLobBean;
 import net.simpleframework.workflow.engine.ProcessModelBean;
 import net.simpleframework.workflow.engine.WorkitemBean;
-import net.simpleframework.workflow.engine.event.IProcessEventListener;
-import net.simpleframework.workflow.engine.event.IWorkflowEventListener;
+import net.simpleframework.workflow.engine.event.IProcessListener;
+import net.simpleframework.workflow.engine.event.IWorkflowListener;
 import net.simpleframework.workflow.engine.remote.IProcessRemote;
 import net.simpleframework.workflow.schema.ProcessDocument;
 import net.simpleframework.workflow.schema.ProcessNode;
@@ -85,8 +85,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		final ProcessBean process = startProcess(processModel, initiateItem.getUserId(), roleId,
 				initiateItem.getVariables(), null, topic);
 		// 事件
-		for (final IWorkflowEventListener listener : getEventListeners(process)) {
-			((IProcessEventListener) listener).onCreated(initiateItem, process);
+		for (final IWorkflowListener listener : getEventListeners(process)) {
+			((IProcessListener) listener).onCreated(initiateItem, process);
 		}
 		createStartNode(process, initiateItem.getTransitions());
 		return process;
@@ -102,8 +102,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 			final Properties properties, final String topic) {
 		final ProcessBean process = startProcess(processModel, null, null, variables, properties,
 				topic);
-		for (final IWorkflowEventListener listener : getEventListeners(process)) {
-			((IProcessEventListener) listener).onCreated(null, process);
+		for (final IWorkflowListener listener : getEventListeners(process)) {
+			((IProcessListener) listener).onCreated(null, process);
 		}
 		createStartNode(process, null);
 		return process;
@@ -335,8 +335,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 				for (final ProcessBean process : coll(paramsValue)) {
 					final Object id = process.getId();
 					// 触发删除事件
-					for (final IWorkflowEventListener listener : getEventListeners(process)) {
-						((IProcessEventListener) listener).onDelete(process);
+					for (final IWorkflowListener listener : getEventListeners(process)) {
+						((IProcessListener) listener).onDelete(process);
 					}
 
 					// 删除lob
@@ -358,8 +358,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 				if (ArrayUtils.contains(columns, "status")) {
 					for (final Object bean : beans) {
 						final ProcessBean process = (ProcessBean) bean;
-						for (final IWorkflowEventListener listener : getEventListeners(process)) {
-							((IProcessEventListener) listener).onStatusChange(process);
+						for (final IWorkflowListener listener : getEventListeners(process)) {
+							((IProcessListener) listener).onStatusChange(process);
 						}
 					}
 				}

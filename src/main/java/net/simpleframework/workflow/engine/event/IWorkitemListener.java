@@ -8,11 +8,11 @@ import net.simpleframework.workflow.engine.WorkitemBean;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public interface IWorkitemEventListener extends IWorkflowEventListener {
+public interface IWorkitemListener extends IWorkflowListener {
 
 	void onStatusChange(WorkitemBean workitem);
 
-	public static abstract class WorkitemAdapter implements IWorkitemEventListener {
+	public static abstract class WorkitemAdapter implements IWorkitemListener {
 
 		@Override
 		public void onStatusChange(final WorkitemBean workitem) {
