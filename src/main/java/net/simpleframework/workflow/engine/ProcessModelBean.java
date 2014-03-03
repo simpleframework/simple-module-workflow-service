@@ -70,7 +70,7 @@ public class ProcessModelBean extends AbstractWorkflowBean {
 		return userText;
 	}
 
-	public void setUserText(String userText) {
+	public void setUserText(final String userText) {
 		this.userText = userText;
 	}
 

@@ -8,7 +8,6 @@ import net.simpleframework.ctx.IApplicationContext;
 import net.simpleframework.ctx.Module;
 import net.simpleframework.ctx.permission.IPermissionConst;
 import net.simpleframework.ctx.permission.IPermissionHandler;
-import net.simpleframework.ctx.permission.PermissionFactory;
 import net.simpleframework.ctx.settings.ContextSettings;
 import net.simpleframework.ctx.task.ExecutorRunnable;
 import net.simpleframework.workflow.engine.ActivityBean;
@@ -110,7 +109,7 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 	@Override
 	public IWorkflowPermissionHandler getParticipantService() {
 		IPermissionHandler pHandler;
-		return ((pHandler = PermissionFactory.get()) instanceof IWorkflowPermissionHandler ? (IWorkflowPermissionHandler) pHandler
+		return ((pHandler = getPermission()) instanceof IWorkflowPermissionHandler ? (IWorkflowPermissionHandler) pHandler
 				: null);
 	}
 
