@@ -11,6 +11,13 @@ import net.simpleframework.workflow.engine.ActivityBean;
 public interface IActivityEventListener extends IWorkflowEventListener {
 
 	/**
+	 * 过期检查
+	 * 
+	 * @param activity
+	 */
+	void onTimeoutCheck(ActivityBean activity);
+
+	/**
 	 * 状态变化时触发
 	 * 
 	 * @param activity

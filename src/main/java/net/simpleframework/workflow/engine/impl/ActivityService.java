@@ -334,14 +334,14 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				new ActivityComplete(nActivity).complete();
 			}
 		} else {
-			doRemoteSubTask(nActivity);
+			doRemoteSubActivity(nActivity);
 		}
 	}
 
-	void doRemoteSubTask(final ActivityBean activity) {
+	void doRemoteSubActivity(final ActivityBean activity) {
 		final ID activityId = activity.getId();
 		final ITaskExecutor taskExecutor = context.getTaskExecutor();
-		taskExecutor.addScheduledTask(settings.getSubTaskPeriod(), new ExecutorRunnable() {
+		taskExecutor.addScheduledTask(settings.getSubActivityPeriod(), new ExecutorRunnable() {
 			@Override
 			protected void task() throws Exception {
 				final ActivityBean nActivity = getBean(activityId);
@@ -722,13 +722,24 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		update(new String[] { "timeoutDate" }, activity);
 	}
 
-	void doTimeoutTask() {
-		final IDataQuery<ActivityBean> dq = query("timeoutDate<? and status<>?", new Date(),
-				EActivityStatus.timeout);
+	void doActivityTimeout() {
+		final IDataQuery<ActivityBean> dq = query("timeoutDate is not null and status<=?",
+				EActivityStatus.timeout).setFetchSize(0);
 		ActivityBean activity;
+		final Date n = new Date();
 		while ((activity = dq.next()) != null) {
-			activity.setStatus(EActivityStatus.timeout);
-			update(new String[] { "timeoutDate" }, activity);
+			if (pService.isFinalStatus(getProcessBean(activity))) {
+				continue;
+			}
+			if (activity.getStatus() != EActivityStatus.timeout && n.after(activity.getTimeoutDate())) {
+				// 设置过期状态
+				activity.setStatus(EActivityStatus.timeout);
+				update(new String[] { "timeoutDate" }, activity);
+			}
+			// 触发超期检测事件，比如一些通知
+			for (final IWorkflowEventListener listener : getEventListeners(activity)) {
+				((IActivityEventListener) listener).onTimeoutCheck(activity);
+			}
 		}
 	}
 
@@ -763,15 +774,15 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				.setFetchSize(0);
 		ActivityBean activity;
 		while ((activity = (ActivityBean) qs.next()) != null) {
-			doRemoteSubTask(activity);
+			doRemoteSubActivity(activity);
 		}
 
 		// 启动过期监控
 		final ITaskExecutor taskExecutor = context.getTaskExecutor();
-		taskExecutor.addScheduledTask(settings.getTimeoutPeriod(), new ExecutorRunnable() {
+		taskExecutor.addScheduledTask(settings.getTimeoutCheckPeriod(), new ExecutorRunnable() {
 			@Override
 			protected void task() throws Exception {
-				doTimeoutTask();
+				doActivityTimeout();
 			}
 		});
 

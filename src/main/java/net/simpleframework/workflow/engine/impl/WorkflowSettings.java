@@ -20,19 +20,24 @@ public class WorkflowSettings extends PropertiesContextSettings {
 	}
 
 	/**
-	 * 获取子流程的监控时间
+	 * 获取子流程的监控周期时间
 	 * 
 	 * @return
 	 */
-	public long getSubTaskPeriod() {
+	public long getSubActivityPeriod() {
 		return 60 * 5; // 单位秒
 	}
 
+	/**
+	 * 委托监控周期时间
+	 * 
+	 * @return
+	 */
 	public long getDelegatePeriod() {
 		return 60 * 5; // 单位秒
 	}
 
-	public long getTimeoutPeriod() {
+	public long getTimeoutCheckPeriod() {
 		return 60 * 5; // 单位秒
 	}
 }

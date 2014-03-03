@@ -26,19 +26,19 @@ public enum EActivityStatus {
 		}
 	},
 
-	timeout {
-
-		@Override
-		public String toString() {
-			return $m("EActivityStatus.timeout");
-		}
-	},
-
 	waiting {
 
 		@Override
 		public String toString() {
 			return $m("EActivityStatus.waiting");
+		}
+	},
+
+	timeout {
+
+		@Override
+		public String toString() {
+			return $m("EActivityStatus.timeout");
 		}
 	},
 
