@@ -1,5 +1,7 @@
 package net.simpleframework.workflow.engine.event;
 
+import java.util.Date;
+
 /**
  * Licensed under the Apache License, Version 2.0
  * 
@@ -7,4 +9,12 @@ package net.simpleframework.workflow.engine.event;
  *         http://www.simpleframework.net
  */
 public interface IWorkCalendarListener extends IWorkflowListener {
+
+	/**
+	 * 工作日历，根据小时数推算真实日期
+	 * 
+	 * @param hours
+	 * @return
+	 */
+	Date getRealDate(int hours);
 }

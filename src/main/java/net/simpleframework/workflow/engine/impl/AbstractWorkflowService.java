@@ -99,12 +99,34 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 	}
 
 	public IWorkCalendarListener getWorkCalendarListener(final T bean) {
+		final Set<String> set = getListeners(bean);
+		for (final String listenerClass : set) {
+			final IWorkflowListener l = (IWorkflowListener) singleton(listenerClass);
+			if (l instanceof IWorkCalendarListener) {
+				return (IWorkCalendarListener) l;
+			}
+		}
 		return null;
 	}
 
 	private final Map<ID, Set<String>> listenerClassMap = new ConcurrentHashMap<ID, Set<String>>();
 
 	public Collection<IWorkflowListener> getEventListeners(final T bean) {
+		final Set<String> set = getListeners(bean);
+		final ArrayList<IWorkflowListener> al = new ArrayList<IWorkflowListener>();
+		for (final String listenerClass : set) {
+			final IWorkflowListener l = (IWorkflowListener) singleton(listenerClass);
+			if ((bean instanceof ProcessModelBean && l instanceof IProcessModelListener)
+					|| (bean instanceof ProcessBean && l instanceof IProcessListener)
+					|| (bean instanceof ActivityBean && l instanceof IActivityListener)
+					|| (bean instanceof WorkitemBean && l instanceof IWorkitemListener)) {
+				al.add(l);
+			}
+		}
+		return al;
+	}
+
+	private Set<String> getListeners(final T bean) {
 		final Set<String> set = new LinkedHashSet<String>();
 		Set<String> _set = null;
 		if (bean instanceof ProcessModelBean) {
@@ -132,17 +154,7 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 		if ((_set = listenerClassMap.get(bean.getId())) != null) {
 			set.addAll(_set);
 		}
-		final ArrayList<IWorkflowListener> al = new ArrayList<IWorkflowListener>();
-		for (final String listenerClass : set) {
-			final IWorkflowListener l = (IWorkflowListener) singleton(listenerClass);
-			if ((bean instanceof ProcessModelBean && l instanceof IProcessModelListener)
-					|| (bean instanceof ProcessBean && l instanceof IProcessListener)
-					|| (bean instanceof ActivityBean && l instanceof IActivityListener)
-					|| (bean instanceof WorkitemBean && l instanceof IWorkitemListener)) {
-				al.add(l);
-			}
-		}
-		return al;
+		return set;
 	}
 
 	public void addEventListener(final T bean, final Class<? extends IWorkflowListener> listenerClass) {
