@@ -1,5 +1,6 @@
 package net.simpleframework.workflow.engine.event;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -17,4 +18,15 @@ public interface IWorkCalendarListener extends IWorkflowListener {
 	 * @return
 	 */
 	Date getRealDate(int hours);
+
+	public static class WorkCalendarAdapter implements IWorkCalendarListener {
+
+		@Override
+		public Date getRealDate(final int hours) {
+			final Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(System.currentTimeMillis());
+			cal.add(Calendar.HOUR_OF_DAY, hours);
+			return cal.getTime();
+		}
+	}
 }

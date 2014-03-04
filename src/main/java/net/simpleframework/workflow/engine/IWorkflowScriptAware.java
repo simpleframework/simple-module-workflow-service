@@ -17,7 +17,7 @@ public interface IWorkflowScriptAware<T extends AbstractWorkflowBean> {
 	 * @param bean
 	 * @return
 	 */
-	IScriptEval createScriptEval(final T bean);
+	IScriptEval getScriptEval(final T bean);
 
 	/**
 	 * 

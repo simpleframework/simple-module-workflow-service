@@ -64,7 +64,7 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 	public ActivityComplete(final ActivityBean activity, final Collection<TransitionNode> transitions) {
 		activityId = activity.getId();
 
-		final IScriptEval script = context.getActivityService().createScriptEval(activity);
+		final IScriptEval script = aService.getScriptEval(activity);
 		for (final TransitionNode transition : transitions) {
 			_transitions.put(transition.getId(), transition);
 			putParticipant(transition, script);
@@ -74,16 +74,16 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 	private void doInit(final ActivityBean activity) {
 		activityId = activity.getId();
 
-		final AbstractTaskNode tasknode = context.getActivityService().getTaskNode(activity);
+		final AbstractTaskNode tasknode = aService.getTaskNode(activity);
 		final IScriptEval script;
 		if (workitemComplete != null) {
-			script = wService.createScriptEval(workitemComplete.getWorkitem());
+			script = wService.getScriptEval(workitemComplete.getWorkitem());
 			final Map<String, Object> variables = workitemComplete.getVariables();
 			for (final Map.Entry<String, Object> e : variables.entrySet()) {
 				script.putVariable(e.getKey(), e.getValue());
 			}
 		} else {
-			script = context.getActivityService().createScriptEval(activity);
+			script = aService.getScriptEval(activity);
 		}
 
 		// 解析条件正确的transition
@@ -131,11 +131,11 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 	}
 
 	public ActivityBean getActivity() {
-		return context.getActivityService().getBean(activityId);
+		return aService.getBean(activityId);
 	}
 
 	public void complete() {
-		context.getActivityService().complete(this);
+		aService.complete(this);
 	}
 
 	public boolean isTransitionManual() {

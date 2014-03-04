@@ -36,8 +36,7 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 		final String relative = rRole.getRelative();
 		final ERelativeType rType = rRole.getRelativeType();
 		if (rType == ERelativeType.processInitiator) {
-			final ProcessBean process = context.getActivityService().getProcessBean(
-					activityComplete.getActivity());
+			final ProcessBean process = aService.getProcessBean(activityComplete.getActivity());
 			final ID userId = process.getUserId();
 			if (userId != null) {
 				if (StringUtils.hasText(relative)) {

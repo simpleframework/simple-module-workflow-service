@@ -27,6 +27,7 @@ import net.simpleframework.workflow.engine.event.IActivityListener;
 import net.simpleframework.workflow.engine.event.IProcessListener;
 import net.simpleframework.workflow.engine.event.IProcessModelListener;
 import net.simpleframework.workflow.engine.event.IWorkCalendarListener;
+import net.simpleframework.workflow.engine.event.IWorkCalendarListener.WorkCalendarAdapter;
 import net.simpleframework.workflow.engine.event.IWorkflowListener;
 import net.simpleframework.workflow.engine.event.IWorkitemListener;
 import net.simpleframework.workflow.schema.AbstractTaskNode;
@@ -46,12 +47,26 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 		defaultExpr.add("import " + WorkflowContext.class.getPackage().getName() + ".*;");
 	}
 
-	public IScriptEval createScriptEval(final T bean) {
-		final IScriptEval script = ScriptEvalFactory.createDefaultScriptEval(createVariables(bean));
-		for (final String expr : defaultExpr) {
-			script.eval(expr);
+	/**
+	 * 获取脚本解析器
+	 * 
+	 * @param bean
+	 * @return
+	 */
+	public IScriptEval getScriptEval(final T bean) {
+		IScriptEval script = (IScriptEval) bean.getAttr("_ScriptEval");
+		if (script == null) {
+			script = ScriptEvalFactory.createDefaultScriptEval(createVariables(bean));
+			for (final String expr : defaultExpr) {
+				script.eval(expr);
+			}
+			bean.setAttr("_ScriptEval", script);
 		}
 		return script;
+	}
+
+	protected Object eval(final T bean, final String script) {
+		return getScriptEval(bean).eval(script);
 	}
 
 	public Map<String, Object> createVariables(final T bean) {
@@ -106,7 +121,7 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 				return (IWorkCalendarListener) l;
 			}
 		}
-		return null;
+		return singleton(WorkCalendarAdapter.class);
 	}
 
 	private final Map<ID, Set<String>> listenerClassMap = new ConcurrentHashMap<ID, Set<String>>();

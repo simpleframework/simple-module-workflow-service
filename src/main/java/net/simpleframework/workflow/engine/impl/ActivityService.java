@@ -19,6 +19,7 @@ import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
+import net.simpleframework.common.Convert;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
 import net.simpleframework.common.coll.ArrayUtils;
@@ -138,7 +139,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 	}
 
-	private void doUserNode(final ActivityBean activity, final UserNode to,
+	private void doUserNode(final ActivityBean preActivity, final UserNode to,
 			final Collection<Participant> _participants) {
 		final ArrayList<Participant> participants = new ArrayList<Participant>();
 		Iterator<Participant> it = null;
@@ -152,12 +153,19 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 
 		final boolean instanceShared = ParticipantUtils.isInstanceShared(to);
-		final ProcessBean process = getProcessBean(activity);
+		final ProcessBean process = getProcessBean(preActivity);
 		ActivityBean nActivity = null;
 		for (final Participant participant : participants) {
 			if (!instanceShared || nActivity == null) {
-				nActivity = createActivity(process, to, activity);
+				nActivity = createActivity(process, to, preActivity);
+				// 设置后续参与者
 				PropSequential.set(nActivity, it);
+				// 设置过期
+				final int timoutHours = Convert.toInt(eval(nActivity, to.getTimoutHours()));
+				if (timoutHours > 0) {
+					nActivity
+							.setTimeoutDate(getWorkCalendarListener(nActivity).getRealDate(timoutHours));
+				}
 				insert(nActivity);
 			}
 			wService.insert(wService.createWorkitem(nActivity, participant));
@@ -212,10 +220,11 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 		dq = getEntityManager().queryBeans(ev.addExpression(")"));
 		ActivityBean pre;
-		final int count = to.getCount();
+
+		final int count = Convert.toInt(eval(nActivity, to.getCount()));
 		final List<ActivityBean> aborts = new ArrayList<ActivityBean>();
 		boolean complete;
-		if (count <= 0 && count >= dq.getCount()) {
+		if (count <= 0 || count >= dq.getCount()) {
 			complete = true;
 			// 查找是否存在有未完成的任务环节
 			while ((pre = dq.next()) != null) {
@@ -720,6 +729,11 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	public void updateTimeoutDate(final ActivityBean activity, final Date timeoutDate) {
 		activity.setTimeoutDate(timeoutDate);
 		update(new String[] { "timeoutDate" }, activity);
+	}
+
+	@Override
+	public void updateTimeoutDate(final ActivityBean activity, final int hours) {
+		updateTimeoutDate(activity, getWorkCalendarListener(activity).getRealDate(hours));
 	}
 
 	void doActivityTimeout() {

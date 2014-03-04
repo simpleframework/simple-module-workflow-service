@@ -176,4 +176,6 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * @param timeoutDate
 	 */
 	void updateTimeoutDate(ActivityBean activity, Date timeoutDate);
+
+	void updateTimeoutDate(ActivityBean activity, int hours);
 }
