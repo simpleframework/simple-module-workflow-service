@@ -160,13 +160,13 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				nActivity = createActivity(process, to, preActivity);
 				// 设置后续参与者
 				PropSequential.set(nActivity, it);
-				// 设置过期
-				final int timoutHours = Convert.toInt(eval(nActivity, to.getTimoutHours()));
-				if (timoutHours > 0) {
-					nActivity
-							.setTimeoutDate(getWorkCalendarListener(nActivity).getRealDate(timoutHours));
-				}
 				insert(nActivity);
+			}
+
+			// 设置过期
+			final int timoutHours = Convert.toInt(eval(nActivity, to.getTimoutHours()));
+			if (timoutHours > 0) {
+				updateTimeoutDate(nActivity, timoutHours);
 			}
 			wService.insert(wService.createWorkitem(nActivity, participant));
 		}
