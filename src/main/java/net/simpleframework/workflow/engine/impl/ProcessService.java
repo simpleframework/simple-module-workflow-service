@@ -219,16 +219,14 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public void suspend(final ProcessBean process) {
-		assertStatus(process, EProcessStatus.running);
-		process.setStatus(EProcessStatus.suspended);
-		update(new String[] { "status" }, process);
+		_assert(process, EProcessStatus.running);
+		_status(process, EProcessStatus.suspended);
 	}
 
 	@Override
 	public void resume(final ProcessBean process) {
-		assertStatus(process, EProcessStatus.suspended);
-		process.setStatus(EProcessStatus.running);
-		update(new String[] { "status" }, process);
+		_assert(process, EProcessStatus.suspended);
+		_status(process, EProcessStatus.running);
 	}
 
 	@Override
@@ -239,8 +237,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 			}
 		}
 
-		process.setStatus(EProcessStatus.abort);
-		update(new String[] { "status" }, process);
+		_status(process, EProcessStatus.abort);
 	}
 
 	@Override
@@ -278,8 +275,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	public WorkitemBean getFirstWorkitem(final ProcessBean process) {
 		final ActivityBean startActivity = aService.getStartActivity(process);
 		for (final ActivityBean activity : aService.getNextActivities(startActivity)) {
-			final List<WorkitemBean> list = wService
-					.getWorkitemList(activity, EWorkitemStatus.running);
+			final List<WorkitemBean> list = wService.getWorkitems(activity, EWorkitemStatus.running);
 			if (list.size() > 0) {
 				return list.get(0);
 			}

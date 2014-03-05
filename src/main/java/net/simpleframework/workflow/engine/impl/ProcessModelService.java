@@ -80,7 +80,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 
 	@Override
 	public void updateModel(final ProcessModelBean processModel, final char[] model) {
-		assertStatus(processModel, EProcessModelStatus.edit);
+		_assert(processModel, EProcessModelStatus.edit);
 		try {
 			final ProcessDocument document = new ProcessDocument(model);
 			final ProcessNode processNode = document.getProcessNode();
@@ -196,9 +196,8 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 
 	@Override
 	public void deploy(final ProcessModelBean processModel) {
-		assertStatus(processModel, EProcessModelStatus.edit);
-		processModel.setStatus(EProcessModelStatus.deploy);
-		update(new String[] { "status" }, processModel);
+		_assert(processModel, EProcessModelStatus.edit);
+		_status(processModel, EProcessModelStatus.deploy);
 	}
 
 	@Override
@@ -207,9 +206,8 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 
 	@Override
 	public void resume(final ProcessModelBean processModel) {
-		assertStatus(processModel, EProcessModelStatus.deploy, EProcessModelStatus.suspended);
-		processModel.setStatus(EProcessModelStatus.edit);
-		update(new String[] { "status" }, processModel);
+		_assert(processModel, EProcessModelStatus.deploy, EProcessModelStatus.suspended);
+		_status(processModel, EProcessModelStatus.edit);
 	}
 
 	@Override

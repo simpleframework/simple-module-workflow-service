@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.common.object.ObjectEx;
-import net.simpleframework.workflow.engine.participant.ParticipantUtils;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -33,7 +32,7 @@ public class WorkitemComplete extends ObjectEx implements Serializable, IWorkflo
 			final int allParticipants = aService.getParticipants(activity, false).size();
 			// 完成的工作项
 			final int complete = aService.getParticipants2(activity).size();
-			if (complete + 1 < ParticipantUtils.getResponseValue(aService.getTaskNode(activity),
+			if (complete + 1 < TasknodeUtils.getResponseValue(aService.getTaskNode(activity),
 					allParticipants)) {
 				allCompleted = false;
 			}

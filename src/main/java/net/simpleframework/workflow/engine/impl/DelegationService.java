@@ -24,13 +24,13 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 		IDelegationService {
 
 	@Override
-	public DelegationBean queryWorkitem(final WorkitemBean workitem) {
+	public DelegationBean getDelegation(final WorkitemBean workitem) {
 		return getBean("delegationsource=? and sourceid=?", EDelegationSource.workitem,
 				workitem.getId());
 	}
 
 	@Override
-	public IDataQuery<DelegationBean> queryWorkitems(final Object userId) {
+	public IDataQuery<DelegationBean> queryDelegations(final Object userId) {
 		final StringBuilder sb = new StringBuilder();
 		sb.append("select d.* from ")
 				.append(getTablename(DelegationBean.class))
@@ -42,31 +42,38 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 				new SQLValue(sb.toString(), userId, EDelegationSource.workitem));
 	}
 
-	public void doDelegateTask(final DelegationBean delegation) {
+	@Override
+	public void doAbort(final DelegationBean delegation) {
+		_assert(delegation, EDelegationStatus.ready, EDelegationStatus.running);
+		_abort(delegation);
+		updateWorkitem(delegation, EWorkitemStatus.running);
+	}
+
+	void _abort(final DelegationBean delegation) {
+		_status(delegation, EDelegationStatus.abort);
+	}
+
+	@Override
+	public boolean isFinalStatus(final DelegationBean t) {
+		return t.getStatus().ordinal() >= EDelegationStatus.complete.ordinal();
+	}
+
+	void doDelegateTask(final DelegationBean delegation, final boolean confirm) {
 		final EDelegationStatus status = delegation.getStatus();
 		if (status == EDelegationStatus.ready) {
-			final Date startDate = delegation.getStartDate();
+			final Date startDate = delegation.getDstartDate();
 			final Date n = new Date();
 			if (startDate == null || startDate.before(n)) {
-				delegation.setStatus(EDelegationStatus.running);
-				delegation.setRunningDate(n);
-				update(new String[] { "status", "runningDate" }, delegation);
+				delegation.setStatus(confirm ? EDelegationStatus.receiving : EDelegationStatus.running);
+				delegation.setStartDate(n);
+				update(new String[] { "status", "startDate" }, delegation);
 
 				updateWorkitem(delegation, EWorkitemStatus.delegate);
-			}
-		} else if (status == EDelegationStatus.running) {
-			final Date endDate = delegation.getEndDate();
-			final Date n = new Date();
-			if (endDate != null && endDate.after(n)) {
-				delegation.setStatus(EDelegationStatus.abort);
-				update(new String[] { "status" }, delegation);
-
-				updateWorkitem(delegation, EWorkitemStatus.running);
 			}
 		}
 	}
 
-	private void updateWorkitem(final DelegationBean delegation, final EWorkitemStatus status) {
+	void updateWorkitem(final DelegationBean delegation, final EWorkitemStatus status) {
 		// 更新Workitem
 		WorkitemBean workitem;
 		if (delegation.getDelegationSource() == EDelegationSource.workitem
@@ -81,39 +88,44 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 		}
 	}
 
-	public void doDelegateTask() {
-		final IDataQuery<DelegationBean> dq = query("status<=?", EDelegationStatus.running)
+	void doTimeoutTask() {
+		final IDataQuery<DelegationBean> dq = query("status=?", EDelegationStatus.running)
 				.setFetchSize(0);
 		DelegationBean delegation;
 		while ((delegation = dq.next()) != null) {
-			doDelegateTask(delegation);
+			final Date endDate = delegation.getDcompleteDate();
+			final Date n = new Date();
+			if (endDate != null && endDate.after(n)) {
+				_abort(delegation);
+				updateWorkitem(delegation, EWorkitemStatus.running);
+			}
 		}
-	}
-
-	@Override
-	public void doAbort(final DelegationBean delegation) {
-		assertStatus(delegation, EDelegationStatus.ready, EDelegationStatus.running);
-		delegation.setStatus(EDelegationStatus.abort);
-		dService.update(new String[] { "status" }, delegation);
-
-		updateWorkitem(delegation, EWorkitemStatus.running);
 	}
 
 	@Override
 	public void onInit() throws Exception {
 		super.onInit();
 
+		// 检测是否过期
 		final ITaskExecutor taskExecutor = context.getTaskExecutor();
 		taskExecutor.addScheduledTask(settings.getDelegatePeriod(), new ExecutorRunnable() {
 			@Override
 			protected void task() throws Exception {
-				doDelegateTask();
+				doTimeoutTask();
 			}
 		});
 	}
 
-	@Override
-	public boolean isFinalStatus(final DelegationBean t) {
-		return t.getStatus().ordinal() >= EDelegationStatus.complete.ordinal();
+	DelegationBean createDelegation(final WorkitemBean workitem, final ID userId,
+			final Date dStartDate, final Date dCompleteDate, final String description) {
+		final DelegationBean delegation = createBean();
+		delegation.setDelegationSource(EDelegationSource.workitem);
+		delegation.setSourceId(workitem.getId());
+		delegation.setUserId(userId);
+		delegation.setUserText(permission.getUser(userId).toString());
+		delegation.setDstartDate(dStartDate);
+		delegation.setDcompleteDate(dCompleteDate);
+		delegation.setDescription(description);
+		return delegation;
 	}
 }

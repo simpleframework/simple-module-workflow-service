@@ -20,6 +20,14 @@ public enum EDelegationStatus {
 		}
 	},
 
+	receiving {
+
+		@Override
+		public String toString() {
+			return $m("EDelegationStatus.receiving");
+		}
+	},
+
 	/**
 	 * 运行
 	 */

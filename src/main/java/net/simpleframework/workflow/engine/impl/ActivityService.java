@@ -40,11 +40,11 @@ import net.simpleframework.workflow.engine.IMappingVal;
 import net.simpleframework.workflow.engine.IWorkflowForm;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.PropSequential;
+import net.simpleframework.workflow.engine.TasknodeUtils;
 import net.simpleframework.workflow.engine.WorkitemBean;
 import net.simpleframework.workflow.engine.event.IActivityListener;
 import net.simpleframework.workflow.engine.event.IWorkflowListener;
 import net.simpleframework.workflow.engine.participant.Participant;
-import net.simpleframework.workflow.engine.participant.ParticipantUtils;
 import net.simpleframework.workflow.engine.remote.IProcessRemote;
 import net.simpleframework.workflow.schema.AbstractTaskNode;
 import net.simpleframework.workflow.schema.EVariableMode;
@@ -101,17 +101,14 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		final AbstractTaskNode tasknode = getTaskNode(activity);
 		if (tasknode instanceof UserNode) {
 			// 放弃未完成的工作项
-			for (final WorkitemBean workitem : wService.getWorkitemList(activity)) {
-				final EWorkitemStatus status = workitem.getStatus();
-				if (status == EWorkitemStatus.running || status == EWorkitemStatus.suspended) {
-					workitem.setStatus(EWorkitemStatus.abort);
-					wService.update(new String[] { "status" }, workitem);
+			for (final WorkitemBean workitem : wService.getWorkitems(activity)) {
+				if (!wService.isFinalStatus(workitem)) {
+					wService._abort(workitem);
 				}
 			}
 
-			if (!ParticipantUtils.isInstanceShared(tasknode)
-					&& !ParticipantUtils.isSequential(tasknode)) {
-				// 多实例，响应数
+			if (!TasknodeUtils.isInstanceShared(tasknode) && !TasknodeUtils.isSequential(tasknode)) {
+				// 多实例并行，处理响应数
 				final ArrayList<ActivityBean> al = new ArrayList<ActivityBean>();
 				int complete = 0;
 				for (final ActivityBean activity2 : getNextActivities(getPreActivity(activity))) {
@@ -122,7 +119,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 						}
 					}
 				}
-				if (complete >= ParticipantUtils.getResponseValue(tasknode, al.size())) {
+				if (complete >= TasknodeUtils.getResponseValue(tasknode, al.size())) {
 					for (int i = 0; i < al.size(); i++) {
 						_abort(al.get(i));
 					}
@@ -144,7 +141,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		final ArrayList<Participant> participants = new ArrayList<Participant>();
 		Iterator<Participant> it = null;
 		if (_participants != null && _participants.size() > 0) {
-			if (ParticipantUtils.isSequential(to)) {
+			if (TasknodeUtils.isSequential(to)) {
 				it = _participants.iterator();
 				participants.add(it.next());
 			} else {
@@ -152,7 +149,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			}
 		}
 
-		final boolean instanceShared = ParticipantUtils.isInstanceShared(to);
+		final boolean instanceShared = TasknodeUtils.isInstanceShared(to);
 		final ProcessBean process = getProcessBean(preActivity);
 		ActivityBean nActivity = null;
 		for (final Participant participant : participants) {
@@ -337,8 +334,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			pService
 					.startProcess(mService.getProcessModel(to.getModel()), variables, properties, null);
 			if (sync) {
-				nActivity.setStatus(EActivityStatus.waiting);
-				update(new String[] { "status" }, nActivity);
+				_status(nActivity, EActivityStatus.waiting);
 			} else {
 				new ActivityComplete(nActivity).complete();
 			}
@@ -429,10 +425,9 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	void _abort(final ActivityBean activity, final EActivityAbortPolicy policy,
 			final boolean fallback) {
-		for (final WorkitemBean workitem : wService.getWorkitemList(activity)) {
+		for (final WorkitemBean workitem : wService.getWorkitems(activity)) {
 			if (!wService.isFinalStatus(workitem)) {
-				workitem.setStatus(EWorkitemStatus.abort);
-				wService.update(new String[] { "status" }, workitem);
+				wService._abort(workitem);
 			}
 		}
 
@@ -444,8 +439,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 		if (!isFinalStatus(activity)) {
 			// fallback可以理解为abort
-			activity.setStatus(fallback ? EActivityStatus.fallback : EActivityStatus.abort);
-			update(new String[] { "status" }, activity);
+			_status(activity, fallback ? EActivityStatus.fallback : EActivityStatus.abort);
 		}
 	}
 
@@ -464,16 +458,14 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public void suspend(final ActivityBean activity) {
-		assertStatus(activity, EActivityStatus.running);
-		activity.setStatus(EActivityStatus.suspended);
-		update(new String[] { "status" }, activity);
+		_assert(activity, EActivityStatus.running);
+		_status(activity, EActivityStatus.suspended);
 	}
 
 	@Override
 	public void resume(final ActivityBean activity) {
-		assertStatus(activity, EActivityStatus.suspended);
-		activity.setStatus(EActivityStatus.running);
-		update(new String[] { "status" }, activity);
+		_assert(activity, EActivityStatus.suspended);
+		_status(activity, EActivityStatus.running);
 	}
 
 	@Override
@@ -511,7 +503,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public void jump(final ActivityBean activity, final String tasknode) {
-		assertStatus(activity, EActivityStatus.running);
+		_assert(activity, EActivityStatus.running);
 		// final ProcessNode processNode = (ProcessNode)
 		// activity.taskNode().parent();
 		//
@@ -520,9 +512,9 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public void fallback(final ActivityBean activity, final String tasknode) {
-		assertStatus(activity, EActivityStatus.running);
+		_assert(activity, EActivityStatus.running);
 		// 验证是否存在已完成的工作
-		if (wService.getWorkitemList(activity, EWorkitemStatus.complete).size() > 0) {
+		if (wService.getWorkitems(activity, EWorkitemStatus.complete).size() > 0) {
 			throw WorkflowException.of($m("ActivityService.0"));
 		}
 		// 退回前一指定任务
@@ -564,9 +556,9 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		insert(nActivity);
 		if (to instanceof UserNode) {
 			// 克隆工作项
-			final List<WorkitemBean> workitems = wService.getWorkitemList(oActivity,
+			final List<WorkitemBean> workitems = wService.getWorkitems(oActivity,
 					EWorkitemStatus.complete);
-			if (ParticipantUtils.isSequential(to)) {
+			if (TasknodeUtils.isSequential(to)) {
 				// 先按日期排序，之后创建第一个工作项
 				Collections.sort(workitems, new Comparator<WorkitemBean>() {
 					@Override
@@ -588,8 +580,10 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				update(new String[] { "properties" }, nActivity);
 			} else {
 				for (final WorkitemBean workitem : workitems) {
-					final Participant p = new Participant(workitem.getUserId(), workitem.getRoleId());
-					wService.insert(wService.createWorkitem(nActivity, p));
+					// final Participant p = new Participant(workitem.getUserId(),
+					// workitem.getRoleId());
+					// wService.insert(wService.createWorkitem(nActivity, p));
+					wService._clone(nActivity, workitem);
 				}
 			}
 		}
@@ -706,7 +700,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	@Override
 	public Map<ID, String> getParticipants(final ActivityBean activity, final boolean all) {
 		final Map<ID, String> m = new LinkedHashMap<ID, String>();
-		for (final WorkitemBean workitem : wService.getWorkitemList(activity)) {
+		for (final WorkitemBean workitem : wService.getWorkitems(activity)) {
 			if (!all && workitem.getStatus().ordinal() > EWorkitemStatus.complete.ordinal()) {
 				continue;
 			}
@@ -718,8 +712,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	@Override
 	public Map<ID, String> getParticipants2(final ActivityBean activity) {
 		final Map<ID, String> m = new LinkedHashMap<ID, String>();
-		for (final WorkitemBean workitem : wService.getWorkitemList(activity,
-				EWorkitemStatus.complete)) {
+		for (final WorkitemBean workitem : wService.getWorkitems(activity, EWorkitemStatus.complete)) {
 			m.put(workitem.getUserId2(), workitem.getUserText2());
 		}
 		return m;

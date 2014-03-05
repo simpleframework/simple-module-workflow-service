@@ -18,19 +18,18 @@ import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.DelegationBean;
 import net.simpleframework.workflow.engine.EActivityAbortPolicy;
 import net.simpleframework.workflow.engine.EActivityStatus;
-import net.simpleframework.workflow.engine.EDelegationSource;
 import net.simpleframework.workflow.engine.EDelegationStatus;
 import net.simpleframework.workflow.engine.EProcessStatus;
 import net.simpleframework.workflow.engine.EWorkitemStatus;
 import net.simpleframework.workflow.engine.IWorkitemService;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.PropSequential;
+import net.simpleframework.workflow.engine.TasknodeUtils;
 import net.simpleframework.workflow.engine.WorkitemBean;
 import net.simpleframework.workflow.engine.WorkitemComplete;
 import net.simpleframework.workflow.engine.event.IWorkflowListener;
 import net.simpleframework.workflow.engine.event.IWorkitemListener;
 import net.simpleframework.workflow.engine.participant.Participant;
-import net.simpleframework.workflow.engine.participant.ParticipantUtils;
 import net.simpleframework.workflow.schema.AbstractTaskNode;
 import net.simpleframework.workflow.schema.MergeNode;
 import net.simpleframework.workflow.schema.StartNode;
@@ -58,10 +57,16 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	@Override
 	public void complete(final WorkitemComplete workitemComplete) {
 		final WorkitemBean workitem = workitemComplete.getWorkitem();
-		assertStatus(workitem, EWorkitemStatus.running, EWorkitemStatus.delegate);
+		_assert(workitem, EWorkitemStatus.running, EWorkitemStatus.delegate);
+		DelegationBean delegation = null;
+		if (workitem.getStatus() == EWorkitemStatus.delegate) {
+			delegation = dService.getDelegation(workitem);
+			dService._assert(delegation, EDelegationStatus.running);
+		}
+
 		try {
 			final ActivityBean activity = getActivity(workitem);
-			assertStatus(activity, EActivityStatus.running);
+			aService._assert(activity, EActivityStatus.running);
 			final ProcessBean process = aService.getProcessBean(activity);
 			if (process.getStatus() == EProcessStatus.suspended) {
 				throw WorkflowStatusException.of($m("WorkitemService.2"));
@@ -82,8 +87,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			workitem.setCompleteDate(new Date());
 			update(new String[] { "completeDate", "status" }, workitem);
 
-			// 设置委托
-			final DelegationBean delegation = dService.queryWorkitem(workitem);
+			// 设置委托完成
 			if (delegation != null) {
 				delegation.setCompleteDate(new Date());
 				delegation.setStatus(EDelegationStatus.complete);
@@ -97,11 +101,13 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 				if (participants.size() > 0) { // 获取顺序执行的参与者
 					final AbstractTaskNode tasknode = aService.getTaskNode(activity);
 					final Iterator<Participant> it = participants.iterator();
-					if (ParticipantUtils.isInstanceShared(tasknode)) {
+					if (TasknodeUtils.isInstanceShared(tasknode)) {
+						// 单实例：创建工作项，同时设置后续参与者属性
 						insert(createWorkitem(activity, it.next()));
 						PropSequential.set(activity, it);
 						aService.update(new String[] { "properties" }, activity);
 					} else {
+						// 多实例，创建环节实例，同时完成当前环节
 						final ActivityBean nActivity = aService.createActivity(process, tasknode,
 								activity);
 						final Participant participant = it.next();
@@ -124,14 +130,14 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 	@Override
 	public void retake(final WorkitemBean workitem) {
-		assertStatus(workitem, EWorkitemStatus.complete);
+		_assert(workitem, EWorkitemStatus.complete);
 		final ActivityBean activity = getActivity(workitem);
 		final ProcessBean process = aService.getProcessBean(activity);
-		assertStatus(process, EProcessStatus.running);
+		pService._assert(process, EProcessStatus.running);
 
 		ActivityBean nActivity = null;
-		final EActivityStatus status = activity.getStatus();
-		if (status == EActivityStatus.complete) {
+		final EActivityStatus aStatus = activity.getStatus();
+		if (aStatus == EActivityStatus.complete) {
 			// 检测后续环节
 			for (final ActivityBean nextActivity : aService.getNextActivities(activity)) {
 				final AbstractTaskNode tasknode = aService.getTaskNode(nextActivity);
@@ -184,41 +190,81 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			nActivity = aService.createActivity(aService.getTaskNode(activity),
 					aService.getBean(activity.getPreviousId()));
 			aService.insert(nActivity);
-		} else if (status == EActivityStatus.running) {
+		} else if (aStatus == EActivityStatus.running) {
 			nActivity = activity;
-			// 顺序，单实例
-			if (ParticipantUtils.isSequential(aService.getTaskNode(activity))) {
-				final List<WorkitemBean> list = getWorkitemList(activity, EWorkitemStatus.running);
-				if (list.size() > 0) {
-					final WorkitemBean workitem2 = list.get(0);
-					if (workitem2.isReadMark()) {
-						throw WorkflowException.of($m("WorkitemService.1"));
+			// 处理顺序情况
+			if (TasknodeUtils.isSequential(aService.getTaskNode(activity))) {
+				final List<WorkitemBean> list = getWorkitems(activity);
+				WorkitemBean workitem2 = null;
+				for (final WorkitemBean _workitem : list) {
+					if (_workitem.getId().equals(workitem.getId())) {
+						continue;
 					}
-					workitem2.setStatus(EWorkitemStatus.abort);
-					update(new String[] { "status" }, workitem2);
-
-					PropSequential.push(activity,
-							new Participant(workitem2.getUserId(), workitem2.getRoleId()));
-					aService.update(new String[] { "properties" }, activity);
+					if (isFinalStatus(_workitem)) {
+						if (_workitem.getCreateDate().after(workitem.getCreateDate())) {
+							throw WorkflowException.of($m("WorkitemService.1"));
+						}
+					} else { // 只有一个
+						if (_workitem.isReadMark()) {
+							throw WorkflowException.of($m("WorkitemService.1"));
+						}
+						workitem2 = _workitem;
+					}
 				}
+				_abort(workitem2);
+				PropSequential.push(nActivity,
+						new Participant(workitem2.getUserId(), workitem2.getRoleId()));
+				aService.update(new String[] { "properties" }, nActivity);
 			}
 		} else {
-			throw WorkflowStatusException
-					.of(status, EActivityStatus.running, EActivityStatus.complete);
+			throw WorkflowStatusException.of(aStatus, EActivityStatus.running,
+					EActivityStatus.complete);
 		}
 
 		if (nActivity != null) {
-			workitem.setStatus(EWorkitemStatus.retake);
-			update(new String[] { "status" }, workitem);
+			_status(workitem, EWorkitemStatus.retake);
 
-			insert(createWorkitem(nActivity,
-					new Participant(workitem.getUserId(), workitem.getRoleId())));
+			// 复制新的工作项
+			_clone(nActivity, workitem);
 		}
 	}
 
-	private void assertRetakeWorkitems(final ActivityBean activity) {
-		for (final WorkitemBean workitem : getWorkitemList(activity)) {
-			if (workitem.isReadMark() || workitem.getStatus() != EWorkitemStatus.running) {
+	void _abort(final WorkitemBean workitem) {
+		_status(workitem, EWorkitemStatus.abort);
+
+		// 如果含有委托
+		final DelegationBean delegation = _getDelegation(workitem);
+		if (delegation != null) {
+			dService._abort(delegation);
+		}
+	}
+
+	WorkitemBean _clone(final ActivityBean nActivity, final WorkitemBean workitem) {
+		final WorkitemBean nWorkitem = createWorkitem(nActivity, new Participant(
+				workitem.getUserId(), workitem.getRoleId()));
+		insert(nWorkitem);
+
+		// 如果含有委托
+		final DelegationBean delegation = _getDelegation(workitem);
+		if (delegation != null) {
+			final DelegationBean nDelegation = dService.createDelegation(nWorkitem,
+					delegation.getUserId(), delegation.getDstartDate(), delegation.getDcompleteDate(),
+					delegation.getDescription());
+			dService.insert(nDelegation);
+			dService.doDelegateTask(nDelegation, false);
+		}
+		return nWorkitem;
+	}
+
+	DelegationBean _getDelegation(final WorkitemBean workitem) {
+		return workitem.getUserId().equals(workitem.getUserId2()) ? null : dService
+				.getDelegation(workitem);
+	}
+
+	void assertRetakeWorkitems(final ActivityBean activity) {
+		for (final WorkitemBean workitem : getWorkitems(activity)) {
+			_assert(workitem, EWorkitemStatus.running);
+			if (workitem.isReadMark()) {
 				throw WorkflowException.of($m("WorkitemService.1"));
 			}
 		}
@@ -226,7 +272,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 	@Override
 	public void readMark(final WorkitemBean workitem, final boolean unread) {
-		assertStatus(workitem, EWorkitemStatus.running, EWorkitemStatus.delegate);
+		_assert(workitem, EWorkitemStatus.running, EWorkitemStatus.delegate);
 		workitem.setReadMark(!unread);
 		update(new String[] { "readMark" }, workitem);
 	}
@@ -234,48 +280,41 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	@Override
 	public void setWorkitemDelegation(final WorkitemBean workitem, final ID userId,
 			final Date startDate, final Date endDate, final String description) {
-		assertStatus(workitem, EWorkitemStatus.running);
-		final DelegationBean delegation = dService.createBean();
-		delegation.setDelegationSource(EDelegationSource.workitem);
-		delegation.setSourceId(workitem.getId());
-		delegation.setUserId(userId);
-		delegation.setUserText(permission.getUser(userId).toString());
-		delegation.setStartDate(startDate);
-		delegation.setEndDate(endDate);
-		delegation.setDescription(description);
+		_assert(workitem, EWorkitemStatus.running);
+		final DelegationBean delegation = dService.createDelegation(workitem, userId, startDate,
+				endDate, description);
 		dService.insert(delegation);
-
 		// 执行...
-		dService.doDelegateTask(delegation);
+		dService.doDelegateTask(delegation, true);
 	}
 
 	@Override
-	public List<WorkitemBean> getWorkitemList(final ActivityBean activity,
+	public List<WorkitemBean> getWorkitems(final ActivityBean activity,
 			final EWorkitemStatus... status) {
-		final List<WorkitemBean> list = new ArrayList<WorkitemBean>();
-		if (activity != null) {
-			_setWorkitemList(list, query("activityId=?", activity.getId()), status);
-		}
-		return list;
+		return _createWorkitems(query("activityId=?", activity.getId()), status);
 	}
 
 	@Override
-	public List<WorkitemBean> getWorkitemList(final ID userId, final EWorkitemStatus... status) {
-		final List<WorkitemBean> list = new ArrayList<WorkitemBean>();
-		if (userId != null) {
-			_setWorkitemList(list, query("userId2=?", userId), status);
-		}
-		return list;
+	public List<WorkitemBean> getWorklist(final Object user, final EWorkitemStatus... status) {
+		return _createWorkitems(query("userId2=?", user), status);
 	}
 
-	private void _setWorkitemList(final List<WorkitemBean> list, final IDataQuery<WorkitemBean> dq,
+	@Override
+	public List<WorkitemBean> getRunningWorklist(final Object user) {
+		return getWorklist(user, EWorkitemStatus.running, EWorkitemStatus.suspended,
+				EWorkitemStatus.delegate);
+	}
+
+	private List<WorkitemBean> _createWorkitems(final IDataQuery<WorkitemBean> dq,
 			final EWorkitemStatus... status) {
+		final List<WorkitemBean> workitems = new ArrayList<WorkitemBean>();
 		WorkitemBean workitem;
 		while ((workitem = dq.next()) != null) {
 			if (ArrayUtils.isEmpty(status) || ArrayUtils.contains(status, workitem.getStatus())) {
-				list.add(workitem);
+				workitems.add(workitem);
 			}
 		}
+		return workitems;
 	}
 
 	@Override

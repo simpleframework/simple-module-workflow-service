@@ -66,10 +66,10 @@
         createdate datetime not null,
         userid char(32) not null,
         usertext varchar(32) not null,
-        runningdate datetime,
+        startdate datetime,
         completedate datetime,
-        startdate datetime, 
-        enddate datetime,   
+        dstartdate datetime, 
+        dcompletedate datetime,   
         rulehandler varchar(128), 
         description varchar(256),
         primary key(id)

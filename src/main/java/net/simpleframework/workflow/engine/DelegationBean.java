@@ -31,11 +31,11 @@ public class DelegationBean extends AbstractWorkflowBean implements IDescription
 
 	private String userText;
 
-	/* 委托的实际开始时间和结束时间 */
-	private Date runningDate, completeDate;
+	/* 委托的实际开始时间和实际结束时间 */
+	private Date startDate, completeDate;
 
-	/* 定义委托的开始执行时间和结束执行时间 */
-	private Date startDate, endDate;
+	/* 委托的设计开始时间和设计结束时间 */
+	private Date dstartDate, dcompleteDate;
 
 	/* 定义该委托类，参考IDelegationHandler */
 	private String ruleHandler;
@@ -83,12 +83,12 @@ public class DelegationBean extends AbstractWorkflowBean implements IDescription
 		this.userText = userText;
 	}
 
-	public Date getRunningDate() {
-		return runningDate;
+	public Date getStartDate() {
+		return startDate;
 	}
 
-	public void setRunningDate(final Date runningDate) {
-		this.runningDate = runningDate;
+	public void setStartDate(final Date startDate) {
+		this.startDate = startDate;
 	}
 
 	public Date getCompleteDate() {
@@ -99,20 +99,20 @@ public class DelegationBean extends AbstractWorkflowBean implements IDescription
 		this.completeDate = completeDate;
 	}
 
-	public Date getStartDate() {
-		return startDate;
+	public Date getDstartDate() {
+		return dstartDate;
 	}
 
-	public void setStartDate(final Date startDate) {
-		this.startDate = startDate;
+	public void setDstartDate(final Date dstartDate) {
+		this.dstartDate = dstartDate;
 	}
 
-	public Date getEndDate() {
-		return endDate;
+	public Date getDcompleteDate() {
+		return dcompleteDate;
 	}
 
-	public void setEndDate(final Date endDate) {
-		this.endDate = endDate;
+	public void setDcompleteDate(final Date dcompleteDate) {
+		this.dcompleteDate = dcompleteDate;
 	}
 
 	public String getRuleHandler() {

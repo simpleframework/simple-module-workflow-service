@@ -66,10 +66,10 @@
         createdate timestamp not null,
         userid char(32) not null,
         usertext varchar2(32) not null,
-        runningdate timestamp,
+        startdate timestamp,
         completedate timestamp,
-        startdate timestamp, 
-        enddate timestamp,   
+        dstartdate timestamp, 
+        dcompletedate timestamp,   
         rulehandler varchar2(128 char), 
         description varchar2(256 char),
         primary key(id)

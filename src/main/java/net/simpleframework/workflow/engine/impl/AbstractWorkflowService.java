@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.simpleframework.ado.bean.AbstractIdBean;
-import net.simpleframework.ado.bean.IIdBeanAware;
 import net.simpleframework.common.BeanUtils;
 import net.simpleframework.common.Convert;
 import net.simpleframework.common.ID;
@@ -106,13 +105,6 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 		return Convert.toBool(getVariable(bean, name));
 	}
 
-	public void assertStatus(final IIdBeanAware bean, final Enum<?>... status) {
-		final Enum<?> status2 = (Enum<?>) BeanUtils.getProperty(bean, "status");
-		if (!ArrayUtils.contains(status, status2)) {
-			throw WorkflowStatusException.of(status2, status);
-		}
-	}
-
 	public IWorkCalendarListener getWorkCalendarListener(final T bean) {
 		final Set<String> set = getListeners(bean);
 		for (final String listenerClass : set) {
@@ -188,6 +180,19 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 			return set.remove(listenerClass.getName());
 		}
 		return false;
+	}
+
+	protected void _assert(final T t, final Enum<?>... status) {
+		final Enum<?> status2 = (Enum<?>) BeanUtils.getProperty(t, "status");
+		if (!ArrayUtils.contains(status, status2)) {
+			throw WorkflowStatusException.of(status2, status);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	protected void _status(final T t, final Enum<?> status) {
+		BeanUtils.setProperty(t, "status", status);
+		update(new String[] { "status" }, t);
 	}
 
 	protected static ProcessModelService mService = (ProcessModelService) IWorkflowContextAware.mService;
