@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,13 +79,13 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			for (final TransitionNode transition : activityComplete.getTransitions()) {
 				final AbstractTaskNode to = transition.to();
 				if (to instanceof UserNode) {
-					doUserNode(activity, (UserNode) to, activityComplete.getParticipants(transition));
+					_doUserNode(activity, (UserNode) to, activityComplete.getParticipants(transition));
 				} else if (to instanceof MergeNode) {
-					doMergeNode(activity, (MergeNode) to);
+					_doMergeNode(activity, (MergeNode) to);
 				} else if (to instanceof SubNode) {
-					doSubNode(activity, (SubNode) to);
+					_doSubNode(activity, (SubNode) to);
 				} else if (to instanceof EndNode) {
-					endActivity = createActivity(process, to, activity);
+					endActivity = _create(process, to, activity);
 					endActivity.setStatus(EActivityStatus.complete);
 					endActivity.setCompleteDate(new Date());
 					insert(endActivity);
@@ -132,31 +131,29 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			process.setCompleteDate(endActivity.getCompleteDate());
 			pService.update(new String[] { "completeDate", "status" }, process);
 
-			backToProcess(process);
+			_backToProcess(process);
 		}
 	}
 
-	private void doUserNode(final ActivityBean preActivity, final UserNode to,
-			final Collection<Participant> _participants) {
+	private void _doUserNode(final ActivityBean preActivity, final UserNode to,
+			final List<Participant> _participants) {
 		final ArrayList<Participant> participants = new ArrayList<Participant>();
-		Iterator<Participant> it = null;
 		if (_participants != null && _participants.size() > 0) {
 			if (TasknodeUtils.isSequential(to)) {
-				it = _participants.iterator();
-				participants.add(it.next());
+				participants.add(_participants.remove(0));
 			} else {
 				participants.addAll(_participants);
 			}
 		}
 
-		final boolean instanceShared = TasknodeUtils.isInstanceShared(to);
 		final ProcessBean process = getProcessBean(preActivity);
+		final boolean instanceShared = TasknodeUtils.isInstanceShared(to);
 		ActivityBean nActivity = null;
 		for (final Participant participant : participants) {
 			if (!instanceShared || nActivity == null) {
-				nActivity = createActivity(process, to, preActivity);
+				nActivity = _create(process, to, preActivity);
 				// 设置后续参与者
-				PropSequential.set(nActivity, it);
+				PropSequential.set(nActivity, _participants);
 				insert(nActivity);
 			}
 
@@ -165,19 +162,19 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			if (timoutHours > 0) {
 				updateTimeoutDate(nActivity, timoutHours);
 			}
-			wService.insert(wService.createWorkitem(nActivity, participant));
+			wService.insert(wService._create(nActivity, participant));
 		}
 	}
 
 	private static final String MERGE_PRE_ACTIVITIES = "merge_pre_activities";
 
-	private void doMergeNode(final ActivityBean preActivity, final MergeNode to) {
+	private void _doMergeNode(final ActivityBean preActivity, final MergeNode to) {
 		// 当前的合并环节，单实例
 		ActivityBean nActivity = null;
 		IDataQuery<ActivityBean> dq = query("processId=? and tasknodeId=?",
 				preActivity.getProcessId(), to.getId());
 		if (dq.getCount() == 0) {
-			insert(nActivity = createActivity(to, preActivity));
+			insert(nActivity = _create(to, preActivity));
 		} else {
 			// 查找非最终态的实例
 			ActivityBean activity;
@@ -189,14 +186,14 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			}
 			// 如果全部是最终态，则创建，可能由于回退造成
 			if (nActivity == null) {
-				insert(nActivity = createActivity(to, preActivity));
+				insert(nActivity = _create(to, preActivity));
 			}
 		}
 
 		// 更新每次的preActivity
 		final ID preId = preActivity.getId();
 		if (!preId.equals(nActivity.getPreviousId())) {
-			setMergePreActivities(
+			_setMergePreActivities(
 					nActivity,
 					new String[] { nActivity.getProperties().getProperty(MERGE_PRE_ACTIVITIES),
 							preId.toString() });
@@ -235,7 +232,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			int completes = 0;
 			while ((pre = dq.next()) != null) {
 				// 如果合并环节含有前一环节的记录，则认为是完成的
-				if (isPreviousOfMergeActivity(nActivity, pre)) {
+				if (_isPreviousOfMergeActivity(nActivity, pre)) {
 					completes++;
 				} else {
 					aborts.add(pre);
@@ -256,22 +253,22 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 	}
 
-	void setMergePreActivities(final ActivityBean mActivity, final Object[] preActivities) {
+	void _setMergePreActivities(final ActivityBean mActivity, final Object[] preActivities) {
 		mActivity.getProperties().setProperty(MERGE_PRE_ACTIVITIES,
 				StringUtils.join(preActivities, ";"));
 	}
 
-	List<String> getMergePreActivities(final ActivityBean mActivity) {
+	List<String> _getMergePreActivities(final ActivityBean mActivity) {
 		return ArrayUtils.asList(StringUtils.split(
 				mActivity.getProperties().getProperty(MERGE_PRE_ACTIVITIES), ";"));
 	}
 
-	boolean isPreviousOfMergeActivity(final ActivityBean mActivity, final ActivityBean preActivity) {
+	boolean _isPreviousOfMergeActivity(final ActivityBean mActivity, final ActivityBean preActivity) {
 		return preActivity.getId().equals(mActivity.getPreviousId())
-				|| getMergePreActivities(mActivity).contains(preActivity.getId().toString());
+				|| _getMergePreActivities(mActivity).contains(preActivity.getId().toString());
 	}
 
-	private void backToProcess(final ProcessBean sProcess) {
+	void _backToProcess(final ProcessBean sProcess) {
 		final Properties properties = sProcess.getProperties();
 		final String serverUrl = properties.getProperty(IProcessRemote.SERVERURL);
 		if (StringUtils.hasText(serverUrl)) {
@@ -297,7 +294,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		if (sub.isSync()) {
 			// 设置返回的变量，仅在同步方式
 			final ProcessBean mProcess = getProcessBean(activity);
-			final ProcessNode processNode = pService.getProcessNode(mProcess);
+			final ProcessNode processNode = pService._getProcessNode(mProcess);
 			for (final VariableMapping vm : sub.getMappingSet()) {
 				final VariableNode vNode = processNode.getVariableNodeByName(vm.variable);
 				if (vNode == null) {
@@ -311,8 +308,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		new ActivityComplete(activity).complete();
 	}
 
-	private void doSubNode(final ActivityBean preActivity, final SubNode to) {
-		final ActivityBean nActivity = createActivity(to, preActivity);
+	private void _doSubNode(final ActivityBean preActivity, final SubNode to) {
+		final ActivityBean nActivity = _create(to, preActivity);
 		insert(nActivity);
 
 		final String url = to.getUrl();
@@ -339,11 +336,11 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				new ActivityComplete(nActivity).complete();
 			}
 		} else {
-			doRemoteSubActivity(nActivity);
+			_doRemoteSubActivity(nActivity);
 		}
 	}
 
-	void doRemoteSubActivity(final ActivityBean activity) {
+	void _doRemoteSubActivity(final ActivityBean activity) {
 		final ID activityId = activity.getId();
 		final ITaskExecutor taskExecutor = context.getTaskExecutor();
 		taskExecutor.addScheduledTask(settings.getSubActivityPeriod(), new ExecutorRunnable() {
@@ -537,7 +534,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			_clone(preActivity, activity);
 		} else if (to instanceof MergeNode) {
 			_clone(getBean(preActivity.getPreviousId()), activity);
-			for (final String id : getMergePreActivities(preActivity)) {
+			for (final String id : _getMergePreActivities(preActivity)) {
 				_clone(getBean(id), activity);
 			}
 		} else {
@@ -552,38 +549,30 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			preActivity = getBean(oActivity.getPreviousId());
 		}
 		// 新建一个克隆节点
-		final ActivityBean nActivity = createActivity(to, preActivity);
+		final ActivityBean nActivity = _create(to, preActivity);
 		insert(nActivity);
 		if (to instanceof UserNode) {
 			// 克隆工作项
 			final List<WorkitemBean> workitems = wService.getWorkitems(oActivity,
 					EWorkitemStatus.complete);
-			if (TasknodeUtils.isSequential(to)) {
-				// 先按日期排序，之后创建第一个工作项
-				Collections.sort(workitems, new Comparator<WorkitemBean>() {
-					@Override
-					public int compare(final WorkitemBean item1, final WorkitemBean item2) {
-						return item1.getCreateDate().compareTo(item2.getCreateDate());
+			if (workitems.size() > 0) {
+				if (TasknodeUtils.isSequential(to)) {
+					// 先按日期排序，之后创建第一个工作项
+					Collections.sort(workitems, new Comparator<WorkitemBean>() {
+						@Override
+						public int compare(final WorkitemBean item1, final WorkitemBean item2) {
+							return item1.getCreateDate().compareTo(item2.getCreateDate());
+						}
+					});
+					// 仅创建第一个工作项
+					wService._clone(nActivity, workitems.remove(0));
+					// 设置后续参与者
+					PropSequential.set(nActivity, workitems);
+					update(new String[] { "properties" }, nActivity);
+				} else {
+					for (final WorkitemBean workitem : workitems) {
+						wService._clone(nActivity, workitem);
 					}
-				});
-
-				final ArrayList<Participant> al = new ArrayList<Participant>();
-				for (final WorkitemBean item : workitems) {
-					al.add(new Participant(item.getUserId(), item.getRoleId()));
-				}
-				// 仅创建第一个工作项
-				final Iterator<Participant> it = al.iterator();
-				final Participant first = it.next();
-				wService.insert(wService.createWorkitem(nActivity, first));
-				// 设置后续参与者
-				PropSequential.set(nActivity, it);
-				update(new String[] { "properties" }, nActivity);
-			} else {
-				for (final WorkitemBean workitem : workitems) {
-					// final Participant p = new Participant(workitem.getUserId(),
-					// workitem.getRoleId());
-					// wService.insert(wService.createWorkitem(nActivity, p));
-					wService._clone(nActivity, workitem);
 				}
 			}
 		}
@@ -612,7 +601,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				preActivity.getProcessId(), AbstractTaskNode.TT_MERGE);
 		ActivityBean activity;
 		while ((activity = dq.next()) != null) {
-			if (isPreviousOfMergeActivity(activity, preActivity) && !list.contains(activity)) {
+			if (_isPreviousOfMergeActivity(activity, preActivity) && !list.contains(activity)) {
 				list.add(activity);
 			}
 		}
@@ -644,7 +633,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public AbstractTaskNode getTaskNode(final ActivityBean activity) {
-		return (AbstractTaskNode) pService.getProcessNode(getProcessBean(activity)).getNodeById(
+		return (AbstractTaskNode) pService._getProcessNode(getProcessBean(activity)).getNodeById(
 				activity.getTasknodeId());
 	}
 
@@ -729,7 +718,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		updateTimeoutDate(activity, getWorkCalendarListener(activity).getRealDate(hours));
 	}
 
-	void doActivityTimeout() {
+	void _doActivityTimeout() {
 		final IDataQuery<ActivityBean> dq = query("timeoutDate is not null and status<=?",
 				EActivityStatus.timeout).setFetchSize(0);
 		ActivityBean activity;
@@ -750,11 +739,11 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 	}
 
-	ActivityBean createActivity(final AbstractTaskNode tasknode, final ActivityBean preActivity) {
-		return createActivity(null, tasknode, preActivity);
+	ActivityBean _create(final AbstractTaskNode tasknode, final ActivityBean preActivity) {
+		return _create(null, tasknode, preActivity);
 	}
 
-	ActivityBean createActivity(ProcessBean process, final AbstractTaskNode tasknode,
+	ActivityBean _create(ProcessBean process, final AbstractTaskNode tasknode,
 			final ActivityBean preActivity) {
 		if (process == null && preActivity != null) {
 			process = getProcessBean(preActivity);
@@ -781,7 +770,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				.setFetchSize(0);
 		ActivityBean activity;
 		while ((activity = (ActivityBean) qs.next()) != null) {
-			doRemoteSubActivity(activity);
+			_doRemoteSubActivity(activity);
 		}
 
 		// 启动过期监控
@@ -789,7 +778,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		taskExecutor.addScheduledTask(settings.getTimeoutCheckPeriod(), new ExecutorRunnable() {
 			@Override
 			protected void task() throws Exception {
-				doActivityTimeout();
+				_doActivityTimeout();
 			}
 		});
 

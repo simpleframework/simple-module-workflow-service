@@ -3,9 +3,7 @@ package net.simpleframework.workflow.engine.impl;
 import static net.simpleframework.common.I18n.$m;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -97,23 +95,21 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			if (workitemComplete.isAllCompleted()) {
 				aService.complete(workitemComplete.getActivityComplete());
 			} else {
-				final Collection<Participant> participants = PropSequential.list(activity);
-				if (participants.size() > 0) { // 获取顺序执行的参与者
+				final List<?> list = PropSequential.list(activity);
+				if (list.size() > 0) { // 获取顺序执行的参与者
 					final AbstractTaskNode tasknode = aService.getTaskNode(activity);
-					final Iterator<Participant> it = participants.iterator();
+					final Object o = list.remove(0);
 					if (TasknodeUtils.isInstanceShared(tasknode)) {
 						// 单实例：创建工作项，同时设置后续参与者属性
-						insert(createWorkitem(activity, it.next()));
-						PropSequential.set(activity, it);
+						PropSequential.set(activity, list);
 						aService.update(new String[] { "properties" }, activity);
+						_createSequentialWorkitem(activity, o);
 					} else {
 						// 多实例，创建环节实例，同时完成当前环节
-						final ActivityBean nActivity = aService.createActivity(process, tasknode,
-								activity);
-						final Participant participant = it.next();
-						PropSequential.set(nActivity, it);
+						final ActivityBean nActivity = aService._create(process, tasknode, activity);
+						PropSequential.set(nActivity, list);
 						aService.insert(nActivity);
-						insert(createWorkitem(nActivity, participant));
+						_createSequentialWorkitem(nActivity, o);
 
 						activity.setStatus(EActivityStatus.complete);
 						activity.setCompleteDate(new Date());
@@ -125,6 +121,14 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			workitemComplete.done();
 		} finally {
 			workitemComplete.reset();
+		}
+	}
+
+	void _createSequentialWorkitem(final ActivityBean activity, final Object o) {
+		if (o instanceof Participant) {
+			insert(_create(activity, (Participant) o));
+		} else if (o instanceof WorkitemBean) {
+			_clone(activity, (WorkitemBean) o);
 		}
 	}
 
@@ -143,7 +147,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 				final AbstractTaskNode tasknode = aService.getTaskNode(nextActivity);
 				if (tasknode instanceof UserNode) {
 					// 如果用户环节，则不能出现已读和完成
-					assertRetakeWorkitems(nextActivity);
+					_assertRetakeWorkitems(nextActivity);
 					// 放弃
 					aService._abort(nextActivity);
 				} else if (tasknode instanceof MergeNode) {
@@ -151,25 +155,25 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 					if (status2 == EActivityStatus.complete) {
 						for (final ActivityBean nextActivity2 : aService.getNextActivities(nextActivity)) {
 							if (aService.getTaskNode(nextActivity2) instanceof UserNode) {
-								assertRetakeWorkitems(nextActivity2);
+								_assertRetakeWorkitems(nextActivity2);
 							} else {
 								throw WorkflowException.of($m("WorkitemService.0"));
 							}
 						}
 					}
 
-					final List<String> preActivities = aService.getMergePreActivities(nextActivity);
+					final List<String> preActivities = aService._getMergePreActivities(nextActivity);
 					final int size = preActivities.size();
 					if (size > 0) {
 						if (activity.getId().toString().equals(preActivities.remove(size - 1))) {
 							// 新建merge环节
 							if (status2 == EActivityStatus.running) {
-								aService.setMergePreActivities(nextActivity, preActivities.toArray());
+								aService._setMergePreActivities(nextActivity, preActivities.toArray());
 								aService.update(new String[] { "properties" }, nextActivity);
 							} else if (status2 == EActivityStatus.complete) {
-								final ActivityBean mActivity = aService.createActivity(tasknode,
+								final ActivityBean mActivity = aService._create(tasknode,
 										aService.getBean(nextActivity.getPreviousId()));
-								aService.setMergePreActivities(mActivity, preActivities.toArray());
+								aService._setMergePreActivities(mActivity, preActivities.toArray());
 								aService.insert(mActivity);
 								// 放弃
 								aService._abort(nextActivity, EActivityAbortPolicy.nextActivities);
@@ -187,7 +191,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 				}
 			}
 			// 创建新的环节
-			nActivity = aService.createActivity(aService.getTaskNode(activity),
+			nActivity = aService._create(aService.getTaskNode(activity),
 					aService.getBean(activity.getPreviousId()));
 			aService.insert(nActivity);
 		} else if (aStatus == EActivityStatus.running) {
@@ -212,8 +216,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 					}
 				}
 				_abort(workitem2);
-				PropSequential.push(nActivity,
-						new Participant(workitem2.getUserId(), workitem2.getRoleId()));
+
+				PropSequential.push(nActivity, workitem2);
 				aService.update(new String[] { "properties" }, nActivity);
 			}
 		} else {
@@ -240,18 +244,18 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	WorkitemBean _clone(final ActivityBean nActivity, final WorkitemBean workitem) {
-		final WorkitemBean nWorkitem = createWorkitem(nActivity, new Participant(
-				workitem.getUserId(), workitem.getRoleId()));
+		final WorkitemBean nWorkitem = _create(nActivity, new Participant(workitem.getUserId(),
+				workitem.getRoleId()));
 		insert(nWorkitem);
 
 		// 如果含有委托
 		final DelegationBean delegation = _getDelegation(workitem);
 		if (delegation != null) {
-			final DelegationBean nDelegation = dService.createDelegation(nWorkitem,
-					delegation.getUserId(), delegation.getDstartDate(), delegation.getDcompleteDate(),
+			final DelegationBean nDelegation = dService._create(nWorkitem, delegation.getUserId(),
+					delegation.getDstartDate(), delegation.getDcompleteDate(),
 					delegation.getDescription());
 			dService.insert(nDelegation);
-			dService.doDelegateTask(nDelegation, false);
+			dService._doDelegateTask(nDelegation, false);
 		}
 		return nWorkitem;
 	}
@@ -261,7 +265,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 				.getDelegation(workitem);
 	}
 
-	void assertRetakeWorkitems(final ActivityBean activity) {
+	void _assertRetakeWorkitems(final ActivityBean activity) {
 		for (final WorkitemBean workitem : getWorkitems(activity)) {
 			_assert(workitem, EWorkitemStatus.running);
 			if (workitem.isReadMark()) {
@@ -281,11 +285,11 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	public void setWorkitemDelegation(final WorkitemBean workitem, final ID userId,
 			final Date startDate, final Date endDate, final String description) {
 		_assert(workitem, EWorkitemStatus.running);
-		final DelegationBean delegation = dService.createDelegation(workitem, userId, startDate,
-				endDate, description);
+		final DelegationBean delegation = dService._create(workitem, userId, startDate, endDate,
+				description);
 		dService.insert(delegation);
 		// 执行...
-		dService.doDelegateTask(delegation, true);
+		dService._doDelegateTask(delegation, true);
 	}
 
 	@Override
@@ -347,7 +351,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		pService.delete(processId);
 	}
 
-	WorkitemBean createWorkitem(final ActivityBean activity, final Participant participant) {
+	WorkitemBean _create(final ActivityBean activity, final Participant participant) {
 		final WorkitemBean workitem = createBean();
 		workitem.setActivityId(activity.getId());
 		workitem.setUserId(participant.userId);

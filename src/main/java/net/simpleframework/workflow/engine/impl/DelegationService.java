@@ -46,7 +46,7 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	public void doAbort(final DelegationBean delegation) {
 		_assert(delegation, EDelegationStatus.ready, EDelegationStatus.running);
 		_abort(delegation);
-		updateWorkitem(delegation, EWorkitemStatus.running);
+		_updateWorkitem(delegation, EWorkitemStatus.running);
 	}
 
 	void _abort(final DelegationBean delegation) {
@@ -58,7 +58,7 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 		return t.getStatus().ordinal() >= EDelegationStatus.complete.ordinal();
 	}
 
-	void doDelegateTask(final DelegationBean delegation, final boolean confirm) {
+	void _doDelegateTask(final DelegationBean delegation, final boolean confirm) {
 		final EDelegationStatus status = delegation.getStatus();
 		if (status == EDelegationStatus.ready) {
 			final Date startDate = delegation.getDstartDate();
@@ -68,12 +68,12 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 				delegation.setStartDate(n);
 				update(new String[] { "status", "startDate" }, delegation);
 
-				updateWorkitem(delegation, EWorkitemStatus.delegate);
+				_updateWorkitem(delegation, EWorkitemStatus.delegate);
 			}
 		}
 	}
 
-	void updateWorkitem(final DelegationBean delegation, final EWorkitemStatus status) {
+	void _updateWorkitem(final DelegationBean delegation, final EWorkitemStatus status) {
 		// 更新Workitem
 		WorkitemBean workitem;
 		if (delegation.getDelegationSource() == EDelegationSource.workitem
@@ -88,7 +88,7 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 		}
 	}
 
-	void doTimeoutTask() {
+	void _doTimeoutTask() {
 		final IDataQuery<DelegationBean> dq = query("status=?", EDelegationStatus.running)
 				.setFetchSize(0);
 		DelegationBean delegation;
@@ -97,7 +97,7 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 			final Date n = new Date();
 			if (endDate != null && endDate.after(n)) {
 				_abort(delegation);
-				updateWorkitem(delegation, EWorkitemStatus.running);
+				_updateWorkitem(delegation, EWorkitemStatus.running);
 			}
 		}
 	}
@@ -111,13 +111,13 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 		taskExecutor.addScheduledTask(settings.getDelegatePeriod(), new ExecutorRunnable() {
 			@Override
 			protected void task() throws Exception {
-				doTimeoutTask();
+				_doTimeoutTask();
 			}
 		});
 	}
 
-	DelegationBean createDelegation(final WorkitemBean workitem, final ID userId,
-			final Date dStartDate, final Date dCompleteDate, final String description) {
+	DelegationBean _create(final WorkitemBean workitem, final ID userId, final Date dStartDate,
+			final Date dCompleteDate, final String description) {
 		final DelegationBean delegation = createBean();
 		delegation.setDelegationSource(EDelegationSource.workitem);
 		delegation.setSourceId(workitem.getId());

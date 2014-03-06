@@ -140,7 +140,7 @@ public class VariableService extends AbstractDbBeanService<VariableBean> impleme
 		for (int i = 0; i < length; i++) {
 			VariableNode variableNode = null;
 			if (bean instanceof ProcessBean) {
-				variableNode = ((ProcessService) pService).getProcessNode((ProcessBean) bean)
+				variableNode = ((ProcessService) pService)._getProcessNode((ProcessBean) bean)
 						.getVariableNodeByName(names[i]);
 			} else if (bean instanceof ActivityBean) {
 				variableNode = aService.getTaskNode((ActivityBean) bean)

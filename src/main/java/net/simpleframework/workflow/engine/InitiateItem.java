@@ -1,7 +1,9 @@
 package net.simpleframework.workflow.engine;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.simpleframework.common.ID;
@@ -98,8 +100,8 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 		return false;
 	}
 
-	public Collection<TransitionNode> getTransitions() {
-		return _transitions.values();
+	public List<TransitionNode> getTransitions() {
+		return new ArrayList<TransitionNode>(_transitions.values());
 	}
 
 	public void resetTransitions(final String[] transitionIds) {

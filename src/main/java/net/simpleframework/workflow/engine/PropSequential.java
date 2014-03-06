@@ -1,8 +1,7 @@
 package net.simpleframework.workflow.engine;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 import net.simpleframework.common.StringUtils;
@@ -14,56 +13,60 @@ import net.simpleframework.workflow.engine.participant.Participant;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public abstract class PropSequential {
+public abstract class PropSequential implements IWorkflowContextAware {
 
-	/* 保存顺序执行的参与者 */
-	static final String SEQUENTIAL_PARTICIPANTS = "sequential_participants";
+	/* 保存顺序执行的参与者或已有的工作项id(前缀#) */
+	static final String SEQUENTIAL = "sequential";
 
-	public static Collection<Participant> list(final ActivityBean activity) {
-		final ArrayList<Participant> participants = new ArrayList<Participant>();
-		final String[] pArr = StringUtils.split(
-				activity.getProperties().getProperty(SEQUENTIAL_PARTICIPANTS), ";");
+	public static List<?> list(final ActivityBean activity) {
+		final List<Object> l = new ArrayList<Object>();
+		final String[] pArr = StringUtils
+				.split(activity.getProperties().getProperty(SEQUENTIAL), ";");
 		if (pArr != null) {
-			Participant participant;
 			for (final String str : pArr) {
-				if ((participant = Participant.of(str)) != null) {
-					participants.add(participant);
+				final Object o = str.charAt(0) == '#' ? wService.getBean(str.substring(1))
+						: Participant.of(str);
+				if (o != null) {
+					l.add(o);
 				}
 			}
 		}
-		return participants;
+		return l;
 	}
 
-	public static void set(final ActivityBean activity, final Iterator<Participant> it) {
-		if (it == null) {
+	public static void set(final ActivityBean activity, final List<?> l) {
+		final Properties properties = activity.getProperties();
+		if (l == null) {
+			properties.remove(SEQUENTIAL);
 			return;
 		}
 
 		final StringBuilder sb = new StringBuilder();
-		int i = 0;
-		while (it.hasNext()) {
-			final Participant participant = it.next();
-			if (i++ > 0) {
+		for (final Object o : l) {
+			if (sb.length() > 0) {
 				sb.append(";");
 			}
-			sb.append(participant);
+			if (o instanceof WorkitemBean) {
+				sb.append("#").append(((WorkitemBean) o).getId());
+			} else {
+				sb.append(o);
+			}
 		}
 
-		final Properties properties = activity.getProperties();
 		if (sb.length() > 0) {
-			properties.put(SEQUENTIAL_PARTICIPANTS, sb.toString());
+			properties.put(SEQUENTIAL, sb.toString());
 		} else {
-			properties.remove(SEQUENTIAL_PARTICIPANTS);
+			properties.remove(SEQUENTIAL);
 		}
 	}
 
-	public static void push(final ActivityBean activity, final Participant participant) {
-		String nstr = participant.toString();
+	public static void push(final ActivityBean activity, final WorkitemBean workitem) {
+		String nstr = "#" + workitem.getId();
 		final Properties properties = activity.getProperties();
-		final String ostr = properties.getProperty(SEQUENTIAL_PARTICIPANTS);
+		final String ostr = properties.getProperty(SEQUENTIAL);
 		if (StringUtils.hasText(ostr)) {
 			nstr += ";" + ostr;
 		}
-		properties.setProperty(SEQUENTIAL_PARTICIPANTS, nstr);
+		properties.setProperty(SEQUENTIAL, nstr);
 	}
 }

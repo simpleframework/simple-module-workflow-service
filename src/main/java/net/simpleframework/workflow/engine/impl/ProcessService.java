@@ -67,7 +67,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	 * @param process
 	 * @return
 	 */
-	ProcessNode getProcessNode(final ProcessBean process) {
+	ProcessNode _getProcessNode(final ProcessBean process) {
 		return mService.getProcessDocument(getProcessModel(process)).getProcessNode();
 	}
 
@@ -82,13 +82,13 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 			throw WorkflowException.of($m("ProcessService.3"));
 		}
 
-		final ProcessBean process = startProcess(processModel, initiateItem.getUserId(), roleId,
+		final ProcessBean process = _startProcess(processModel, initiateItem.getUserId(), roleId,
 				initiateItem.getVariables(), null, topic);
 		// 事件
 		for (final IWorkflowListener listener : getEventListeners(process)) {
 			((IProcessListener) listener).onCreated(initiateItem, process);
 		}
-		createStartNode(process, initiateItem.getTransitions());
+		_createStartNode(process, initiateItem.getTransitions());
 		return process;
 	}
 
@@ -100,20 +100,19 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	@Override
 	public ProcessBean startProcess(final ProcessModelBean processModel, final KVMap variables,
 			final Properties properties, final String topic) {
-		final ProcessBean process = startProcess(processModel, null, null, variables, properties,
+		final ProcessBean process = _startProcess(processModel, null, null, variables, properties,
 				topic);
 		for (final IWorkflowListener listener : getEventListeners(process)) {
 			((IProcessListener) listener).onCreated(null, process);
 		}
-		createStartNode(process, null);
+		_createStartNode(process, null);
 		return process;
 	}
 
-	private void createStartNode(final ProcessBean process,
-			final Collection<TransitionNode> transitions) {
+	private void _createStartNode(final ProcessBean process, final List<TransitionNode> transitions) {
 		// 创建开始任务
-		final StartNode startNode = getProcessNode(process).startNode();
-		final ActivityBean sActivity = aService.createActivity(process, startNode, null);
+		final StartNode startNode = _getProcessNode(process).startNode();
+		final ActivityBean sActivity = aService._create(process, startNode, null);
 		aService.insert(sActivity);
 		if (transitions == null) {
 			new ActivityComplete(sActivity).complete();
@@ -122,7 +121,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		}
 	}
 
-	private ProcessBean startProcess(final ProcessModelBean processModel, final ID userId,
+	private ProcessBean _startProcess(final ProcessModelBean processModel, final ID userId,
 			final ID roleId, final Map<String, Object> variables, final Properties properties,
 			final String topic) {
 		if (processModel.getStatus() != EProcessModelStatus.deploy) {
@@ -252,7 +251,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public Object getVariable(final ProcessBean process, final String name) {
-		final VariableNode variableNode = getProcessNode(process).getVariableNodeByName(name);
+		final VariableNode variableNode = _getProcessNode(process).getVariableNodeByName(name);
 		return vService.getVariableValue(process, variableNode);
 	}
 
@@ -268,7 +267,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public Collection<String> getVariableNames(final ProcessBean process) {
-		return getProcessNode(process).variables().keySet();
+		return _getProcessNode(process).variables().keySet();
 	}
 
 	@Override

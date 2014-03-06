@@ -24,17 +24,13 @@ public class Participant implements IWorkflowContextAware {
 		this(userId, null);
 	}
 
-	public String getId() {
-		return roleId + "_" + userId;
-	}
-
 	@Override
 	public String toString() {
-		return userId + "," + roleId;
+		return StringUtils.join(new Object[] { userId, roleId }, "_");
 	}
 
 	public static Participant of(final String participant) {
-		final String[] pArr = StringUtils.split(participant, ",");
+		final String[] pArr = StringUtils.split(participant, "_");
 		return pArr.length == 2 ? new Participant(ID.of(pArr[0]), ID.of(pArr[1])) : null;
 	}
 }

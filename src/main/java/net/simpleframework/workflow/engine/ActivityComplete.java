@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,10 +40,10 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 
 	private final Map<String, TransitionNode> _transitions;
 
-	private final Map<String, Collection<Participant>> _participants;
+	private final Map<String, List<Participant>> _participants;
 	{
 		_transitions = new LinkedHashMap<String, TransitionNode>();
-		_participants = new LinkedHashMap<String, Collection<Participant>>();
+		_participants = new LinkedHashMap<String, List<Participant>>();
 	}
 
 	public ActivityComplete(final WorkitemComplete workitemComplete) {
@@ -61,7 +62,7 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 	 *           开始环节
 	 * @param transitions
 	 */
-	public ActivityComplete(final ActivityBean activity, final Collection<TransitionNode> transitions) {
+	public ActivityComplete(final ActivityBean activity, final List<TransitionNode> transitions) {
 		activityId = activity.getId();
 
 		final IScriptEval script = aService.getScriptEval(activity);
@@ -184,11 +185,11 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 		return pt instanceof Role && ((Role) pt).isMultiSelected();
 	}
 
-	public Collection<TransitionNode> getTransitions() {
-		return _transitions.values();
+	public List<TransitionNode> getTransitions() {
+		return new ArrayList<TransitionNode>(_transitions.values());
 	}
 
-	public Collection<Participant> getParticipants(final TransitionNode transition) {
+	public List<Participant> getParticipants(final TransitionNode transition) {
 		return _participants.get(transition.getId());
 	}
 
@@ -207,12 +208,12 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 		final Set<String> keys = participantIds.keySet();
 		resetTransitions(keys.toArray(new String[keys.size()]));
 
-		final Map<String, Collection<Participant>> participants = new LinkedHashMap<String, Collection<Participant>>();
+		final Map<String, List<Participant>> participants = new LinkedHashMap<String, List<Participant>>();
 		for (final TransitionNode transition : getTransitions()) {
 			final ArrayList<Participant> al = new ArrayList<Participant>();
 			for (final String id : participantIds.get(transition.getId())) {
 				for (final Participant participant : getParticipants(transition)) {
-					if (id.equals(participant.getId())) {
+					if (id.equals(participant.toString())) {
 						al.add(participant);
 						break;
 					}
