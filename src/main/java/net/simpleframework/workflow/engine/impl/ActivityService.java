@@ -138,8 +138,9 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	private void _doUserNode(final ActivityBean preActivity, final UserNode to,
 			final List<Participant> _participants) {
 		final ArrayList<Participant> participants = new ArrayList<Participant>();
+		final boolean sequential = TasknodeUtils.isSequential(to);
 		if (_participants != null && _participants.size() > 0) {
-			if (TasknodeUtils.isSequential(to)) {
+			if (sequential) {
 				participants.add(_participants.remove(0));
 			} else {
 				participants.addAll(_participants);
@@ -153,7 +154,9 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			if (!instanceShared || nActivity == null) {
 				nActivity = _create(process, to, preActivity);
 				// 设置后续参与者
-				PropSequential.set(nActivity, _participants);
+				if (sequential) {
+					PropSequential.set(nActivity, _participants);
+				}
 				insert(nActivity);
 			}
 
