@@ -44,7 +44,8 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 
 	@Override
 	public void doAbort(final DelegationBean delegation) {
-		_assert(delegation, EDelegationStatus.ready, EDelegationStatus.running);
+		_assert(delegation, EDelegationStatus.ready, EDelegationStatus.receiving,
+				EDelegationStatus.running);
 		_abort(delegation);
 		_updateWorkitem(delegation, EWorkitemStatus.running);
 	}

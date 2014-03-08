@@ -24,7 +24,6 @@
       create table sf_workflow_model_lob (
         id char(32) not null,
         processschema text,
-        processimage bytea,
         primary key(id)
       );
     ]]>

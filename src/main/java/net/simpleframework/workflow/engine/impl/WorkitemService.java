@@ -284,6 +284,9 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	public void setWorkitemDelegation(final WorkitemBean workitem, final ID userId,
 			final Date startDate, final Date endDate, final String description) {
 		_assert(workitem, EWorkitemStatus.running);
+		if (workitem.getUserId().equals(userId)) {
+			throw WorkflowException.of($m("WorkitemService.4"));
+		}
 		final DelegationBean delegation = dService._create(workitem, userId, startDate, endDate,
 				description);
 		dService.insert(delegation);

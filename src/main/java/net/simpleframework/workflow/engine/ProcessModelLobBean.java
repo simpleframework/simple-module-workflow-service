@@ -1,7 +1,5 @@
 package net.simpleframework.workflow.engine;
 
-import java.io.InputStream;
-
 import net.simpleframework.ado.bean.AbstractIdBean;
 
 /**
@@ -14,22 +12,12 @@ public class ProcessModelLobBean extends AbstractIdBean {
 
 	private char[] processSchema;
 
-	private InputStream processImage;
-
 	public char[] getProcessSchema() {
 		return processSchema;
 	}
 
 	public void setProcessSchema(final char[] processSchema) {
 		this.processSchema = processSchema;
-	}
-
-	public InputStream getProcessImage() {
-		return processImage;
-	}
-
-	public void setProcessImage(final InputStream processImage) {
-		this.processImage = processImage;
 	}
 
 	private static final long serialVersionUID = -8281273400041652815L;
