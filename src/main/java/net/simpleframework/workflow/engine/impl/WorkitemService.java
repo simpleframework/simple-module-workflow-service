@@ -13,6 +13,7 @@ import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.ActivityBean;
+import net.simpleframework.workflow.engine.ActivityComplete;
 import net.simpleframework.workflow.engine.DelegationBean;
 import net.simpleframework.workflow.engine.EActivityAbortPolicy;
 import net.simpleframework.workflow.engine.EActivityStatus;
@@ -93,7 +94,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			}
 
 			if (workitemComplete.isAllCompleted()) {
-				aService.complete(workitemComplete.getActivityComplete());
+				aService.complete(new ActivityComplete(workitem));
 			} else {
 				final List<?> list = PropSequential.list(activity);
 				if (list.size() > 0) { // 获取顺序执行的参与者
@@ -117,10 +118,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 					}
 				}
 			}
-
-			workitemComplete.done();
 		} finally {
-			workitemComplete.reset();
+			workitemComplete.done();
 		}
 	}
 

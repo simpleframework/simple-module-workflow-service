@@ -47,15 +47,6 @@ public class WorkitemComplete extends ObjectEx implements Serializable, IWorkflo
 		return allCompleted;
 	}
 
-	private ActivityComplete activityComplete;
-
-	public ActivityComplete getActivityComplete() {
-		if (activityComplete == null) {
-			activityComplete = new ActivityComplete(this);
-		}
-		return activityComplete;
-	}
-
 	public IWorkflowForm getWorkflowForm() {
 		return aService.getWorkflowForm(wService.getActivity(getWorkitem()));
 	}
@@ -64,31 +55,26 @@ public class WorkitemComplete extends ObjectEx implements Serializable, IWorkflo
 		wService.complete(this);
 	}
 
-	private static Map<ID, Map<String, Object>> varsCache = new ConcurrentHashMap<ID, Map<String, Object>>();
+	private Map<String, Object> variables;
 
 	public Map<String, Object> getVariables() {
-		Map<String, Object> kv = varsCache.get(workitemId);
-		if (kv == null) {
-			varsCache.put(workitemId, kv = new KVMap());
+		if (variables == null) {
+			variables = new KVMap();
 		}
-		return kv;
+		return variables;
 	}
 
 	public void done() {
-		varsCache.remove(workitemId);
+		WORKITEMCOMPLETE_CACHE.remove(workitemId);
 	}
 
-	public void reset() {
-		completeCache.remove(workitemId);
-	}
-
-	private static Map<ID, WorkitemComplete> completeCache = new ConcurrentHashMap<ID, WorkitemComplete>();
+	private static Map<ID, WorkitemComplete> WORKITEMCOMPLETE_CACHE = new ConcurrentHashMap<ID, WorkitemComplete>();
 
 	public static WorkitemComplete get(final WorkitemBean workitem) {
 		final ID key = workitem.getId();
-		WorkitemComplete workitemComplete = completeCache.get(key);
+		WorkitemComplete workitemComplete = WORKITEMCOMPLETE_CACHE.get(key);
 		if (workitemComplete == null) {
-			completeCache.put(key, workitemComplete = new WorkitemComplete(workitem));
+			WORKITEMCOMPLETE_CACHE.put(key, workitemComplete = new WorkitemComplete(workitem));
 		}
 		return workitemComplete;
 	}

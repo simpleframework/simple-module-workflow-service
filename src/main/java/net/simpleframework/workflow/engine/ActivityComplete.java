@@ -46,8 +46,8 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 		_participants = new LinkedHashMap<String, List<Participant>>();
 	}
 
-	public ActivityComplete(final WorkitemComplete workitemComplete) {
-		this.workitemComplete = workitemComplete;
+	public ActivityComplete(final WorkitemBean workitem) {
+		this.workitemComplete = WorkitemComplete.get(workitem);
 		doInit(wService.getActivity(workitemComplete.getWorkitem()));
 	}
 
@@ -197,10 +197,20 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 		return _transitions.get(id);
 	}
 
+	/**
+	 * 根据客户端选择重置路由
+	 * 
+	 * @param transitionIds
+	 */
 	public void resetTransitions(final String[] transitionIds) {
 		TransitionUtils.resetTransitions(transitionIds, _transitions);
 	}
 
+	/**
+	 * 根据客户端选择重置参与者
+	 * 
+	 * @param participantIds
+	 */
 	public void resetParticipants(final Map<String, String[]> participantIds) {
 		if (participantIds == null) {
 			return;
