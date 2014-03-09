@@ -18,11 +18,11 @@ public enum EActivityStatus {
 		}
 	},
 
-	suspended {
+	timeout {
 
 		@Override
 		public String toString() {
-			return $m("EActivityStatus.suspended");
+			return $m("EActivityStatus.timeout");
 		}
 	},
 
@@ -34,11 +34,11 @@ public enum EActivityStatus {
 		}
 	},
 
-	timeout {
+	suspended {
 
 		@Override
 		public String toString() {
-			return $m("EActivityStatus.timeout");
+			return $m("EActivityStatus.suspended");
 		}
 	},
 

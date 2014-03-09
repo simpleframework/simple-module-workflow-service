@@ -65,7 +65,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 		try {
 			final ActivityBean activity = getActivity(workitem);
-			aService._assert(activity, EActivityStatus.running);
+			aService._assert(activity, EActivityStatus.running, EActivityStatus.timeout);
 			final ProcessBean process = aService.getProcessBean(activity);
 			if (process.getStatus() == EProcessStatus.suspended) {
 				throw WorkflowStatusException.of($m("WorkitemService.2"));
