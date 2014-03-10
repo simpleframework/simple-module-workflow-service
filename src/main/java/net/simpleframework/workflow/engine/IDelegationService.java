@@ -11,12 +11,12 @@ import net.simpleframework.ado.query.IDataQuery;
 public interface IDelegationService extends IWorkflowService<DelegationBean> {
 
 	/**
-	 * 获取工作项委托
+	 * 获取正在运行的工作项委托
 	 * 
 	 * @param workitem
 	 * @return
 	 */
-	DelegationBean getDelegation(WorkitemBean workitem);
+	DelegationBean queryRunningDelegation(WorkitemBean workitem);
 
 	/**
 	 * 获取指定用户的委托任务
@@ -31,5 +31,12 @@ public interface IDelegationService extends IWorkflowService<DelegationBean> {
 	 * 
 	 * @param delegation
 	 */
-	void doAbort(DelegationBean delegation);
+	void abort(DelegationBean delegation);
+
+	/**
+	 * 接受当前委托
+	 * 
+	 * @param delegation
+	 */
+	void accept(DelegationBean delegation);
 }

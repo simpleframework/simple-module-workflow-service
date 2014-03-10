@@ -58,8 +58,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		final WorkitemBean workitem = workitemComplete.getWorkitem();
 		_assert(workitem, EWorkitemStatus.running, EWorkitemStatus.delegate);
 		DelegationBean delegation = null;
-		if (workitem.getStatus() == EWorkitemStatus.delegate) {
-			delegation = dService.getDelegation(workitem);
+		if (workitem.getStatus() == EWorkitemStatus.delegate
+				&& (delegation = dService.queryRunningDelegation(workitem)) != null) {
 			dService._assert(delegation, EDelegationStatus.running);
 		}
 
@@ -261,7 +261,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 	DelegationBean _getDelegation(final WorkitemBean workitem) {
 		return workitem.getUserId().equals(workitem.getUserId2()) ? null : dService
-				.getDelegation(workitem);
+				.queryRunningDelegation(workitem);
 	}
 
 	void _assertRetakeWorkitems(final ActivityBean activity) {

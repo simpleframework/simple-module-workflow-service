@@ -24,9 +24,10 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 		IDelegationService {
 
 	@Override
-	public DelegationBean getDelegation(final WorkitemBean workitem) {
-		return getBean("delegationsource=? and sourceid=?", EDelegationSource.workitem,
-				workitem.getId());
+	public DelegationBean queryRunningDelegation(final WorkitemBean workitem) {
+		/* 运行期的只有一个 */
+		return query("delegationsource=? and sourceid=? and status<?", EDelegationSource.workitem,
+				workitem.getId(), EDelegationStatus.complete).next();
 	}
 
 	@Override
@@ -43,7 +44,13 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	}
 
 	@Override
-	public void doAbort(final DelegationBean delegation) {
+	public void accept(DelegationBean delegation) {
+		_assert(delegation, EDelegationStatus.receiving);
+		_status(delegation, EDelegationStatus.running);
+	}
+
+	@Override
+	public void abort(final DelegationBean delegation) {
 		_assert(delegation, EDelegationStatus.ready, EDelegationStatus.receiving,
 				EDelegationStatus.running);
 		_abort(delegation);
