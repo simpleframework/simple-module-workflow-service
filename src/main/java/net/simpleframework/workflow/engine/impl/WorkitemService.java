@@ -147,7 +147,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 				final AbstractTaskNode tasknode = aService.getTaskNode(nextActivity);
 				if (tasknode instanceof UserNode) {
 					// 如果用户环节，则不能出现已读和完成
-					_assertRetakeWorkitems(nextActivity);
+					assertRetakeWorkitems(nextActivity);
 					// 放弃
 					aService._abort(nextActivity);
 				} else if (tasknode instanceof MergeNode) {
@@ -155,7 +155,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 					if (status2 == EActivityStatus.complete) {
 						for (final ActivityBean nextActivity2 : aService.getNextActivities(nextActivity)) {
 							if (aService.getTaskNode(nextActivity2) instanceof UserNode) {
-								_assertRetakeWorkitems(nextActivity2);
+								assertRetakeWorkitems(nextActivity2);
 							} else {
 								throw WorkflowException.of($m("WorkitemService.0"));
 							}
@@ -264,8 +264,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 				.queryRunningDelegation(workitem);
 	}
 
-	void _assertRetakeWorkitems(final ActivityBean activity) {
-		for (final WorkitemBean workitem : getWorkitems(activity)) {
+	protected void assertRetakeWorkitems(final ActivityBean nextActivity) {
+		for (final WorkitemBean workitem : getWorkitems(nextActivity)) {
 			_assert(workitem, EWorkitemStatus.running);
 			if (workitem.isReadMark()) {
 				throw WorkflowException.of($m("WorkitemService.1"));
@@ -283,10 +283,18 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	@Override
 	public void setWorkitemDelegation(final WorkitemBean workitem, final ID userId,
 			final Date startDate, final Date endDate, final String description) {
-		_assert(workitem, EWorkitemStatus.running);
 		if (workitem.getUserId().equals(userId)) {
 			throw WorkflowException.of($m("WorkitemService.4"));
 		}
+		_assert(workitem, EWorkitemStatus.running, EWorkitemStatus.delegate);
+		if (workitem.getStatus() == EWorkitemStatus.delegate) {
+			// 如果已经委托了，则放弃
+			final DelegationBean delegation = dService.queryRunningDelegation(workitem);
+			if (delegation != null) {
+				dService._abort(delegation);
+			}
+		}
+
 		final DelegationBean delegation = dService._create(workitem, userId, startDate, endDate,
 				description);
 		dService.insert(delegation);

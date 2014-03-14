@@ -124,5 +124,10 @@ public class WorkitemBean extends AbstractWorkflowBean {
 		this.readMark = readMark;
 	}
 
+	@Override
+	public String toString() {
+		return "Workitem [" + getUserText() + ", " + status + "]";
+	}
+
 	private static final long serialVersionUID = 1553478269588195799L;
 }

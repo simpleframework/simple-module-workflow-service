@@ -133,5 +133,10 @@ public class DelegationBean extends AbstractWorkflowBean implements IDescription
 		this.description = description;
 	}
 
+	@Override
+	public String toString() {
+		return "Delegation [" + getUserText() + ", " + status + "]";
+	}
+
 	private static final long serialVersionUID = -642924978376103383L;
 }
