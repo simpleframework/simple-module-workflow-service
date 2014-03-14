@@ -63,7 +63,7 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	 * @param unread
 	 *           true标记为未读
 	 */
-	void readMark(WorkitemBean workitem, boolean unread);
+	void doReadMark(WorkitemBean workitem, boolean unread);
 
 	/**
 	 * 设置工作项委托

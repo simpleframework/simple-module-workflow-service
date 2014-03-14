@@ -274,7 +274,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	@Override
-	public void readMark(final WorkitemBean workitem, final boolean unread) {
+	public void doReadMark(final WorkitemBean workitem, final boolean unread) {
 		_assert(workitem, EWorkitemStatus.running, EWorkitemStatus.delegate);
 		workitem.setReadMark(!unread);
 		update(new String[] { "readMark" }, workitem);

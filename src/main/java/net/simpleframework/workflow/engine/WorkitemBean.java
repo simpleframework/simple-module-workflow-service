@@ -14,7 +14,8 @@ import net.simpleframework.common.StringUtils;
  *         http://www.simpleframework.net
  */
 @EntityInterceptor(listenerTypes = { "net.simpleframework.module.log.EntityUpdateLogAdapter",
-		"net.simpleframework.module.log.EntityDeleteLogAdapter" }, columns = { "status" })
+		"net.simpleframework.module.log.EntityDeleteLogAdapter" }, columns = { "status", "readMark",
+		"topMark" })
 public class WorkitemBean extends AbstractWorkflowBean {
 	/* 状态 */
 	@ColumnMeta(columnText = "#(AbstractWorkflowBean.0)")
@@ -42,7 +43,12 @@ public class WorkitemBean extends AbstractWorkflowBean {
 	private Date completeDate;
 
 	/* 是否已读 */
+	@ColumnMeta(columnText = "#(WorkitemBean.0)")
 	private boolean readMark;
+
+	/* 是否置顶 */
+	@ColumnMeta(columnText = "#(WorkitemBean.1)")
+	private boolean topMark;
 
 	public EWorkitemStatus getStatus() {
 		return status != null ? status : EWorkitemStatus.running;
@@ -122,6 +128,14 @@ public class WorkitemBean extends AbstractWorkflowBean {
 
 	public void setReadMark(final boolean readMark) {
 		this.readMark = readMark;
+	}
+
+	public boolean isTopMark() {
+		return topMark;
+	}
+
+	public void setTopMark(final boolean topMark) {
+		this.topMark = topMark;
 	}
 
 	@Override

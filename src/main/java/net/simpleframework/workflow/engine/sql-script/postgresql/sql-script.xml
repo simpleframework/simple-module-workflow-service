@@ -107,7 +107,8 @@
         usertext2 varchar(32),
         createdate timestamp not null,
         completedate timestamp,
-        readmark bool,
+        readmark bool not null,
+        topmark bool not null,
         primary key(id)
       );
     ]]>
