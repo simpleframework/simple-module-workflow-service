@@ -237,6 +237,10 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	void _abort(final WorkitemBean workitem) {
 		_status(workitem, EWorkitemStatus.abort);
 
+		if (!workitem.isReadMark()) { // 未读
+			update(new String[] { "readMark" }, workitem);
+		}
+
 		// 如果含有委托
 		final DelegationBean delegation = _getDelegation(workitem);
 		if (delegation != null) {
