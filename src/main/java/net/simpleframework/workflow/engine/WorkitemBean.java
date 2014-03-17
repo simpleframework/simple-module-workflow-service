@@ -145,7 +145,7 @@ public class WorkitemBean extends AbstractWorkflowBean {
 		return retakeRef;
 	}
 
-	public void setRetakeRef(ID retakeRef) {
+	public void setRetakeRef(final ID retakeRef) {
 		this.retakeRef = retakeRef;
 	}
 

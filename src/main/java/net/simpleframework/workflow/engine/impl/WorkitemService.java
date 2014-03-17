@@ -228,7 +228,9 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			_status(workitem, EWorkitemStatus.retake);
 
 			// 复制新的工作项
-			_clone(nActivity, workitem);
+			final WorkitemBean nWorkitem = _clone(nActivity, workitem);
+			nWorkitem.setRetakeRef(workitem.getId());
+			update(new String[] { "retakeRef" }, nWorkitem);
 		}
 	}
 
@@ -283,20 +285,20 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		_doReadMark(workitem, false);
 	}
 
-	private void _doReadMark(final WorkitemBean workitem, boolean unread) {
+	private void _doReadMark(final WorkitemBean workitem, final boolean unread) {
 		_assert(workitem, EWorkitemStatus.running, EWorkitemStatus.delegate);
 		workitem.setReadMark(!unread);
 		update(new String[] { "readMark" }, workitem);
 	}
 
 	@Override
-	public void doUnTopMark(WorkitemBean workitem) {
+	public void doUnTopMark(final WorkitemBean workitem) {
 		_doTopMark(workitem, true);
 
 	}
 
 	@Override
-	public void doTopMark(WorkitemBean workitem) {
+	public void doTopMark(final WorkitemBean workitem) {
 		_doTopMark(workitem, false);
 	}
 
