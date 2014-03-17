@@ -86,7 +86,7 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * 
 	 * @param activityCallback
 	 */
-	void complete(ActivityComplete activityCallback);
+	void doComplete(ActivityComplete activityCallback);
 
 	/**
 	 * 挂起当前环节
@@ -94,14 +94,14 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * @param activity
 	 * @param resume
 	 */
-	void suspend(ActivityBean activity);
+	void doSuspend(ActivityBean activity);
 
 	/**
 	 * 恢复当前环节
 	 * 
 	 * @param activity
 	 */
-	void resume(ActivityBean activity);
+	void doResume(ActivityBean activity);
 
 	/**
 	 * 
@@ -109,9 +109,9 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * @param policy
 	 *           放弃策略
 	 */
-	void abort(ActivityBean activity, EActivityAbortPolicy policy);
+	void doAbort(ActivityBean activity, EActivityAbortPolicy policy);
 
-	void abort(ActivityBean activity);
+	void doAbort(ActivityBean activity);
 
 	/**
 	 * 跳转到指定的任务环节
@@ -122,7 +122,7 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * @param tasknode
 	 *           环节id或名称
 	 */
-	void jump(ActivityBean activity, String tasknode);
+	void doJump(ActivityBean activity, String tasknode);
 
 	/**
 	 * 回退到指定的任务环节
@@ -131,9 +131,9 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * @param tasknode
 	 *           环节id或名称
 	 */
-	void fallback(ActivityBean activity, String tasknode);
+	void doFallback(ActivityBean activity, String tasknode);
 
-	void fallback(ActivityBean activity);
+	void doFallback(ActivityBean activity);
 
 	/**
 	 * 完成子流程环节
@@ -175,7 +175,7 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * @param activity
 	 * @param timeoutDate
 	 */
-	void updateTimeoutDate(ActivityBean activity, Date timeoutDate);
+	void doUpdateTimeoutDate(ActivityBean activity, Date timeoutDate);
 
-	void updateTimeoutDate(ActivityBean activity, int hours);
+	void doUpdateTimeoutDate(ActivityBean activity, int hours);
 }

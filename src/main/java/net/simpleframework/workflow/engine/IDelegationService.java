@@ -31,12 +31,12 @@ public interface IDelegationService extends IWorkflowService<DelegationBean> {
 	 * 
 	 * @param delegation
 	 */
-	void abort(DelegationBean delegation);
+	void doAbort(DelegationBean delegation);
 
 	/**
 	 * 接受当前委托
 	 * 
 	 * @param delegation
 	 */
-	void accept(DelegationBean delegation);
+	void doAccept(DelegationBean delegation);
 }

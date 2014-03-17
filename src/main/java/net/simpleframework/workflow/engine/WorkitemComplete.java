@@ -52,7 +52,7 @@ public class WorkitemComplete extends ObjectEx implements Serializable, IWorkflo
 	}
 
 	public void complete(final Map<String, String> parameters) {
-		wService.complete(this);
+		wService.doComplete(this);
 	}
 
 	private Map<String, Object> variables;

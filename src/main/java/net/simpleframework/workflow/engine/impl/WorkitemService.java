@@ -54,7 +54,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	@Override
-	public void complete(final WorkitemComplete workitemComplete) {
+	public void doComplete(final WorkitemComplete workitemComplete) {
 		final WorkitemBean workitem = workitemComplete.getWorkitem();
 		_assert(workitem, EWorkitemStatus.running, EWorkitemStatus.delegate);
 		DelegationBean delegation = null;
@@ -94,7 +94,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			}
 
 			if (workitemComplete.isAllCompleted()) {
-				aService.complete(new ActivityComplete(workitem));
+				aService.doComplete(new ActivityComplete(workitem));
 			} else {
 				final List<?> list = PropSequential.list(activity);
 				if (list.size() > 0) { // 获取顺序执行的参与者
@@ -132,7 +132,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	@Override
-	public void retake(final WorkitemBean workitem) {
+	public void doRetake(final WorkitemBean workitem) {
 		_assert(workitem, EWorkitemStatus.complete);
 		final ActivityBean activity = getActivity(workitem);
 		final ProcessBean process = aService.getProcessBean(activity);
@@ -274,14 +274,40 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	@Override
-	public void doReadMark(final WorkitemBean workitem, final boolean unread) {
+	public void doUnReadMark(final WorkitemBean workitem) {
+		_doReadMark(workitem, true);
+	}
+
+	@Override
+	public void doReadMark(final WorkitemBean workitem) {
+		_doReadMark(workitem, false);
+	}
+
+	private void _doReadMark(final WorkitemBean workitem, boolean unread) {
 		_assert(workitem, EWorkitemStatus.running, EWorkitemStatus.delegate);
 		workitem.setReadMark(!unread);
 		update(new String[] { "readMark" }, workitem);
 	}
 
 	@Override
-	public void setWorkitemDelegation(final WorkitemBean workitem, final ID userId,
+	public void doUnTopMark(WorkitemBean workitem) {
+		_doTopMark(workitem, true);
+
+	}
+
+	@Override
+	public void doTopMark(WorkitemBean workitem) {
+		_doTopMark(workitem, false);
+	}
+
+	private void _doTopMark(final WorkitemBean workitem, final boolean untop) {
+		_assert(workitem, EWorkitemStatus.running, EWorkitemStatus.delegate);
+		workitem.setTopMark(!untop);
+		update(new String[] { "topMark" }, workitem);
+	}
+
+	@Override
+	public void doWorkitemDelegation(final WorkitemBean workitem, final ID userId,
 			final Date startDate, final Date endDate, final String description) {
 		if (workitem.getUserId().equals(userId)) {
 			throw WorkflowException.of($m("WorkitemService.4"));
@@ -344,7 +370,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	@Override
-	public void deleteProcess(final WorkitemBean workitem) {
+	public void doDeleteProcess(final WorkitemBean workitem) {
 		// 检测是否含有完成状态，否则不能删除
 		final Object processId = getActivity(workitem).getProcessId();
 		final IDataQuery<ActivityBean> qs = aService.query("processId=?", processId);

@@ -21,7 +21,7 @@ public interface IProcessModelService extends IWorkflowService<ProcessModelBean>
 	 */
 	ProcessDocument getProcessDocument(ProcessModelBean processModel);
 
-	ProcessModelBean addModel(ID userId, ProcessDocument processDocument);
+	ProcessModelBean doAddModel(ID userId, ProcessDocument processDocument);
 
 	/**
 	 * 更新
@@ -29,7 +29,7 @@ public interface IProcessModelService extends IWorkflowService<ProcessModelBean>
 	 * @param processModel
 	 * @param model
 	 */
-	void updateModel(ProcessModelBean processModel, char[] model);
+	void doUpdateModel(ProcessModelBean processModel, char[] model);
 
 	/**
 	 * 根据名称获取ProcessModelBean实例
@@ -77,19 +77,19 @@ public interface IProcessModelService extends IWorkflowService<ProcessModelBean>
 	 * 
 	 * @param processModel
 	 */
-	void deploy(ProcessModelBean processModel);
+	void doDeploy(ProcessModelBean processModel);
 
 	/**
 	 * 挂起
 	 * 
 	 * @param processModel
 	 */
-	void suspend(ProcessModelBean processModel);
+	void doSuspend(ProcessModelBean processModel);
 
 	/**
 	 * 恢复
 	 * 
 	 * @param processModel
 	 */
-	void resume(ProcessModelBean processModel);
+	void doResume(ProcessModelBean processModel);
 }

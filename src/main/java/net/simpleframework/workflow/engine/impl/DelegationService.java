@@ -44,13 +44,13 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	}
 
 	@Override
-	public void accept(final DelegationBean delegation) {
+	public void doAccept(final DelegationBean delegation) {
 		_assert(delegation, EDelegationStatus.receiving);
 		_status(delegation, EDelegationStatus.running);
 	}
 
 	@Override
-	public void abort(final DelegationBean delegation) {
+	public void doAbort(final DelegationBean delegation) {
 		_assert(delegation, EDelegationStatus.ready, EDelegationStatus.receiving,
 				EDelegationStatus.running);
 		_abort(delegation);

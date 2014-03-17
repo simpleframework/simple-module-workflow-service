@@ -47,23 +47,32 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	 * 
 	 * @param workitemComplete
 	 */
-	void complete(WorkitemComplete workitemComplete);
+	void doComplete(WorkitemComplete workitemComplete);
 
 	/**
 	 * 取回当前的工作项
 	 * 
 	 * @param workitem
 	 */
-	void retake(WorkitemBean workitem);
+	void doRetake(WorkitemBean workitem);
 
 	/**
-	 * 设置已读或标记未读
+	 * 设置未读
 	 * 
 	 * @param workitem
-	 * @param unread
-	 *           true标记为未读
 	 */
-	void doReadMark(WorkitemBean workitem, boolean unread);
+	void doUnReadMark(WorkitemBean workitem);
+
+	/**
+	 * 设置已读
+	 * 
+	 * @param workitem
+	 */
+	void doReadMark(WorkitemBean workitem);
+
+	void doUnTopMark(WorkitemBean workitem);
+
+	void doTopMark(WorkitemBean workitem);
 
 	/**
 	 * 设置工作项委托
@@ -74,7 +83,7 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	 * @param endDate
 	 * @param description
 	 */
-	void setWorkitemDelegation(WorkitemBean workitem, ID userId, Date startDate, Date endDate,
+	void doWorkitemDelegation(WorkitemBean workitem, ID userId, Date startDate, Date endDate,
 			String description);
 
 	/**
@@ -90,5 +99,5 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	 * 
 	 * @param workitem
 	 */
-	void deleteProcess(WorkitemBean workitem);
+	void doDeleteProcess(WorkitemBean workitem);
 }

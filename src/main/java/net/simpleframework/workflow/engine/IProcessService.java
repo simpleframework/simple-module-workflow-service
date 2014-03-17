@@ -35,9 +35,9 @@ public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 	 *           主题
 	 * @return
 	 */
-	ProcessBean startProcess(InitiateItem initiateItem, String topic);
+	ProcessBean doStartProcess(InitiateItem initiateItem, String topic);
 
-	ProcessBean startProcess(InitiateItem initiateItem);
+	ProcessBean doStartProcess(InitiateItem initiateItem);
 
 	/**
 	 * 非人工方式启动流程，一般用在子流程及接口方式
@@ -48,8 +48,8 @@ public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 	 * @param topic
 	 * @return
 	 */
-	ProcessBean startProcess(ProcessModelBean processModel, KVMap variables, Properties properties,
-			String topic);
+	ProcessBean doStartProcess(ProcessModelBean processModel, KVMap variables,
+			Properties properties, String topic);
 
 	/**
 	 * 获取流程实例列表
@@ -66,14 +66,14 @@ public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 	 * @param process
 	 * @param resume
 	 */
-	void suspend(ProcessBean process);
+	void doSuspend(ProcessBean process);
 
 	/**
 	 * 恢复流程
 	 * 
 	 * @param process
 	 */
-	void resume(ProcessBean process);
+	void doResume(ProcessBean process);
 
 	/**
 	 * 放弃流程实例
@@ -81,14 +81,14 @@ public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 	 * @param process
 	 * @param policy
 	 */
-	void abort(ProcessBean process, EProcessAbortPolicy policy);
+	void doAbort(ProcessBean process, EProcessAbortPolicy policy);
 
 	/**
 	 * 子流程返回到主流程
 	 * 
 	 * @param process
 	 */
-	void backToRemote(ProcessBean process);
+	void doBackToRemote(ProcessBean process);
 
 	/**
 	 * 获取创建流程后，当前流程启动者的第一个工作项
@@ -104,5 +104,5 @@ public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 	 * @param process
 	 * @param title
 	 */
-	void updateTitle(ProcessBean process, String title);
+	void doUpdateTitle(ProcessBean process, String title);
 }

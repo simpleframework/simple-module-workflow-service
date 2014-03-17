@@ -136,7 +136,7 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 	}
 
 	public void complete() {
-		aService.complete(this);
+		aService.doComplete(this);
 	}
 
 	public boolean isTransitionManual() {

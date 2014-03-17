@@ -66,7 +66,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		IActivityService {
 
 	@Override
-	public void complete(final ActivityComplete activityComplete) {
+	public void doComplete(final ActivityComplete activityComplete) {
 		final ActivityBean activity = activityComplete.getActivity();
 		if (isFinalStatus(activity)) {
 			throw WorkflowStatusException.of($m("ActivityService.2"));
@@ -163,7 +163,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			// 设置过期
 			final int timoutHours = Convert.toInt(eval(nActivity, to.getTimoutHours()));
 			if (timoutHours > 0) {
-				updateTimeoutDate(nActivity, timoutHours);
+				doUpdateTimeoutDate(nActivity, timoutHours);
 			}
 			wService.insert(wService._create(nActivity, participant));
 		}
@@ -275,7 +275,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		final Properties properties = sProcess.getProperties();
 		final String serverUrl = properties.getProperty(IProcessRemote.SERVERURL);
 		if (StringUtils.hasText(serverUrl)) {
-			pService.backToRemote(sProcess);
+			pService.doBackToRemote(sProcess);
 		} else {
 			final ActivityBean nActivity = getBean(properties
 					.getProperty(IProcessRemote.SUB_ACTIVITYID));
@@ -331,8 +331,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				properties
 						.setProperty(IProcessRemote.SUB_ACTIVITYID, String.valueOf(nActivity.getId()));
 			}
-			pService
-					.startProcess(mService.getProcessModel(to.getModel()), variables, properties, null);
+			pService.doStartProcess(mService.getProcessModel(to.getModel()), variables, properties,
+					null);
 			if (sync) {
 				_status(nActivity, EActivityStatus.waiting);
 			} else {
@@ -444,7 +444,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	@Override
-	public void abort(final ActivityBean activity, final EActivityAbortPolicy policy) {
+	public void doAbort(final ActivityBean activity, final EActivityAbortPolicy policy) {
 		if (isFinalStatus(activity)) {
 			throw WorkflowStatusException.of($m("ActivityService.3", activity.getStatus()));
 		}
@@ -452,18 +452,18 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	@Override
-	public void abort(final ActivityBean activity) {
-		abort(activity, EActivityAbortPolicy.normal);
+	public void doAbort(final ActivityBean activity) {
+		doAbort(activity, EActivityAbortPolicy.normal);
 	}
 
 	@Override
-	public void suspend(final ActivityBean activity) {
+	public void doSuspend(final ActivityBean activity) {
 		_assert(activity, EActivityStatus.running);
 		_status(activity, EActivityStatus.suspended);
 	}
 
 	@Override
-	public void resume(final ActivityBean activity) {
+	public void doResume(final ActivityBean activity) {
 		_assert(activity, EActivityStatus.suspended);
 		_status(activity, EActivityStatus.running);
 	}
@@ -502,7 +502,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	@Override
-	public void jump(final ActivityBean activity, final String tasknode) {
+	public void doJump(final ActivityBean activity, final String tasknode) {
 		_assert(activity, EActivityStatus.running);
 		// final ProcessNode processNode = (ProcessNode)
 		// activity.taskNode().parent();
@@ -511,7 +511,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	@Override
-	public void fallback(final ActivityBean activity, final String tasknode) {
+	public void doFallback(final ActivityBean activity, final String tasknode) {
 		_assert(activity, EActivityStatus.running);
 		// 验证是否存在已完成的工作
 		if (wService.getWorkitems(activity, EWorkitemStatus.complete).size() > 0) {
@@ -583,8 +583,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	@Override
-	public void fallback(final ActivityBean activity) {
-		fallback(activity, null);
+	public void doFallback(final ActivityBean activity) {
+		doFallback(activity, null);
 	}
 
 	@Override
@@ -711,14 +711,14 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	@Override
-	public void updateTimeoutDate(final ActivityBean activity, final Date timeoutDate) {
+	public void doUpdateTimeoutDate(final ActivityBean activity, final Date timeoutDate) {
 		activity.setTimeoutDate(timeoutDate);
 		update(new String[] { "timeoutDate" }, activity);
 	}
 
 	@Override
-	public void updateTimeoutDate(final ActivityBean activity, final int hours) {
-		updateTimeoutDate(activity, getWorkCalendarListener(activity).getRealDate(hours));
+	public void doUpdateTimeoutDate(final ActivityBean activity, final int hours) {
+		doUpdateTimeoutDate(activity, getWorkCalendarListener(activity).getRealDate(hours));
 	}
 
 	void _doActivityTimeout() {

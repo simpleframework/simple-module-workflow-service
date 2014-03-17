@@ -72,7 +72,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
-	public ProcessBean startProcess(final InitiateItem initiateItem, final String topic) {
+	public ProcessBean doStartProcess(final InitiateItem initiateItem, final String topic) {
 		final ID roleId = initiateItem.getRoleId();
 		if (roleId == null) {
 			throw WorkflowException.of($m("ProcessService.2"));
@@ -93,12 +93,12 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
-	public ProcessBean startProcess(final InitiateItem initiateItem) {
-		return startProcess(initiateItem, null);
+	public ProcessBean doStartProcess(final InitiateItem initiateItem) {
+		return doStartProcess(initiateItem, null);
 	}
 
 	@Override
-	public ProcessBean startProcess(final ProcessModelBean processModel, final KVMap variables,
+	public ProcessBean doStartProcess(final ProcessModelBean processModel, final KVMap variables,
 			final Properties properties, final String topic) {
 		final ProcessBean process = _startProcess(processModel, null, null, variables, properties,
 				topic);
@@ -163,7 +163,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
-	public void backToRemote(final ProcessBean process) {
+	public void doBackToRemote(final ProcessBean process) {
 		final ITaskExecutor taskExecutor = context.getTaskExecutor();
 		taskExecutor.addScheduledTask(settings.getSubActivityPeriod(), new ExecutorRunnable() {
 			@Override
@@ -217,19 +217,19 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
-	public void suspend(final ProcessBean process) {
+	public void doSuspend(final ProcessBean process) {
 		_assert(process, EProcessStatus.running);
 		_status(process, EProcessStatus.suspended);
 	}
 
 	@Override
-	public void resume(final ProcessBean process) {
+	public void doResume(final ProcessBean process) {
 		_assert(process, EProcessStatus.suspended);
 		_status(process, EProcessStatus.running);
 	}
 
 	@Override
-	public void abort(final ProcessBean process, final EProcessAbortPolicy policy) {
+	public void doAbort(final ProcessBean process, final EProcessAbortPolicy policy) {
 		if (policy == EProcessAbortPolicy.allActivities) {
 			for (final ActivityBean activity : aService.getActivities(process)) {
 				aService._abort(activity);
@@ -288,7 +288,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
-	public void updateTitle(final ProcessBean process, final String title) {
+	public void doUpdateTitle(final ProcessBean process, final String title) {
 		process.setTitle(title);
 		update(new String[] { "title" }, process);
 	}

@@ -53,7 +53,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 	}
 
 	@Override
-	public ProcessModelBean addModel(final ID userId, ProcessDocument document) {
+	public ProcessModelBean doAddModel(final ID userId, ProcessDocument document) {
 		final ProcessModelBean bean = createBean();
 		if (document == null) {
 			document = new ProcessDocument();
@@ -79,7 +79,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 	}
 
 	@Override
-	public void updateModel(final ProcessModelBean processModel, final char[] model) {
+	public void doUpdateModel(final ProcessModelBean processModel, final char[] model) {
 		_assert(processModel, EProcessModelStatus.edit);
 		try {
 			final ProcessDocument document = new ProcessDocument(model);
@@ -195,17 +195,17 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 	}
 
 	@Override
-	public void deploy(final ProcessModelBean processModel) {
+	public void doDeploy(final ProcessModelBean processModel) {
 		_assert(processModel, EProcessModelStatus.edit);
 		_status(processModel, EProcessModelStatus.deploy);
 	}
 
 	@Override
-	public void suspend(final ProcessModelBean processModel) {
+	public void doSuspend(final ProcessModelBean processModel) {
 	}
 
 	@Override
-	public void resume(final ProcessModelBean processModel) {
+	public void doResume(final ProcessModelBean processModel) {
 		_assert(processModel, EProcessModelStatus.deploy, EProcessModelStatus.suspended);
 		_status(processModel, EProcessModelStatus.edit);
 	}
