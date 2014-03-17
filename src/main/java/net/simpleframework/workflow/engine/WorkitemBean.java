@@ -50,6 +50,9 @@ public class WorkitemBean extends AbstractWorkflowBean {
 	@ColumnMeta(columnText = "#(WorkitemBean.1)")
 	private boolean topMark;
 
+	/* 取回工作项的引用 */
+	private ID retakeRef;
+
 	public EWorkitemStatus getStatus() {
 		return status != null ? status : EWorkitemStatus.running;
 	}
@@ -136,6 +139,14 @@ public class WorkitemBean extends AbstractWorkflowBean {
 
 	public void setTopMark(final boolean topMark) {
 		this.topMark = topMark;
+	}
+
+	public ID getRetakeRef() {
+		return retakeRef;
+	}
+
+	public void setRetakeRef(ID retakeRef) {
+		this.retakeRef = retakeRef;
 	}
 
 	@Override

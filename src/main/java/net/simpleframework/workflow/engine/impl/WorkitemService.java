@@ -336,7 +336,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 	@Override
 	public List<WorkitemBean> getWorklist(final Object user, final EWorkitemStatus... status) {
-		return _createWorkitems(query("userId2=?", user), status);
+		return _createWorkitems(query("userId2=? order by topMark desc, createDate desc", user),
+				status);
 	}
 
 	@Override

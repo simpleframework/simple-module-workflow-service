@@ -109,6 +109,7 @@
         completedate timestamp,
         readmark bool not null,
         topmark bool not null,
+        retakeref char(32),
         primary key(id)
       );
     ]]>
