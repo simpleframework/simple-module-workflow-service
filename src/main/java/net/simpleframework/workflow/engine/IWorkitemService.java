@@ -1,6 +1,7 @@
 package net.simpleframework.workflow.engine;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import net.simpleframework.common.ID;
@@ -38,9 +39,9 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	 * @param status
 	 * @return
 	 */
-	List<WorkitemBean> getWorklist(Object user, EWorkitemStatus... status);
+	Iterator<WorkitemBean> getWorklist(Object user, EWorkitemStatus... status);
 
-	List<WorkitemBean> getRunningWorklist(Object user);
+	Iterator<WorkitemBean> getRunningWorklist(Object user);
 
 	/**
 	 * 完成当前的工作项

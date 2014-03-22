@@ -2,7 +2,7 @@ package net.simpleframework.workflow.engine.participant;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Map;
 
 import net.simpleframework.common.ID;
@@ -25,9 +25,9 @@ public class ParticipantRoleHandler extends AbstractParticipantHandler {
 		final String participant = ScriptEvalUtils.replaceExpr(script, getParticipantType(variables)
 				.getParticipant());
 		final ID roleId = permission.getRole(participant).getId();
-		final Enumeration<ID> users = permission.users(roleId, variables);
-		while (users.hasMoreElements()) {
-			participants.add(new Participant(users.nextElement(), roleId));
+		final Iterator<ID> users = permission.users(roleId, variables);
+		while (users.hasNext()) {
+			participants.add(new Participant(users.next(), roleId));
 		}
 		return participants;
 	}

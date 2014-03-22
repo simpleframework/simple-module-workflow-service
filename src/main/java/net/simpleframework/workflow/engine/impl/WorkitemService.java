@@ -4,10 +4,12 @@ import static net.simpleframework.common.I18n.$m;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import net.simpleframework.ado.db.IDbEntityManager;
+import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.ArrayUtils;
@@ -307,7 +309,6 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	private void _doTopMark(final WorkitemBean workitem, final boolean untop) {
-		_assert(workitem, EWorkitemStatus.running, EWorkitemStatus.delegate);
 		workitem.setTopMark(!untop);
 		update(new String[] { "topMark" }, workitem);
 	}
@@ -337,25 +338,9 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	@Override
 	public List<WorkitemBean> getWorkitems(final ActivityBean activity,
 			final EWorkitemStatus... status) {
-		return _createWorkitems(query("activityId=?", activity.getId()), status);
-	}
-
-	@Override
-	public List<WorkitemBean> getWorklist(final Object user, final EWorkitemStatus... status) {
-		return _createWorkitems(query("userId2=? order by topMark desc, createDate desc", user),
-				status);
-	}
-
-	@Override
-	public List<WorkitemBean> getRunningWorklist(final Object user) {
-		return getWorklist(user, EWorkitemStatus.running, EWorkitemStatus.suspended,
-				EWorkitemStatus.delegate);
-	}
-
-	private List<WorkitemBean> _createWorkitems(final IDataQuery<WorkitemBean> dq,
-			final EWorkitemStatus... status) {
 		final List<WorkitemBean> workitems = new ArrayList<WorkitemBean>();
 		WorkitemBean workitem;
+		final IDataQuery<WorkitemBean> dq = query("activityId=?", activity.getId());
 		while ((workitem = dq.next()) != null) {
 			if (ArrayUtils.isEmpty(status) || ArrayUtils.contains(status, workitem.getStatus())) {
 				workitems.add(workitem);
@@ -363,6 +348,38 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		}
 		return workitems;
 	}
+
+	@Override
+	public Iterator<WorkitemBean> getWorklist(final Object user, final EWorkitemStatus... status) {
+		final StringBuilder sql = new StringBuilder("userId2=?");
+		final ArrayList<Object> params = new ArrayList<Object>();
+		params.add(user);
+		if (status != null && status.length > 0) {
+			sql.append(" and (");
+			for (final EWorkitemStatus s : status) {
+				if (params.size() > 1) {
+					sql.append(" or ");
+				}
+				sql.append("status=?");
+				params.add(s);
+			}
+			sql.append(")");
+		}
+		sql.append(" order by topMark desc, createDate desc");
+		return DataQueryUtils.toIterator(query(sql.toString(), params.toArray()));
+	}
+
+	@Override
+	public Iterator<WorkitemBean> getRunningWorklist(final Object user) {
+		return getWorklist(user, EWorkitemStatus.running, EWorkitemStatus.suspended,
+				EWorkitemStatus.delegate);
+	}
+
+	// private List<WorkitemBean> _createWorkitems(final IDataQuery<WorkitemBean>
+	// dq,
+	// final EWorkitemStatus... status) {
+	//
+	// }
 
 	@Override
 	public Map<String, Object> createVariables(final WorkitemBean workitem) {
