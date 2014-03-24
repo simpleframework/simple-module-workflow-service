@@ -34,6 +34,7 @@
         id char(32) not null,
         modelid char(32) not null,
         title varchar2(128 char),
+        version varchar2(16 char) not null,
         status number(4) not null,
         userid char(32),
         usertext varchar2(32),
@@ -50,7 +51,7 @@
     <![CDATA[
       create table sf_workflow_process_lob (
         id char(32) not null,
-        processmodel clob,
+        processschema clob,
         primary key(id)
       );
     ]]>

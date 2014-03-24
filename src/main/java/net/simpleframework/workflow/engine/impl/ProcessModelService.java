@@ -43,11 +43,12 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 
 	@Override
 	public ProcessDocument getProcessDocument(final ProcessModelBean processModel) {
-		ProcessDocument doc = (ProcessDocument) processModel.getAttr("processDocument");
+		ProcessDocument doc = (ProcessDocument) processModel.getAttr(ATTR_PROCESS_DOCUMENT);
 		if (doc == null) {
 			final ProcessModelLobBean lob = getEntityManager(ProcessModelLobBean.class).getBean(
 					processModel.getId());
-			processModel.setAttr("processDocument", doc = new ProcessDocument(lob.getProcessSchema()));
+			processModel.setAttr(ATTR_PROCESS_DOCUMENT,
+					doc = new ProcessDocument(lob.getProcessSchema()));
 		}
 		return doc;
 	}
@@ -97,6 +98,8 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 		}
 	}
 
+	private static final String DEFAULT_ORDERBY = " order by createDate desc";
+
 	@Override
 	public IDataQuery<ProcessModelBean> getModelList(final EProcessModelStatus... status) {
 		final StringBuilder sql = new StringBuilder();
@@ -114,7 +117,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 			}
 			sql.append(")");
 		}
-		sql.append(" order by createDate desc");
+		sql.append(DEFAULT_ORDERBY);
 		return query(sql.toString(), params.toArray());
 	}
 

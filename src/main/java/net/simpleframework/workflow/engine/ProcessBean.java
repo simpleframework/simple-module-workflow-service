@@ -18,6 +18,8 @@ import net.simpleframework.common.ID;
 public class ProcessBean extends AbstractWorkflowBean {
 	private ID modelId;
 
+	private String version;
+
 	private Date completeDate;
 
 	@ColumnMeta(columnText = "#(AbstractWorkflowBean.2)")
@@ -40,6 +42,14 @@ public class ProcessBean extends AbstractWorkflowBean {
 
 	public void setModelId(final ID modelId) {
 		this.modelId = modelId;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(final String version) {
+		this.version = version;
 	}
 
 	public Date getCompleteDate() {

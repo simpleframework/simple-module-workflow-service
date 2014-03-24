@@ -347,6 +347,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		return workitems;
 	}
 
+	private static final String DEFAULT_ORDERBY = " order by topmark desc, createdate desc";
+
 	@Override
 	public IDataQuery<WorkitemBean> getWorklist(final Object user, final EWorkitemStatus... status) {
 		final StringBuilder sql = new StringBuilder("userId2=?");
@@ -363,7 +365,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			}
 			sql.append(")");
 		}
-		sql.append(" order by topMark desc, createDate desc");
+		sql.append(DEFAULT_ORDERBY);
 		return query(sql.toString(), params.toArray());
 	}
 
@@ -371,6 +373,13 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	public IDataQuery<WorkitemBean> getRunningWorklist(final Object user) {
 		return getWorklist(user, EWorkitemStatus.running, EWorkitemStatus.suspended,
 				EWorkitemStatus.delegate);
+	}
+
+	@Override
+	public IDataQuery<WorkitemBean> getUnreadWorklist(final Object user) {
+		final StringBuilder sql = new StringBuilder("userId2=? and readMark=?")
+				.append(DEFAULT_ORDERBY);
+		return query(sql.toString(), user, Boolean.FALSE);
 	}
 
 	@Override

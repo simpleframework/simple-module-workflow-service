@@ -52,13 +52,21 @@ import net.simpleframework.workflow.schema.VariableNode;
 public class ProcessService extends AbstractWorkflowService<ProcessBean> implements IProcessService {
 
 	@Override
-	public ProcessDocument getProcessDocument(final ProcessBean process) {
-		return mService.getProcessDocument(getProcessModel(process));
+	public ProcessModelBean getProcessModel(final ProcessBean process) {
+		return mService.getBean(process.getModelId());
 	}
 
 	@Override
-	public ProcessModelBean getProcessModel(final ProcessBean process) {
-		return mService.getBean(process.getModelId());
+	public ProcessDocument getProcessDocument(final ProcessBean process) {
+		ProcessDocument doc = (ProcessDocument) process.getAttr(ATTR_PROCESS_DOCUMENT);
+		if (doc == null) {
+			final ProcessLobBean lob = getEntityManager(ProcessLobBean.class).getBean(process.getId());
+			if (lob != null) {
+				process.setAttr(ATTR_PROCESS_DOCUMENT,
+						doc = new ProcessDocument(lob.getProcessSchema()));
+			}
+		}
+		return doc != null ? doc : mService.getProcessDocument(getProcessModel(process));
 	}
 
 	/**
@@ -68,7 +76,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	 * @return
 	 */
 	ProcessNode _getProcessNode(final ProcessBean process) {
-		return mService.getProcessDocument(getProcessModel(process)).getProcessNode();
+		return getProcessDocument(process).getProcessNode();
 	}
 
 	@Override
@@ -123,19 +131,12 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	private ProcessBean _startProcess(final ProcessModelBean processModel, final ID userId,
 			final ID roleId, final Map<String, Object> variables, final Properties properties,
-			final String topic) {
+			final String title) {
 		if (processModel.getStatus() != EProcessModelStatus.deploy) {
 			throw WorkflowException.of($m("ProcessService.1"));
 		}
 
-		final ProcessBean process = createBean();
-		process.setModelId(processModel.getId());
-		process.setUserId(userId);
-		process.setUserText(permission.getUser(userId).toString());
-		process.setRoleId(roleId);
-		process.setRoleText(permission.getRole(roleId).toString());
-		process.setCreateDate(new Date());
-		process.setTitle(topic);
+		final ProcessBean process = _create(processModel, userId, roleId, title);
 		if (properties != null) {
 			process.getProperties().putAll(properties);
 		}
@@ -156,7 +157,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		if (!doc.getProcessNode().isInstanceShared()) {
 			final ProcessLobBean lob = new ProcessLobBean();
 			lob.setId(process.getId());
-			lob.setProcessModel(doc.toString().toCharArray());
+			lob.setProcessSchema(doc.toString().toCharArray());
 			getEntityManager(ProcessLobBean.class).insert(lob);
 		}
 		return process;
@@ -291,6 +292,21 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	public void doUpdateTitle(final ProcessBean process, final String title) {
 		process.setTitle(title);
 		update(new String[] { "title" }, process);
+	}
+
+	ProcessBean _create(final ProcessModelBean processModel, final ID userId, final ID roleId,
+			final String title) {
+		final ProcessBean process = createBean();
+		process.setModelId(processModel.getId());
+		process.setTitle(title);
+		process.setCreateDate(new Date());
+		final ProcessDocument doc = mService.getProcessDocument(processModel);
+		process.setVersion(doc.getProcessNode().getVersion().toString());
+		process.setUserId(userId);
+		process.setUserText(permission.getUser(userId).toString());
+		process.setRoleId(roleId);
+		process.setRoleText(permission.getRole(roleId).toString());
+		return process;
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package net.simpleframework.workflow.engine;
 
-import net.simpleframework.ado.bean.AbstractIdBean;
 import net.simpleframework.ado.db.common.EntityInterceptor;
 
 /**
@@ -10,16 +9,7 @@ import net.simpleframework.ado.db.common.EntityInterceptor;
  *         http://www.simpleframework.net
  */
 @EntityInterceptor(listenerTypes = "net.simpleframework.module.log.EntityDeleteLogAdapter")
-public class ProcessLobBean extends AbstractIdBean {
-	private char[] processModel;
-
-	public char[] getProcessModel() {
-		return processModel;
-	}
-
-	public void setProcessModel(final char[] processModel) {
-		this.processModel = processModel;
-	}
+public class ProcessLobBean extends ProcessModelLobBean {
 
 	private static final long serialVersionUID = 219135045162448573L;
 }

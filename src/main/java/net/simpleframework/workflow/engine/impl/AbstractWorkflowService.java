@@ -206,4 +206,6 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 	static void doStartup() {
 		vService = singleton(VariableService.class);
 	}
+
+	static final String ATTR_PROCESS_DOCUMENT = "_processdocument";
 }

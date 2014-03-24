@@ -33,6 +33,14 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	List<WorkitemBean> getWorkitems(ActivityBean activity, EWorkitemStatus... status);
 
 	/**
+	 * 获取运行态的工作列表
+	 * 
+	 * @param user
+	 * @return
+	 */
+	IDataQuery<WorkitemBean> getRunningWorklist(Object user);
+
+	/**
 	 * 获取指定用户的工作列表
 	 * 
 	 * @param userId
@@ -41,7 +49,13 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	 */
 	IDataQuery<WorkitemBean> getWorklist(Object user, EWorkitemStatus... status);
 
-	IDataQuery<WorkitemBean> getRunningWorklist(Object user);
+	/**
+	 * 获取未读的工作列表
+	 * 
+	 * @param user
+	 * @return
+	 */
+	IDataQuery<WorkitemBean> getUnreadWorklist(Object user);
 
 	/**
 	 * 完成当前的工作项
