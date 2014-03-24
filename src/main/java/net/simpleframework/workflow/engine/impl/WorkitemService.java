@@ -4,12 +4,10 @@ import static net.simpleframework.common.I18n.$m;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import net.simpleframework.ado.db.IDbEntityManager;
-import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.ArrayUtils;
@@ -52,7 +50,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 	@Override
 	public ProcessBean getProcessBean(final WorkitemBean workitem) {
-		return pService.getBean(getActivity(workitem).getProcessId());
+		return pService.getBean(workitem.getProcessId());
 	}
 
 	@Override
@@ -350,7 +348,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	@Override
-	public Iterator<WorkitemBean> getWorklist(final Object user, final EWorkitemStatus... status) {
+	public IDataQuery<WorkitemBean> getWorklist(final Object user, final EWorkitemStatus... status) {
 		final StringBuilder sql = new StringBuilder("userId2=?");
 		final ArrayList<Object> params = new ArrayList<Object>();
 		params.add(user);
@@ -366,20 +364,14 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			sql.append(")");
 		}
 		sql.append(" order by topMark desc, createDate desc");
-		return DataQueryUtils.toIterator(query(sql.toString(), params.toArray()));
+		return query(sql.toString(), params.toArray());
 	}
 
 	@Override
-	public Iterator<WorkitemBean> getRunningWorklist(final Object user) {
+	public IDataQuery<WorkitemBean> getRunningWorklist(final Object user) {
 		return getWorklist(user, EWorkitemStatus.running, EWorkitemStatus.suspended,
 				EWorkitemStatus.delegate);
 	}
-
-	// private List<WorkitemBean> _createWorkitems(final IDataQuery<WorkitemBean>
-	// dq,
-	// final EWorkitemStatus... status) {
-	//
-	// }
 
 	@Override
 	public Map<String, Object> createVariables(final WorkitemBean workitem) {
@@ -413,6 +405,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 	WorkitemBean _create(final ActivityBean activity, final Participant participant) {
 		final WorkitemBean workitem = createBean();
+		workitem.setProcessId(activity.getProcessId());
 		workitem.setActivityId(activity.getId());
 		workitem.setUserId(participant.userId);
 		workitem.setUserText(permission.getUser(participant.userId).toString());

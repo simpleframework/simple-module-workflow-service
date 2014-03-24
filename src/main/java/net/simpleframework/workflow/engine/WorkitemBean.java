@@ -21,6 +21,9 @@ public class WorkitemBean extends AbstractWorkflowBean {
 	@ColumnMeta(columnText = "#(AbstractWorkflowBean.0)")
 	private EWorkitemStatus status;
 
+	/* 流程实例id */
+	private ID processId;
+
 	/* 关联的环节id */
 	private ID activityId;
 
@@ -59,6 +62,22 @@ public class WorkitemBean extends AbstractWorkflowBean {
 
 	public void setStatus(final EWorkitemStatus status) {
 		this.status = status;
+	}
+
+	public ID getProcessId() {
+		return processId;
+	}
+
+	public void setProcessId(final ID processId) {
+		this.processId = processId;
+	}
+
+	public ID getActivityId() {
+		return activityId;
+	}
+
+	public void setActivityId(final ID activityId) {
+		this.activityId = activityId;
 	}
 
 	public ID getUserId() {
@@ -107,14 +126,6 @@ public class WorkitemBean extends AbstractWorkflowBean {
 
 	public void setUserText2(final String userText2) {
 		this.userText2 = userText2;
-	}
-
-	public ID getActivityId() {
-		return activityId;
-	}
-
-	public void setActivityId(final ID activityId) {
-		this.activityId = activityId;
 	}
 
 	public Date getCompleteDate() {

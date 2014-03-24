@@ -1,9 +1,9 @@
 package net.simpleframework.workflow.engine;
 
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
+import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 
 /**
@@ -39,9 +39,9 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	 * @param status
 	 * @return
 	 */
-	Iterator<WorkitemBean> getWorklist(Object user, EWorkitemStatus... status);
+	IDataQuery<WorkitemBean> getWorklist(Object user, EWorkitemStatus... status);
 
-	Iterator<WorkitemBean> getRunningWorklist(Object user);
+	IDataQuery<WorkitemBean> getRunningWorklist(Object user);
 
 	/**
 	 * 完成当前的工作项

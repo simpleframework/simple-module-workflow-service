@@ -33,7 +33,7 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	@Override
 	public IDataQuery<DelegationBean> queryDelegations(final Object userId) {
 		final StringBuilder sb = new StringBuilder();
-		sb.append("select d.* from ")
+		sb.append("select d.*,w.processid from ")
 				.append(getTablename(DelegationBean.class))
 				.append(" d left join ")
 				.append(getTablename(WorkitemBean.class))

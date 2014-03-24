@@ -66,6 +66,17 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		IActivityService {
 
 	@Override
+	public ProcessBean getProcessBean(final ActivityBean activity) {
+		return pService.getBean(activity.getProcessId());
+	}
+
+	@Override
+	public AbstractTaskNode getTaskNode(final ActivityBean activity) {
+		return (AbstractTaskNode) pService._getProcessNode(getProcessBean(activity)).getNodeById(
+				activity.getTasknodeId());
+	}
+
+	@Override
 	public void doComplete(final ActivityComplete activityComplete) {
 		final ActivityBean activity = activityComplete.getActivity();
 		if (isFinalStatus(activity)) {
@@ -627,17 +638,6 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			preActivity = getPreActivity(preActivity);
 		}
 		return preActivity;
-	}
-
-	@Override
-	public ProcessBean getProcessBean(final ActivityBean activity) {
-		return pService.getBean(activity.getProcessId());
-	}
-
-	@Override
-	public AbstractTaskNode getTaskNode(final ActivityBean activity) {
-		return (AbstractTaskNode) pService._getProcessNode(getProcessBean(activity)).getNodeById(
-				activity.getTasknodeId());
 	}
 
 	@Override
