@@ -173,12 +173,10 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 				final KVMap data = new KVMap(); // 提交的参数
 				data.add(IProcessRemote.SUB_ACTIVITYID,
 						properties.getProperty(IProcessRemote.SUB_ACTIVITYID));
-				final String[] mappings = StringUtils.split(properties
-						.getProperty(IProcessRemote.VAR_MAPPINGS));
-				if (mappings != null) {
-					for (final String mapping : mappings) {
-						data.add(mapping, pService.getVariable(process, mapping));
-					}
+
+				for (final String mapping : StringUtils.split(properties
+						.getProperty(IProcessRemote.VAR_MAPPINGS))) {
+					data.add(mapping, pService.getVariable(process, mapping));
 				}
 
 				final Map<String, Object> r = context.getRemoteService().call(
