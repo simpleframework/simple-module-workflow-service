@@ -14,6 +14,11 @@ public enum EDelegationSource {
 	workitem,
 
 	/**
+	 * 用户委托
+	 */
+	user,
+
+	/**
 	 * 角色委托
 	 */
 	role
