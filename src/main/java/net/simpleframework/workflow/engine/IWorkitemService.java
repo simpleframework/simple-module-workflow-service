@@ -38,7 +38,7 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	 * @param user
 	 * @return
 	 */
-	IDataQuery<WorkitemBean> getRunningWorklist(Object user);
+	IDataQuery<WorkitemBean> getRunningWorklist(ID userId);
 
 	/**
 	 * 获取指定用户的工作列表
@@ -47,7 +47,7 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	 * @param status
 	 * @return
 	 */
-	IDataQuery<WorkitemBean> getWorklist(Object user, EWorkitemStatus... status);
+	IDataQuery<WorkitemBean> getWorklist(ID userId, EWorkitemStatus... status);
 
 	/**
 	 * 获取未读的工作列表
@@ -55,7 +55,7 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	 * @param user
 	 * @return
 	 */
-	IDataQuery<WorkitemBean> getUnreadWorklist(Object user);
+	IDataQuery<WorkitemBean> getUnreadWorklist(ID userId);
 
 	/**
 	 * 完成当前的工作项
@@ -94,11 +94,11 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	 * 
 	 * @param workitem
 	 * @param userId
-	 * @param startDate
-	 * @param endDate
+	 * @param dStartDate
+	 * @param dCompleteDate
 	 * @param description
 	 */
-	void doWorkitemDelegation(WorkitemBean workitem, ID userId, Date startDate, Date endDate,
+	void doWorkitemDelegation(WorkitemBean workitem, ID userId, Date dStartDate, Date dCompleteDate,
 			String description);
 
 	/**

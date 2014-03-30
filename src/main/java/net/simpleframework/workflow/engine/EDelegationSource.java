@@ -16,10 +16,5 @@ public enum EDelegationSource {
 	/**
 	 * 用户委托
 	 */
-	user,
-
-	/**
-	 * 角色委托
-	 */
-	role
+	user
 }

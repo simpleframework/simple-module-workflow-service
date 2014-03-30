@@ -26,12 +26,22 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	@Override
 	public DelegationBean queryRunningDelegation(final WorkitemBean workitem) {
 		/* 运行期的只有一个 */
-		return query("delegationsource=? and sourceid=? and status<?", EDelegationSource.workitem,
-				workitem.getId(), EDelegationStatus.complete).next();
+		return _queryRunningDelegation(EDelegationSource.workitem, workitem.getId());
 	}
 
 	@Override
-	public IDataQuery<DelegationBean> queryDelegations(final Object userId) {
+	public DelegationBean queryRunningDelegation(final ID userId) {
+		return _queryRunningDelegation(EDelegationSource.user, userId);
+	}
+
+	private DelegationBean _queryRunningDelegation(final EDelegationSource delegationSource,
+			final ID sourceId) {
+		return query("delegationsource=? and sourceid=? and status<?", delegationSource, sourceId,
+				EDelegationStatus.complete).next();
+	}
+
+	@Override
+	public IDataQuery<DelegationBean> queryDelegations(final ID userId) {
 		final StringBuilder sb = new StringBuilder();
 		sb.append("select d.*,w.processid from ")
 				.append(getTablename(DelegationBean.class))
@@ -64,6 +74,16 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	@Override
 	public boolean isFinalStatus(final DelegationBean t) {
 		return t.getStatus().ordinal() >= EDelegationStatus.complete.ordinal();
+	}
+
+	@Override
+	public void doUserDelegation(final ID sourceId, final ID userId, final Date dStartDate,
+			final Date dCompleteDate, final String description) {
+		final DelegationBean delegation = _create(EDelegationSource.user, sourceId, userId,
+				dStartDate, dCompleteDate, description);
+		insert(delegation);
+
+		_doDelegateTask(delegation, false);
 	}
 
 	void _doDelegateTask(final DelegationBean delegation, final boolean confirm) {
@@ -124,11 +144,11 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 		});
 	}
 
-	DelegationBean _create(final WorkitemBean workitem, final ID userId, final Date dStartDate,
-			final Date dCompleteDate, final String description) {
+	DelegationBean _create(final EDelegationSource delegationSource, final ID sourceId,
+			final ID userId, final Date dStartDate, final Date dCompleteDate, final String description) {
 		final DelegationBean delegation = createBean();
-		delegation.setDelegationSource(EDelegationSource.workitem);
-		delegation.setSourceId(workitem.getId());
+		delegation.setDelegationSource(delegationSource);
+		delegation.setSourceId(sourceId);
 		delegation.setUserId(userId);
 		delegation.setUserText(permission.getUser(userId).toString());
 		delegation.setDstartDate(dStartDate);

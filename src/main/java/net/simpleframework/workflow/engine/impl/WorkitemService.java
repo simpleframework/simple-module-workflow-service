@@ -17,6 +17,7 @@ import net.simpleframework.workflow.engine.ActivityComplete;
 import net.simpleframework.workflow.engine.DelegationBean;
 import net.simpleframework.workflow.engine.EActivityAbortPolicy;
 import net.simpleframework.workflow.engine.EActivityStatus;
+import net.simpleframework.workflow.engine.EDelegationSource;
 import net.simpleframework.workflow.engine.EDelegationStatus;
 import net.simpleframework.workflow.engine.EProcessStatus;
 import net.simpleframework.workflow.engine.EWorkitemStatus;
@@ -256,9 +257,9 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		// 如果含有委托
 		final DelegationBean delegation = _getDelegation(workitem);
 		if (delegation != null) {
-			final DelegationBean nDelegation = dService._create(nWorkitem, delegation.getUserId(),
-					delegation.getDstartDate(), delegation.getDcompleteDate(),
-					delegation.getDescription());
+			final DelegationBean nDelegation = dService._create(EDelegationSource.workitem,
+					nWorkitem.getId(), delegation.getUserId(), delegation.getDstartDate(),
+					delegation.getDcompleteDate(), delegation.getDescription());
 			dService.insert(nDelegation);
 			dService._doDelegateTask(nDelegation, false);
 		}
@@ -313,7 +314,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 	@Override
 	public void doWorkitemDelegation(final WorkitemBean workitem, final ID userId,
-			final Date startDate, final Date endDate, final String description) {
+			final Date dStartDate, final Date dCompleteDate, final String description) {
 		if (workitem.getUserId().equals(userId)) {
 			throw WorkflowException.of($m("WorkitemService.4"));
 		}
@@ -326,8 +327,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			}
 		}
 
-		final DelegationBean delegation = dService._create(workitem, userId, startDate, endDate,
-				description);
+		final DelegationBean delegation = dService._create(EDelegationSource.workitem,
+				workitem.getId(), userId, dStartDate, dCompleteDate, description);
 		dService.insert(delegation);
 		// 执行...
 		dService._doDelegateTask(delegation, true);
@@ -350,10 +351,10 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	private static final String DEFAULT_ORDERBY = " order by topmark desc, createdate desc";
 
 	@Override
-	public IDataQuery<WorkitemBean> getWorklist(final Object user, final EWorkitemStatus... status) {
+	public IDataQuery<WorkitemBean> getWorklist(final ID userId, final EWorkitemStatus... status) {
 		final StringBuilder sql = new StringBuilder("userId2=?");
 		final ArrayList<Object> params = new ArrayList<Object>();
-		params.add(user);
+		params.add(userId);
 		if (status != null && status.length > 0) {
 			sql.append(" and (");
 			for (final EWorkitemStatus s : status) {
@@ -370,16 +371,16 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	@Override
-	public IDataQuery<WorkitemBean> getRunningWorklist(final Object user) {
-		return getWorklist(user, EWorkitemStatus.running, EWorkitemStatus.suspended,
+	public IDataQuery<WorkitemBean> getRunningWorklist(final ID userId) {
+		return getWorklist(userId, EWorkitemStatus.running, EWorkitemStatus.suspended,
 				EWorkitemStatus.delegate);
 	}
 
 	@Override
-	public IDataQuery<WorkitemBean> getUnreadWorklist(final Object user) {
+	public IDataQuery<WorkitemBean> getUnreadWorklist(final ID userId) {
 		final StringBuilder sql = new StringBuilder("userId2=? and readMark=?")
 				.append(DEFAULT_ORDERBY);
-		return query(sql.toString(), user, Boolean.FALSE);
+		return query(sql.toString(), userId, Boolean.FALSE);
 	}
 
 	@Override

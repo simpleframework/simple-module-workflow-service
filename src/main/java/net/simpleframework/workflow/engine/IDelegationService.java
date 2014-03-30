@@ -1,6 +1,9 @@
 package net.simpleframework.workflow.engine;
 
+import java.util.Date;
+
 import net.simpleframework.ado.query.IDataQuery;
+import net.simpleframework.common.ID;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -18,13 +21,15 @@ public interface IDelegationService extends IWorkflowService<DelegationBean> {
 	 */
 	DelegationBean queryRunningDelegation(WorkitemBean workitem);
 
+	DelegationBean queryRunningDelegation(ID userId);
+
 	/**
 	 * 获取指定用户的委托任务
 	 * 
 	 * @param userId
 	 * @return
 	 */
-	IDataQuery<DelegationBean> queryDelegations(Object userId);
+	IDataQuery<DelegationBean> queryDelegations(ID userId);
 
 	/**
 	 * 放弃当前委托
@@ -39,4 +44,16 @@ public interface IDelegationService extends IWorkflowService<DelegationBean> {
 	 * @param delegation
 	 */
 	void doAccept(DelegationBean delegation);
+
+	/**
+	 * 设置用户委托
+	 * 
+	 * @param sourceId
+	 * @param userId
+	 * @param dStartDate
+	 * @param dCompleteDate
+	 * @param description
+	 */
+	void doUserDelegation(ID sourceId, ID userId, Date dStartDate, Date dCompleteDate,
+			String description);
 }
