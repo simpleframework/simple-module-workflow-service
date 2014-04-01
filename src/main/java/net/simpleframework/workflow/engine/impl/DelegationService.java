@@ -41,16 +41,20 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	}
 
 	@Override
-	public IDataQuery<DelegationBean> queryDelegations(final ID userId) {
+	public IDataQuery<DelegationBean> queryDelegations(final ID userId,
+			final EDelegationSource source) {
 		final StringBuilder sb = new StringBuilder();
-		sb.append("select d.*,w.processid from ")
-				.append(getTablename(DelegationBean.class))
-				.append(" d left join ")
-				.append(getTablename(WorkitemBean.class))
-				.append(
-						" w on d.sourceid = w.id where w.userId=? and d.delegationsource=? order by createDate desc");
-		return getEntityManager().queryBeans(
-				new SQLValue(sb.toString(), userId, EDelegationSource.workitem));
+		if (source == EDelegationSource.workitem) {
+			sb.append("select d.*,w.processid from ")
+					.append(getTablename(DelegationBean.class))
+					.append(" d left join ")
+					.append(getTablename(WorkitemBean.class))
+					.append(
+							" w on d.sourceid = w.id where w.userId=? and d.delegationsource=? order by createDate desc");
+			return getEntityManager().queryBeans(new SQLValue(sb.toString(), userId, source));
+		} else {
+			return query("delegationsource=? and sourceid=?", source, userId);
+		}
 	}
 
 	@Override

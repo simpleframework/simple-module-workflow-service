@@ -27,9 +27,10 @@ public interface IDelegationService extends IWorkflowService<DelegationBean> {
 	 * 获取指定用户的委托任务
 	 * 
 	 * @param userId
+	 * @param source
 	 * @return
 	 */
-	IDataQuery<DelegationBean> queryDelegations(ID userId);
+	IDataQuery<DelegationBean> queryDelegations(ID userId, EDelegationSource source);
 
 	/**
 	 * 放弃当前委托
