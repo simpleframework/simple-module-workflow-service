@@ -53,7 +53,7 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 							" w on d.sourceid = w.id where w.userId=? and d.delegationsource=? order by createDate desc");
 			return getEntityManager().queryBeans(new SQLValue(sb.toString(), userId, source));
 		} else {
-			return query("delegationsource=? and sourceid=?", source, userId);
+			return query("delegationsource=? and sourceid=? order by createDate desc", source, userId);
 		}
 	}
 
