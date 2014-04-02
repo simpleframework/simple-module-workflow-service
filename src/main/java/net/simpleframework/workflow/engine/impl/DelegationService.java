@@ -1,12 +1,17 @@
 package net.simpleframework.workflow.engine.impl;
 
+import static net.simpleframework.common.I18n.$m;
+
 import java.util.Date;
 
+import net.simpleframework.ado.IParamsValue;
+import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.db.common.SQLValue;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.task.ExecutorRunnable;
 import net.simpleframework.ctx.task.ITaskExecutor;
+import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.DelegationBean;
 import net.simpleframework.workflow.engine.EDelegationSource;
 import net.simpleframework.workflow.engine.EDelegationStatus;
@@ -83,8 +88,13 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	@Override
 	public void doUserDelegation(final ID sourceId, final ID userId, final Date dStartDate,
 			final Date dCompleteDate, final String description) {
-		final DelegationBean delegation = _create(EDelegationSource.user, sourceId, userId,
-				dStartDate, dCompleteDate, description);
+		DelegationBean delegation = queryRunningDelegation(sourceId);
+		if (delegation != null) {
+			throw WorkflowException.of($m("DelegationService.0"));
+		}
+
+		delegation = _create(EDelegationSource.user, sourceId, userId, dStartDate, dCompleteDate,
+				description);
 		insert(delegation);
 
 		_doDelegateTask(delegation, false);
@@ -134,20 +144,6 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 		}
 	}
 
-	@Override
-	public void onInit() throws Exception {
-		super.onInit();
-
-		// 检测是否过期
-		final ITaskExecutor taskExecutor = context.getTaskExecutor();
-		taskExecutor.addScheduledTask(settings.getDelegatePeriod(), new ExecutorRunnable() {
-			@Override
-			protected void task() throws Exception {
-				_doTimeoutTask();
-			}
-		});
-	}
-
 	DelegationBean _create(final EDelegationSource delegationSource, final ID sourceId,
 			final ID userId, final Date dStartDate, final Date dCompleteDate, final String description) {
 		final DelegationBean delegation = createBean();
@@ -160,4 +156,32 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 		delegation.setDescription(description);
 		return delegation;
 	}
+
+	@Override
+	public void onInit() throws Exception {
+		super.onInit();
+
+		// 检测是否过期
+		final ITaskExecutor taskExecutor = context.getTaskExecutor();
+		taskExecutor.addScheduledTask(settings.getDelegatePeriod(), new ExecutorRunnable() {
+			@Override
+			protected void task() throws Exception {
+				_doTimeoutTask();
+			}
+		});
+
+		addListener(new DbEntityAdapterEx() {
+			@Override
+			public void onBeforeDelete(final IDbEntityManager<?> manager,
+					final IParamsValue paramsValue) {
+				super.onBeforeDelete(manager, paramsValue);
+				for (final DelegationBean delegation : coll(paramsValue)) {
+					if (delegation.getStatus().ordinal() < EDelegationStatus.complete.ordinal()) {
+						throw WorkflowException.of($m("DelegationService.1"));
+					}
+				}
+			}
+		});
+	}
+
 }

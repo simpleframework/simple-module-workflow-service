@@ -448,12 +448,12 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			}
 
 			@Override
-			public void onAfterInsert(IDbEntityManager<?> manager, Object[] beans) {
+			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans) {
 				super.onAfterInsert(manager, beans);
 
 				// 如果存在用户委托，则创建
-				for (Object o : beans) {
-					WorkitemBean workitem = (WorkitemBean) o;
+				for (final Object o : beans) {
+					final WorkitemBean workitem = (WorkitemBean) o;
 					final DelegationBean delegation = dService.queryRunningDelegation(workitem
 							.getUserId());
 					if (delegation != null) {
