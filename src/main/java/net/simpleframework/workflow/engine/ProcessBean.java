@@ -22,7 +22,7 @@ public class ProcessBean extends AbstractWorkflowBean {
 
 	private Date completeDate;
 
-	@ColumnMeta(columnText = "#(AbstractWorkflowBean.2)")
+	@ColumnMeta(columnText = "#(AbstractWorkflowBean.1)")
 	private String title;
 
 	@ColumnMeta(columnText = "#(AbstractWorkflowBean.0)")

@@ -1,8 +1,6 @@
 package net.simpleframework.workflow.engine;
 
-import java.util.Date;
-
-import net.simpleframework.ado.bean.AbstractIdBean;
+import net.simpleframework.ado.bean.AbstractDateAwareBean;
 import net.simpleframework.common.ID;
 
 /**
@@ -11,10 +9,8 @@ import net.simpleframework.common.ID;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class VariableLogBean extends AbstractIdBean {
+public class VariableLogBean extends AbstractDateAwareBean {
 	private String variableId;
-
-	private Date createDate;
 
 	private ID userId;
 
@@ -36,14 +32,6 @@ public class VariableLogBean extends AbstractIdBean {
 
 	public void setUserId(final ID userId) {
 		this.userId = userId;
-	}
-
-	public Date getCreateDate() {
-		return createDate;
-	}
-
-	public void setCreateDate(final Date createDate) {
-		this.createDate = createDate;
 	}
 
 	public String getStringValue() {

@@ -1,9 +1,6 @@
 package net.simpleframework.workflow.engine;
 
-import java.util.Date;
-
-import net.simpleframework.ado.ColumnMeta;
-import net.simpleframework.ado.bean.AbstractIdBean;
+import net.simpleframework.ado.bean.AbstractDateAwareBean;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -12,19 +9,5 @@ import net.simpleframework.ado.bean.AbstractIdBean;
  *         http://www.simpleframework.net
  */
 @SuppressWarnings("serial")
-public abstract class AbstractWorkflowBean extends AbstractIdBean {
-
-	@ColumnMeta(columnText = "#(AbstractWorkflowBean.1)")
-	private Date createDate;
-
-	public Date getCreateDate() {
-		if (createDate == null) {
-			createDate = new Date();
-		}
-		return createDate;
-	}
-
-	public void setCreateDate(final Date createDate) {
-		this.createDate = createDate;
-	}
+public abstract class AbstractWorkflowBean extends AbstractDateAwareBean {
 }
