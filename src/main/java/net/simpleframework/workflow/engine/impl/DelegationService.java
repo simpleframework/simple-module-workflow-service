@@ -41,8 +41,8 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 
 	private DelegationBean _queryRunningDelegation(final EDelegationSource delegationSource,
 			final ID sourceId) {
-		return query("delegationsource=? and sourceid=? and status<?", delegationSource, sourceId,
-				EDelegationStatus.complete).next();
+		return getBean("delegationsource=? and sourceid=? and status<?", delegationSource, sourceId,
+				EDelegationStatus.complete);
 	}
 
 	@Override
