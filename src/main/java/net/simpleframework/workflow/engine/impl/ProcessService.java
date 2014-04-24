@@ -165,7 +165,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public void doBackToRemote(final ProcessBean process) {
-		final ITaskExecutor taskExecutor = context.getTaskExecutor();
+		final ITaskExecutor taskExecutor = workflowContext.getTaskExecutor();
 		taskExecutor.addScheduledTask(settings.getSubActivityPeriod(), new ExecutorRunnable() {
 			@Override
 			protected void task() throws Exception {
@@ -179,7 +179,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 					data.add(mapping, pService.getVariable(process, mapping));
 				}
 
-				final Map<String, Object> r = context.getRemoteService().call(
+				final Map<String, Object> r = workflowContext.getRemoteService().call(
 						properties.getProperty(IProcessRemote.SERVERURL), "subComplete", data);
 				final Boolean success = (Boolean) r.get("success");
 				if (success != null && success.booleanValue()) {

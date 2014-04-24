@@ -356,7 +356,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	void _doRemoteSubActivity(final ActivityBean activity) {
 		final ID activityId = activity.getId();
-		final ITaskExecutor taskExecutor = context.getTaskExecutor();
+		final ITaskExecutor taskExecutor = workflowContext.getTaskExecutor();
 		taskExecutor.addScheduledTask(settings.getSubActivityPeriod(), new ExecutorRunnable() {
 			@Override
 			protected void task() throws Exception {
@@ -390,7 +390,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 					}
 
 					// 创建远程子流程实例
-					final Map<String, Object> r = context.getRemoteService().call(sub.getUrl(),
+					final Map<String, Object> r = workflowContext.getRemoteService().call(sub.getUrl(),
 							"startProcess", data);
 					final Object processId = r.get(IProcessRemote.SUB_PROCESSID);
 					if (processId != null) {
@@ -411,7 +411,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 					final Properties properties = nActivity.getProperties();
 					data.add(IProcessRemote.SUB_PROCESSID, properties.get(IProcessRemote.SUB_PROCESSID));
 					try {
-						final Map<String, Object> r = context.getRemoteService().call(sub.getUrl(),
+						final Map<String, Object> r = workflowContext.getRemoteService().call(sub.getUrl(),
 								"checkProcess", data);
 						final Boolean success = (Boolean) r.get("success");
 						if (success != null && success.booleanValue()) {
@@ -777,7 +777,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 
 		// 启动过期监控
-		final ITaskExecutor taskExecutor = context.getTaskExecutor();
+		final ITaskExecutor taskExecutor = workflowContext.getTaskExecutor();
 		taskExecutor.addScheduledTask(settings.getTimeoutCheckPeriod(), new ExecutorRunnable() {
 			@Override
 			protected void task() throws Exception {

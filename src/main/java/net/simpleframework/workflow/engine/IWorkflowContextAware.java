@@ -13,14 +13,14 @@ import net.simpleframework.workflow.engine.participant.IWorkflowPermissionHandle
  */
 public interface IWorkflowContextAware extends IModuleContextAware {
 
-	static final IWorkflowContext context = ModuleContextFactory.get(IWorkflowContext.class);
+	static final IWorkflowContext workflowContext = ModuleContextFactory.get(IWorkflowContext.class);
 
-	static final WorkflowSettings settings = (WorkflowSettings) context.getContextSettings();
+	static final WorkflowSettings settings = (WorkflowSettings) workflowContext.getContextSettings();
 
-	static final IProcessModelService mService = context.getProcessModelService();
-	static final IProcessService pService = context.getProcessService();
-	static final IActivityService aService = context.getActivityService();
-	static final IWorkitemService wService = context.getWorkitemService();
-	static final IDelegationService dService = context.getDelegationService();
-	static final IWorkflowPermissionHandler permission = context.getParticipantService();
+	static final IProcessModelService mService = workflowContext.getProcessModelService();
+	static final IProcessService pService = workflowContext.getProcessService();
+	static final IActivityService aService = workflowContext.getActivityService();
+	static final IWorkitemService wService = workflowContext.getWorkitemService();
+	static final IDelegationService dService = workflowContext.getDelegationService();
+	static final IWorkflowPermissionHandler permission = workflowContext.getParticipantService();
 }

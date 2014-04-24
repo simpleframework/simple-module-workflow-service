@@ -162,7 +162,7 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 		super.onInit();
 
 		// 检测是否过期
-		final ITaskExecutor taskExecutor = context.getTaskExecutor();
+		final ITaskExecutor taskExecutor = workflowContext.getTaskExecutor();
 		taskExecutor.addScheduledTask(settings.getDelegatePeriod(), new ExecutorRunnable() {
 			@Override
 			protected void task() throws Exception {
