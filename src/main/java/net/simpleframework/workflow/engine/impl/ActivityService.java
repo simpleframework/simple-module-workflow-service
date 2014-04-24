@@ -411,8 +411,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 					final Properties properties = nActivity.getProperties();
 					data.add(IProcessRemote.SUB_PROCESSID, properties.get(IProcessRemote.SUB_PROCESSID));
 					try {
-						final Map<String, Object> r = workflowContext.getRemoteService().call(sub.getUrl(),
-								"checkProcess", data);
+						final Map<String, Object> r = workflowContext.getRemoteService().call(
+								sub.getUrl(), "checkProcess", data);
 						final Boolean success = (Boolean) r.get("success");
 						if (success != null && success.booleanValue()) {
 							taskExecutor.removeScheduledTask(this);
