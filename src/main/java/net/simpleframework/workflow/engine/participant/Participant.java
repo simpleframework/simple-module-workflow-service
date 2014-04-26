@@ -2,7 +2,7 @@ package net.simpleframework.workflow.engine.participant;
 
 import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
-import net.simpleframework.workflow.engine.IWorkflowContextAware;
+import net.simpleframework.workflow.engine.IWorkflowServiceAware;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -10,7 +10,7 @@ import net.simpleframework.workflow.engine.IWorkflowContextAware;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class Participant implements IWorkflowContextAware {
+public class Participant implements IWorkflowServiceAware {
 	public ID userId;
 
 	public ID roleId;

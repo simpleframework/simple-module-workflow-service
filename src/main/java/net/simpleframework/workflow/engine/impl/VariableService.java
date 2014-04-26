@@ -12,7 +12,7 @@ import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
 import net.simpleframework.workflow.engine.AbstractWorkflowBean;
 import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.EVariableSource;
-import net.simpleframework.workflow.engine.IWorkflowContextAware;
+import net.simpleframework.workflow.engine.IWorkflowServiceAware;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.VariableBean;
 import net.simpleframework.workflow.schema.EVariableType;
@@ -25,7 +25,7 @@ import net.simpleframework.workflow.schema.VariableNode;
  *         http://www.simpleframework.net
  */
 public class VariableService extends AbstractDbBeanService<VariableBean> implements
-		IWorkflowContextAware {
+		IWorkflowServiceAware {
 
 	VariableBean createVariableBean(final AbstractWorkflowBean bean,
 			final VariableNode variableNode, final Object value) {

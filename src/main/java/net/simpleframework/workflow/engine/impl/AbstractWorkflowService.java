@@ -17,8 +17,8 @@ import net.simpleframework.ctx.script.IScriptEval;
 import net.simpleframework.ctx.script.ScriptEvalFactory;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
 import net.simpleframework.workflow.engine.ActivityBean;
-import net.simpleframework.workflow.engine.IWorkflowContextAware;
 import net.simpleframework.workflow.engine.IWorkflowService;
+import net.simpleframework.workflow.engine.IWorkflowServiceAware;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.ProcessModelBean;
 import net.simpleframework.workflow.engine.WorkitemBean;
@@ -39,7 +39,7 @@ import net.simpleframework.workflow.schema.ProcessNode;
  *         http://www.simpleframework.net
  */
 public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
-		AbstractDbBeanService<T> implements IWorkflowService<T>, IWorkflowContextAware {
+		AbstractDbBeanService<T> implements IWorkflowService<T>, IWorkflowServiceAware {
 	static Collection<String> defaultExpr;
 	static {
 		defaultExpr = new ArrayList<String>();
@@ -195,11 +195,11 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 		update(new String[] { "status" }, t);
 	}
 
-	protected static ProcessModelService mService = (ProcessModelService) IWorkflowContextAware.mService;
-	protected static ProcessService pService = (ProcessService) IWorkflowContextAware.pService;
-	protected static ActivityService aService = (ActivityService) IWorkflowContextAware.aService;
-	protected static WorkitemService wService = (WorkitemService) IWorkflowContextAware.wService;
-	protected static DelegationService dService = (DelegationService) IWorkflowContextAware.dService;
+	protected static ProcessModelService mService = (ProcessModelService) IWorkflowServiceAware.mService;
+	protected static ProcessService pService = (ProcessService) IWorkflowServiceAware.pService;
+	protected static ActivityService aService = (ActivityService) IWorkflowServiceAware.aService;
+	protected static WorkitemService wService = (WorkitemService) IWorkflowServiceAware.wService;
+	protected static DelegationService dService = (DelegationService) IWorkflowServiceAware.dService;
 
 	protected static VariableService vService;
 

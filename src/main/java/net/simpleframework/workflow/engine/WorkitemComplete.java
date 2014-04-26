@@ -14,7 +14,7 @@ import net.simpleframework.common.object.ObjectEx;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class WorkitemComplete extends ObjectEx implements Serializable, IWorkflowContextAware {
+public class WorkitemComplete extends ObjectEx implements Serializable, IWorkflowServiceAware {
 
 	private final ID workitemId;
 

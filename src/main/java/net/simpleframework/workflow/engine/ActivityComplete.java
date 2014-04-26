@@ -32,7 +32,7 @@ import net.simpleframework.workflow.schema.UserNode.RuleRole;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class ActivityComplete extends ObjectEx implements Serializable, IWorkflowContextAware {
+public class ActivityComplete extends ObjectEx implements Serializable, IWorkflowServiceAware {
 
 	private WorkitemComplete workitemComplete;
 
