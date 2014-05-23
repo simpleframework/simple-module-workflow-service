@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.simpleframework.common.StringUtils;
-import net.simpleframework.ctx.ModuleException;
+import net.simpleframework.common.th.RuntimeExceptionEx;
 import net.simpleframework.workflow.engine.EActivityStatus;
 import net.simpleframework.workflow.engine.EDelegationStatus;
 import net.simpleframework.workflow.engine.EProcessModelStatus;
@@ -19,7 +19,7 @@ import net.simpleframework.workflow.engine.EWorkitemStatus;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class WorkflowStatusException extends ModuleException {
+public class WorkflowStatusException extends RuntimeExceptionEx {
 
 	public WorkflowStatusException(final String msg, final Throwable cause) {
 		super(msg, cause);
