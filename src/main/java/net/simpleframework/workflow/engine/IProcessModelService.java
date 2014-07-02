@@ -43,7 +43,7 @@ public interface IProcessModelService extends IWorkflowService<ProcessModelBean>
 	 * 根据名字或则id获取模型，如果不存在，则抛异常
 	 * 
 	 * @param model
-	 *           名字或则id
+	 *        名字或则id
 	 * @return
 	 */
 	ProcessModelBean getProcessModel(String model);
@@ -67,7 +67,7 @@ public interface IProcessModelService extends IWorkflowService<ProcessModelBean>
 	 * 
 	 * @param userId
 	 * @param model
-	 *           实例或者是id
+	 *        实例或者是id
 	 * @return
 	 */
 	boolean isStartProcess(ID userId, Object model);

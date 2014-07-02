@@ -70,7 +70,7 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * 
 	 * @param activity
 	 * @param tasknode
-	 *           环节id或名称
+	 *        环节id或名称
 	 * @return
 	 */
 	ActivityBean getPreActivity(ActivityBean activity, String tasknode);
@@ -107,7 +107,7 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * 
 	 * @param activity
 	 * @param policy
-	 *           放弃策略
+	 *        放弃策略
 	 */
 	void doAbort(ActivityBean activity, EActivityAbortPolicy policy);
 
@@ -120,7 +120,7 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * 
 	 * @param activity
 	 * @param tasknode
-	 *           环节id或名称
+	 *        环节id或名称
 	 */
 	void doJump(ActivityBean activity, String tasknode);
 
@@ -129,7 +129,7 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * 
 	 * @param activity
 	 * @param tasknode
-	 *           环节id或名称
+	 *        环节id或名称
 	 */
 	void doFallback(ActivityBean activity, String tasknode);
 
@@ -156,7 +156,7 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * 
 	 * @param activity
 	 * @param all
-	 *           包含废止的
+	 *        包含废止的
 	 * @return
 	 */
 	Map<ID, String> getParticipants(ActivityBean activity, boolean all);

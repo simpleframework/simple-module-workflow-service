@@ -59,7 +59,7 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 	 * 指定的转移构造，用在流程启动
 	 * 
 	 * @param activity
-	 *           开始环节
+	 *        开始环节
 	 * @param transitions
 	 */
 	public ActivityComplete(final ActivityBean activity, final List<TransitionNode> transitions) {
