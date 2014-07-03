@@ -364,7 +364,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 					final Object[] beans) {
 				super.onAfterUpdate(manager, columns, beans);
 
-				if (ArrayUtils.contains(columns, "status")) {
+				if (ArrayUtils.contains(columns, "status", true)) {
 					for (final Object bean : beans) {
 						final ProcessBean process = (ProcessBean) bean;
 						for (final IWorkflowListener listener : getEventListeners(process)) {

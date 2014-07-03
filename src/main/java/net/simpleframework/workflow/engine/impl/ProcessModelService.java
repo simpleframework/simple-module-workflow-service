@@ -229,7 +229,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 					final Object[] beans) {
 				itemsCache.clear();
 
-				if (ArrayUtils.contains(columns, "status")) {
+				if (ArrayUtils.contains(columns, "status", true)) {
 					for (final Object bean : beans) {
 						final ProcessModelBean processModel = (ProcessModelBean) bean;
 						for (final IWorkflowListener listener : getEventListeners(processModel)) {

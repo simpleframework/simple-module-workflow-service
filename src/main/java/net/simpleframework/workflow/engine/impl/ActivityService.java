@@ -806,7 +806,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				super.onAfterUpdate(manager, columns, beans);
 
 				// 事件
-				if (ArrayUtils.contains(columns, "status")) {
+				if (ArrayUtils.contains(columns, "status", true)) {
 					for (final Object bean : beans) {
 						final ActivityBean activity = (ActivityBean) bean;
 						for (final IWorkflowListener listener : getEventListeners(activity)) {
