@@ -6,7 +6,6 @@ import net.simpleframework.ado.db.IDbEntityTableRegistry;
 import net.simpleframework.ctx.AbstractADOModuleContext;
 import net.simpleframework.ctx.IApplicationContext;
 import net.simpleframework.ctx.Module;
-import net.simpleframework.ctx.permission.IPermissionConst;
 import net.simpleframework.ctx.permission.IPermissionHandler;
 import net.simpleframework.ctx.settings.ContextSettings;
 import net.simpleframework.ctx.task.ExecutorRunnable;
@@ -111,10 +110,5 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 		IPermissionHandler pHandler;
 		return ((pHandler = getPermission()) instanceof IWorkflowPermissionHandler ? (IWorkflowPermissionHandler) pHandler
 				: null);
-	}
-
-	@Override
-	public String getManagerRole() {
-		return IPermissionConst.ROLE_MANAGER;
 	}
 }
