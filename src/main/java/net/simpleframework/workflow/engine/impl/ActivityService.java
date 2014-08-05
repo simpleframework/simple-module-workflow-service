@@ -419,7 +419,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 						}
 					} catch (final IOException e) {
 						// 忽略。启动时调用，不抛出异常
-						log.warn(e);
+						getLog().warn(e);
 					}
 				}
 			}
