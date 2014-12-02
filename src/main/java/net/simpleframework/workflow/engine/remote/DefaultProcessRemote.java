@@ -21,6 +21,6 @@ public class DefaultProcessRemote extends AbstractWorkflowRemote implements IPro
 	@Override
 	public Map<String, Object> call(final String url, final String method,
 			final Map<String, Object> data) throws IOException {
-		return HttpClient.of(url).post(remote_page + "?method=" + method, data);
+		return new HttpClient(url).post(remote_page + "?method=" + method, data);
 	}
 }
