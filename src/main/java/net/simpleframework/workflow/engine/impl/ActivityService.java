@@ -214,48 +214,59 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			update(new String[] { "properties" }, nActivity);
 		}
 
-		// 判断合并环节之前是否还有活动的
-		ExpressionValue ev = null;
-		for (final TransitionNode t : to.fromTransitions()) {
-			if (ev == null) {
-				ev = new ExpressionValue("processId=? and (");
-				ev.addValues(nActivity.getProcessId());
-			} else {
-				ev.addExpression(" or ");
-			}
-			ev.addExpression("tasknodeId=?");
-			ev.addValues(t.from().getId());
-		}
-		dq = getEntityManager().queryBeans(ev.addExpression(")"));
-		ActivityBean pre;
-
-		final int count = Convert.toInt(eval(nActivity, to.getCount()));
-		final List<ActivityBean> aborts = new ArrayList<ActivityBean>();
-		boolean complete;
-		if (count <= 0 || count >= dq.getCount()) {
+		boolean complete = false;
+		final Object _condition = eval(nActivity, to.getCondition());
+		if (_condition instanceof Boolean && ((Boolean) _condition).booleanValue()) {
 			complete = true;
-			// 查找是否存在有未完成的任务环节
-			while ((pre = dq.next()) != null) {
-				if (!isFinalStatus(pre) && !pre.equals(preActivity)) {
-					complete = false;
-					break;
-				}
-			}
-		} else {
-			complete = false;
-			int completes = 0;
-			while ((pre = dq.next()) != null) {
-				// 如果合并环节含有前一环节的记录，则认为是完成的
-				if (_isPreviousOfMergeActivity(nActivity, pre)) {
-					completes++;
+		}
+
+		final List<ActivityBean> aborts = new ArrayList<ActivityBean>();
+
+		if (!complete) {
+			final int count = Convert.toInt(_condition);
+
+			// 判断合并环节之前是否还有活动的
+			ExpressionValue ev = null;
+			for (final TransitionNode t : to.fromTransitions()) {
+				if (ev == null) {
+					ev = new ExpressionValue("processId=? and (");
+					ev.addValues(nActivity.getProcessId());
 				} else {
-					aborts.add(pre);
+					ev.addExpression(" or ");
 				}
-				if (completes >= count) {
-					complete = true;
+				ev.addExpression("tasknodeId=?");
+				ev.addValues(t.from().getId());
+			}
+
+			dq = getEntityManager().queryBeans(ev.addExpression(")"));
+			ActivityBean pre;
+
+			if (count <= 0 || count >= dq.getCount()) {
+				complete = true;
+				// 查找是否存在有未完成的任务环节
+				while ((pre = dq.next()) != null) {
+					if (!isFinalStatus(pre) && !pre.equals(preActivity)) {
+						complete = false;
+						break;
+					}
+				}
+			} else {
+				complete = false;
+				int completes = 0;
+				while ((pre = dq.next()) != null) {
+					// 如果合并环节含有前一环节的记录，则认为是完成的
+					if (_isPreviousOfMergeActivity(nActivity, pre)) {
+						completes++;
+					} else {
+						aborts.add(pre);
+					}
+					if (completes >= count) {
+						complete = true;
+					}
 				}
 			}
 		}
+
 		if (complete) {
 			new ActivityComplete(nActivity).complete();
 			if (aborts.size() > 0) {
