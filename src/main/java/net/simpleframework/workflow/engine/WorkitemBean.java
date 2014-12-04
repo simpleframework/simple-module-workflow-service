@@ -29,16 +29,17 @@ public class WorkitemBean extends AbstractWorkflowBean {
 
 	/* 任务分派的用户id */
 	private ID userId;
+	/* 用户所在的部门id */
+	private ID deptId;
 
 	/* 任务分派的角色id */
 	private ID roleId;
 
-	/* 用户和角色显示名 */
-	private String userText, roleText;
+	/* 用户显示名 */
+	private String userText;
 
 	/* 实际执行的用户id，缺省值=userId */
 	private ID userId2;
-
 	/* 实际执行用户显示名 */
 	private String userText2;
 
@@ -88,6 +89,14 @@ public class WorkitemBean extends AbstractWorkflowBean {
 		this.userId = userId;
 	}
 
+	public ID getDeptId() {
+		return deptId;
+	}
+
+	public void setDeptId(ID deptId) {
+		this.deptId = deptId;
+	}
+
 	public ID getRoleId() {
 		return roleId;
 	}
@@ -102,14 +111,6 @@ public class WorkitemBean extends AbstractWorkflowBean {
 
 	public void setUserText(final String userText) {
 		this.userText = userText;
-	}
-
-	public String getRoleText() {
-		return roleText;
-	}
-
-	public void setRoleText(final String roleText) {
-		this.roleText = roleText;
 	}
 
 	public ID getUserId2() {

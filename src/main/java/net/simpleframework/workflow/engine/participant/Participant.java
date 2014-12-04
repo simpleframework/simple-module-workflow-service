@@ -13,8 +13,6 @@ import net.simpleframework.workflow.engine.IWorkflowServiceAware;
 public class Participant implements IWorkflowServiceAware {
 	public ID userId;
 
-	public ID deptId;
-
 	public ID roleId;
 
 	public Participant(final ID userId, final ID roleId) {

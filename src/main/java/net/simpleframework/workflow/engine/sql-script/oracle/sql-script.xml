@@ -102,7 +102,7 @@
         activityid char(32) not null,
         status number(4) not null,
         roleid char(32) not null, 
-        roletext varchar2(32) not null,
+        deptid char(32),
         userid char(32) not null,
         usertext varchar2(32) not null,
         userid2 char(32) not null,

@@ -11,6 +11,7 @@ import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.ArrayUtils;
+import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.ActivityComplete;
@@ -417,11 +418,14 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		final WorkitemBean workitem = createBean();
 		workitem.setProcessId(activity.getProcessId());
 		workitem.setActivityId(activity.getId());
-		workitem.setUserId(participant.userId);
-		workitem.setUserText(permission.getUser(participant.userId).toString());
 		workitem.setCreateDate(new Date());
+
+		final PermissionUser user = permission.getUser(participant.userId);
+		workitem.setUserId(user.getId());
+		workitem.setUserText(user.getText());
+		workitem.setDeptId(user.getDeptId());
+
 		workitem.setRoleId(participant.roleId);
-		workitem.setRoleText(permission.getRole(participant.roleId).toString());
 		workitem.setUserId2(participant.userId);
 		return workitem;
 	}
