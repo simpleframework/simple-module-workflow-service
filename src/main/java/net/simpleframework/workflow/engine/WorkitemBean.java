@@ -93,7 +93,7 @@ public class WorkitemBean extends AbstractWorkflowBean {
 		return deptId;
 	}
 
-	public void setDeptId(ID deptId) {
+	public void setDeptId(final ID deptId) {
 		this.deptId = deptId;
 	}
 
