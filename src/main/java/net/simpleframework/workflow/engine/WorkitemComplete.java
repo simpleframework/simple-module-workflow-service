@@ -39,6 +39,15 @@ public class WorkitemComplete extends ObjectEx implements Serializable, IWorkflo
 		}
 	}
 
+	private ActivityComplete activityComplete;
+
+	public ActivityComplete getActivityComplete() {
+		if (activityComplete == null) {
+			activityComplete = new ActivityComplete(getWorkitem());
+		}
+		return activityComplete;
+	}
+
 	public WorkitemBean getWorkitem() {
 		return wService.getBean(workitemId);
 	}

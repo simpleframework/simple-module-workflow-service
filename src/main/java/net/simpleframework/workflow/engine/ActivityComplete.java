@@ -34,7 +34,7 @@ import net.simpleframework.workflow.schema.UserNode.RuleRole;
  */
 public class ActivityComplete extends ObjectEx implements Serializable, IWorkflowServiceAware {
 
-	private WorkitemComplete workitemComplete;
+	private WorkitemBean workitem;
 
 	private ID activityId;
 
@@ -46,9 +46,9 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 		_participants = new LinkedHashMap<String, List<Participant>>();
 	}
 
-	public ActivityComplete(final WorkitemBean workitem) {
-		this.workitemComplete = WorkitemComplete.get(workitem);
-		doInit(wService.getActivity(workitemComplete.getWorkitem()));
+	ActivityComplete(final WorkitemBean workitem) {
+		this.workitem = workitem;
+		doInit(wService.getActivity(workitem));
 	}
 
 	public ActivityComplete(final ActivityBean activity) {
@@ -77,9 +77,9 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 
 		final AbstractTaskNode tasknode = aService.getTaskNode(activity);
 		final IScriptEval script;
-		if (workitemComplete != null) {
-			script = wService.getScriptEval(workitemComplete.getWorkitem());
-			final Map<String, Object> variables = workitemComplete.getVariables();
+		if (workitem != null) {
+			script = wService.getScriptEval(workitem);
+			final Map<String, Object> variables = WorkitemComplete.get(workitem).getVariables();
 			for (final Map.Entry<String, Object> e : variables.entrySet()) {
 				script.putVariable(e.getKey(), e.getValue());
 			}
@@ -94,6 +94,10 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 		for (final TransitionNode transition : getTransitions()) {
 			putParticipant(transition, script);
 		}
+	}
+
+	public WorkitemBean getWorkitem() {
+		return workitem;
 	}
 
 	private void putParticipant(final TransitionNode transition, final IScriptEval script) {
@@ -125,10 +129,6 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 		} else {
 			throw WorkflowException.of($m("ActivityComplete.0"));
 		}
-	}
-
-	public WorkitemComplete getWorkitemComplete() {
-		return workitemComplete;
 	}
 
 	public ActivityBean getActivity() {

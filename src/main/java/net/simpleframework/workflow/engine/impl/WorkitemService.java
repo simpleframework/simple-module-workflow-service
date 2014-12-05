@@ -14,7 +14,6 @@ import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.ActivityBean;
-import net.simpleframework.workflow.engine.ActivityComplete;
 import net.simpleframework.workflow.engine.DelegationBean;
 import net.simpleframework.workflow.engine.EActivityAbortPolicy;
 import net.simpleframework.workflow.engine.EActivityStatus;
@@ -96,7 +95,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			}
 
 			if (workitemComplete.isAllCompleted()) {
-				aService.doComplete(new ActivityComplete(workitem));
+				aService.doComplete(workitemComplete.getActivityComplete());
 			} else {
 				final List<?> list = PropSequential.list(activity);
 				if (list.size() > 0) { // 获取顺序执行的参与者

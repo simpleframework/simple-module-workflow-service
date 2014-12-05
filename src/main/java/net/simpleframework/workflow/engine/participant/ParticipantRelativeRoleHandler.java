@@ -12,7 +12,6 @@ import net.simpleframework.workflow.engine.ActivityComplete;
 import net.simpleframework.workflow.engine.EWorkitemStatus;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.WorkitemBean;
-import net.simpleframework.workflow.engine.WorkitemComplete;
 import net.simpleframework.workflow.engine.participant.IParticipantHandler.AbstractParticipantHandler;
 import net.simpleframework.workflow.schema.UserNode;
 import net.simpleframework.workflow.schema.UserNode.ERelativeType;
@@ -31,7 +30,7 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 		final ArrayList<Participant> participants = new ArrayList<Participant>();
 		final ActivityComplete activityComplete = (ActivityComplete) variables
 				.get("activityComplete");
-		WorkitemComplete workitemComplete;
+		WorkitemBean workitem;
 		final UserNode.RelativeRole rRole = (UserNode.RelativeRole) getParticipantType(variables);
 		final String relative = rRole.getRelative();
 		final ERelativeType rType = rRole.getRelativeType();
@@ -49,14 +48,13 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 					participants.add(new Participant(userId, process.getRoleId()));
 				}
 			}
-		} else if ((workitemComplete = activityComplete.getWorkitemComplete()) != null) {
+		} else if ((workitem = activityComplete.getWorkitem()) != null) {
 			ActivityBean preActivity = null;
 			if (rType == ERelativeType.preActivityParticipant) {
 				preActivity = activityComplete.getActivity();
 			} else if (rType == ERelativeType.preNamedActivityParticipant) {
 			}
 			if (preActivity != null) {
-				final WorkitemBean workitem = workitemComplete.getWorkitem();
 				if (StringUtils.hasText(relative)) {
 					final Collection<Participant> _participants = permission.getRelativeParticipants(
 							workitem.getUserId(), workitem.getRoleId(), relative, variables);
