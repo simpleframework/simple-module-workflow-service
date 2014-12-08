@@ -32,15 +32,14 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 				.get("activityComplete");
 		WorkitemBean workitem;
 		final UserNode.RelativeRole rRole = (UserNode.RelativeRole) getParticipantType(variables);
-		final String relative = rRole.getRelative();
 		final ERelativeType rType = rRole.getRelativeType();
 		if (rType == ERelativeType.processInitiator) {
 			final ProcessBean process = aService.getProcessBean(activityComplete.getActivity());
 			final ID userId = process.getUserId();
 			if (userId != null) {
-				if (StringUtils.hasText(relative)) {
+				if (StringUtils.hasText(rRole.getRelative())) {
 					final Collection<Participant> _participants = permission.getRelativeParticipants(
-							userId, process.getRoleId(), relative, rRole.isIndept(), variables);
+							userId, process.getRoleId(), rRole, variables);
 					if (_participants != null) {
 						participants.addAll(_participants);
 					}
@@ -55,10 +54,9 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 			} else if (rType == ERelativeType.preNamedActivityParticipant) {
 			}
 			if (preActivity != null) {
-				if (StringUtils.hasText(relative)) {
+				if (StringUtils.hasText(rRole.getRelative())) {
 					final Collection<Participant> _participants = permission.getRelativeParticipants(
-							workitem.getUserId(), workitem.getRoleId(), relative, rRole.isIndept(),
-							variables);
+							workitem.getUserId(), workitem.getRoleId(), rRole, variables);
 					if (_participants != null) {
 						participants.addAll(_participants);
 					}

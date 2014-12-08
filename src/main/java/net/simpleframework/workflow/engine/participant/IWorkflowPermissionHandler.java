@@ -8,6 +8,7 @@ import net.simpleframework.common.ID;
 import net.simpleframework.ctx.permission.IPermissionHandler;
 import net.simpleframework.workflow.engine.EDelegationSource;
 import net.simpleframework.workflow.engine.ProcessModelBean;
+import net.simpleframework.workflow.schema.UserNode;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -21,13 +22,12 @@ public interface IWorkflowPermissionHandler extends IPermissionHandler {
 	 * 
 	 * @param user
 	 * @param role
-	 * @param relative
-	 * @param indept
+	 * @param rRole
 	 * @param variables
 	 * @return
 	 */
-	Collection<Participant> getRelativeParticipants(Object user, Object role, String relative,
-			boolean indept, Map<String, Object> variables);
+	Collection<Participant> getRelativeParticipants(Object user, Object role,
+			UserNode.RelativeRole rRole, Map<String, Object> variables);
 
 	/**
 	 * 在设置委托时，返回定义的用户列表，默认实现为当前用户所在部门的所有用户
