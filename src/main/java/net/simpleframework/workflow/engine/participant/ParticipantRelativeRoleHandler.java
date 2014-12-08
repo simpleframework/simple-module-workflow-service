@@ -40,7 +40,7 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 			if (userId != null) {
 				if (StringUtils.hasText(relative)) {
 					final Collection<Participant> _participants = permission.getRelativeParticipants(
-							userId, process.getRoleId(), relative, variables);
+							userId, process.getRoleId(), relative, rRole.isIndept(), variables);
 					if (_participants != null) {
 						participants.addAll(_participants);
 					}
@@ -57,7 +57,8 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 			if (preActivity != null) {
 				if (StringUtils.hasText(relative)) {
 					final Collection<Participant> _participants = permission.getRelativeParticipants(
-							workitem.getUserId(), workitem.getRoleId(), relative, variables);
+							workitem.getUserId(), workitem.getRoleId(), relative, rRole.isIndept(),
+							variables);
 					if (_participants != null) {
 						participants.addAll(_participants);
 					}

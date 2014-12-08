@@ -22,11 +22,12 @@ public interface IWorkflowPermissionHandler extends IPermissionHandler {
 	 * @param user
 	 * @param role
 	 * @param relative
+	 * @param indept
 	 * @param variables
 	 * @return
 	 */
 	Collection<Participant> getRelativeParticipants(Object user, Object role, String relative,
-			Map<String, Object> variables);
+			boolean indept, Map<String, Object> variables);
 
 	/**
 	 * 在设置委托时，返回定义的用户列表，默认实现为当前用户所在部门的所有用户
