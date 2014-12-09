@@ -30,9 +30,11 @@ public class ProcessBean extends AbstractWorkflowBean {
 
 	/* 流程启动者及启动角色 */
 	private ID userId, roleId;
+	/* 流程启动者所在的部门id */
+	private ID deptId;
 
 	/* 用户和角色显示名 */
-	private String userText, roleText;
+	private String userText;
 
 	private Properties properties;
 
@@ -84,6 +86,14 @@ public class ProcessBean extends AbstractWorkflowBean {
 		this.userId = userId;
 	}
 
+	public ID getDeptId() {
+		return deptId;
+	}
+
+	public void setDeptId(final ID deptId) {
+		this.deptId = deptId;
+	}
+
 	public ID getRoleId() {
 		return roleId;
 	}
@@ -98,14 +108,6 @@ public class ProcessBean extends AbstractWorkflowBean {
 
 	public void setUserText(final String userText) {
 		this.userText = userText;
-	}
-
-	public String getRoleText() {
-		return roleText;
-	}
-
-	public void setRoleText(final String roleText) {
-		this.roleText = roleText;
 	}
 
 	public Properties getProperties() {

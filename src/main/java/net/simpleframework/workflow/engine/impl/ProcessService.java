@@ -18,6 +18,7 @@ import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.common.coll.KVMap;
+import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.ctx.task.ExecutorRunnable;
 import net.simpleframework.ctx.task.ITaskExecutor;
 import net.simpleframework.workflow.WorkflowException;
@@ -300,10 +301,13 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		process.setCreateDate(new Date());
 		final ProcessDocument doc = mService.getProcessDocument(processModel);
 		process.setVersion(doc.getProcessNode().getVersion().toString());
-		process.setUserId(userId);
-		process.setUserText(permission.getUser(userId).toString());
+
+		final PermissionUser user = permission.getUser(userId);
+		process.setUserId(user.getId());
+		process.setDeptId(user.getDeptId());
+		process.setUserText(user.getText());
 		process.setRoleId(roleId);
-		process.setRoleText(permission.getRole(roleId).toString());
+
 		return process;
 	}
 

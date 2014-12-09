@@ -37,10 +37,10 @@
         version varchar2(16 char) not null,
         status number(4) not null,
         userid char(32),
+        deptid char(32),
         usertext varchar2(32),
         createdate timestamp not null,
         roleid char(32),
-        roletext varchar2(32),
         completedate timestamp,
         properties clob,
         primary key(id)

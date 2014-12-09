@@ -37,10 +37,10 @@
         version varchar(16) not null,
         status int2 not null,
         userid char(32),
+        deptid char(32),
         usertext varchar(32),
         createdate timestamp not null,
         roleid char(32),
-        roletext varchar(32),
         completedate timestamp,
         properties text,
         primary key(id)
