@@ -72,8 +72,9 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 					// 其它已完成任务项
 					for (final WorkitemBean workitem2 : wService.getWorkitems(preActivity,
 							EWorkitemStatus.complete)) {
+						if(!workitem2.getId().equals(workitem.getId())) {
 						participants.add(new Participant(workitem2.getUserId(), workitem2.getRoleId()));
-					}
+					}}
 				}
 			}
 		}

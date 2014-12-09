@@ -640,7 +640,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public ActivityBean getPreActivity(final ActivityBean activity, final String tasknode) {
-		ActivityBean preActivity = getPreActivity(activity);
+		ActivityBean preActivity = activity;
 		while (preActivity != null && tasknode != null) {
 			if (tasknode.equals(preActivity.getTasknodeId())
 					|| tasknode.equals(getTaskNode(preActivity).getName())) {
