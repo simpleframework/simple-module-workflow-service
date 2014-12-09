@@ -45,7 +45,8 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 				participants.add(new Participant(process.getUserId(), process.getRoleId()));
 			}
 
-		} else if ((workitem = activityComplete.getWorkitem()) != null) {
+		} else  { //if (() != null)
+			workitem = activityComplete.getWorkitem();
 			ActivityBean preActivity = null;
 			if (rType == ERelativeType.preActivityParticipant) {
 				preActivity = activityComplete.getActivity();
@@ -60,7 +61,7 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 					}
 				}
 			}
-			if (preActivity != null) {
+			if (preActivity != null && workitem!=null) {
 				if (StringUtils.hasText(rRole.getRelative())) {
 					final Collection<Participant> _participants = permission.getRelativeParticipants(
 							workitem, rRole, variables);
