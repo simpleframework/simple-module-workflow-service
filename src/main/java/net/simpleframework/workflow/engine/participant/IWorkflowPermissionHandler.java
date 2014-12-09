@@ -6,6 +6,7 @@ import java.util.Map;
 
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.permission.IPermissionHandler;
+import net.simpleframework.workflow.engine.AbstractWorkflowBean;
 import net.simpleframework.workflow.engine.EDelegationSource;
 import net.simpleframework.workflow.engine.ProcessModelBean;
 import net.simpleframework.workflow.schema.UserNode;
@@ -17,16 +18,16 @@ import net.simpleframework.workflow.schema.UserNode;
  *         http://www.simpleframework.net
  */
 public interface IWorkflowPermissionHandler extends IPermissionHandler {
+
 	/**
 	 * 获取相对参与者
 	 * 
-	 * @param user
-	 * @param role
+	 * @param workflowBean
 	 * @param rRole
 	 * @param variables
 	 * @return
 	 */
-	Collection<Participant> getRelativeParticipants(Object user, Object role,
+	Collection<Participant> getRelativeParticipants(AbstractWorkflowBean workflowBean,
 			UserNode.RelativeRole rRole, Map<String, Object> variables);
 
 	/**

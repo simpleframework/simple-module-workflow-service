@@ -2,9 +2,9 @@ package net.simpleframework.workflow.engine.participant;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
-import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
 import net.simpleframework.ctx.script.IScriptEval;
 import net.simpleframework.workflow.engine.ActivityBean;
@@ -35,28 +35,35 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 		final ERelativeType rType = rRole.getRelativeType();
 		if (rType == ERelativeType.processInitiator) {
 			final ProcessBean process = aService.getProcessBean(activityComplete.getActivity());
-			final ID userId = process.getUserId();
-			if (userId != null) {
-				if (StringUtils.hasText(rRole.getRelative())) {
-					final Collection<Participant> _participants = permission.getRelativeParticipants(
-							userId, process.getRoleId(), rRole, variables);
-					if (_participants != null) {
-						participants.addAll(_participants);
-					}
-				} else {
-					participants.add(new Participant(userId, process.getRoleId()));
+			if (StringUtils.hasText(rRole.getRelative())) {
+				final Collection<Participant> _participants = permission.getRelativeParticipants(
+						process, rRole, variables);
+				if (_participants != null) {
+					participants.addAll(_participants);
 				}
+			} else {
+				participants.add(new Participant(process.getUserId(), process.getRoleId()));
 			}
+
 		} else if ((workitem = activityComplete.getWorkitem()) != null) {
 			ActivityBean preActivity = null;
 			if (rType == ERelativeType.preActivityParticipant) {
 				preActivity = activityComplete.getActivity();
 			} else if (rType == ERelativeType.preNamedActivityParticipant) {
+				preActivity = aService.getPreActivity(activityComplete.getActivity(),
+						rRole.getPreActivity());
+				if (preActivity != null) {
+					List<WorkitemBean> list = wService.getWorkitems(preActivity,
+							EWorkitemStatus.complete);
+					if (list.size() > 0) {
+						workitem = list.get(0);
+					}
+				}
 			}
 			if (preActivity != null) {
 				if (StringUtils.hasText(rRole.getRelative())) {
 					final Collection<Participant> _participants = permission.getRelativeParticipants(
-							workitem.getUserId(), workitem.getRoleId(), rRole, variables);
+							workitem, rRole, variables);
 					if (_participants != null) {
 						participants.addAll(_participants);
 					}
