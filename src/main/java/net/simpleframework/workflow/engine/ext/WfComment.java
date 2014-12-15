@@ -21,7 +21,7 @@ public class WfComment extends AbstractComment {
 		return workitemId;
 	}
 
-	public void setWorkitemId(ID workitemId) {
+	public void setWorkitemId(final ID workitemId) {
 		this.workitemId = workitemId;
 	}
 
@@ -29,7 +29,7 @@ public class WfComment extends AbstractComment {
 		return deptId;
 	}
 
-	public void setDeptId(ID deptId) {
+	public void setDeptId(final ID deptId) {
 		this.deptId = deptId;
 	}
 
@@ -37,7 +37,7 @@ public class WfComment extends AbstractComment {
 		return taskname;
 	}
 
-	public void setTaskname(String taskname) {
+	public void setTaskname(final String taskname) {
 		this.taskname = taskname;
 	}
 
