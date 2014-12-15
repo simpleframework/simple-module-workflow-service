@@ -1,6 +1,7 @@
 package net.simpleframework.workflow.engine;
 
 import net.simpleframework.ctx.IModuleContext;
+import net.simpleframework.workflow.engine.ext.IWfCommentService;
 import net.simpleframework.workflow.engine.participant.IWorkflowPermissionHandler;
 import net.simpleframework.workflow.engine.remote.IProcessRemote;
 
@@ -55,6 +56,13 @@ public interface IWorkflowContext extends IModuleContext {
 	 * @return
 	 */
 	IWorkflowPermissionHandler getParticipantService();
+
+	/**
+	 * 获取评论服务
+	 * 
+	 * @return
+	 */
+	IWfCommentService getCommentService();
 
 	IProcessRemote getRemoteService();
 }

@@ -25,6 +25,8 @@ import net.simpleframework.workflow.engine.ProcessModelLobBean;
 import net.simpleframework.workflow.engine.VariableBean;
 import net.simpleframework.workflow.engine.VariableLogBean;
 import net.simpleframework.workflow.engine.WorkitemBean;
+import net.simpleframework.workflow.engine.ext.IWfCommentService;
+import net.simpleframework.workflow.engine.ext.WfCommentService;
 import net.simpleframework.workflow.engine.participant.IWorkflowPermissionHandler;
 import net.simpleframework.workflow.engine.remote.DefaultProcessRemote;
 import net.simpleframework.workflow.engine.remote.IProcessRemote;
@@ -98,6 +100,11 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 	@Override
 	public IDelegationService getDelegationService() {
 		return singleton(DelegationService.class);
+	}
+
+	@Override
+	public IWfCommentService getCommentService() {
+		return singleton(WfCommentService.class);
 	}
 
 	@Override

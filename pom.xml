@@ -36,13 +36,7 @@
   <dependencies>
     <dependency>
       <groupId>net.simpleframework</groupId>
-      <artifactId>simple-context</artifactId>
-      <version>4.0-SNAPSHOT</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>net.simpleframework</groupId>
-      <artifactId>simple-ado</artifactId>
+      <artifactId>simple-module-common</artifactId>
       <version>4.0-SNAPSHOT</version>
     </dependency>
     
@@ -51,7 +45,7 @@
       <artifactId>simple-module-workflow-common</artifactId>
       <version>4.0-SNAPSHOT</version>
     </dependency>
-   
+    
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
