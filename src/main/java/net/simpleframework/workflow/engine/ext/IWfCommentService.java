@@ -9,4 +9,5 @@ import net.simpleframework.module.common.content.ICommentService;
  *         http://www.simpleframework.net
  */
 public interface IWfCommentService extends ICommentService<WfComment> {
+
 }

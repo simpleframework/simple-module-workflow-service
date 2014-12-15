@@ -26,6 +26,7 @@ import net.simpleframework.workflow.engine.VariableBean;
 import net.simpleframework.workflow.engine.VariableLogBean;
 import net.simpleframework.workflow.engine.WorkitemBean;
 import net.simpleframework.workflow.engine.ext.IWfCommentService;
+import net.simpleframework.workflow.engine.ext.WfComment;
 import net.simpleframework.workflow.engine.ext.WfCommentService;
 import net.simpleframework.workflow.engine.participant.IWorkflowPermissionHandler;
 import net.simpleframework.workflow.engine.remote.DefaultProcessRemote;
@@ -64,7 +65,8 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 				new DbEntityTable(ActivityLobBean.class, "sf_workflow_activity_lob").setNoCache(true),
 				new DbEntityTable(WorkitemBean.class, "sf_workflow_workitem"),
 				new DbEntityTable(VariableBean.class, "sf_workflow_variable"),
-				new DbEntityTable(VariableLogBean.class, "sf_workflow_variable_log") };
+				new DbEntityTable(VariableLogBean.class, "sf_workflow_variable_log"),
+				new DbEntityTable(WfComment.class, "sf_workflow_comment") };
 	}
 
 	@Override
