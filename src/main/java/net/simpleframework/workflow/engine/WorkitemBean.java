@@ -170,7 +170,7 @@ public class WorkitemBean extends AbstractWorkflowBean {
 		return ext1;
 	}
 
-	public void setExt1(String ext1) {
+	public void setExt1(final String ext1) {
 		this.ext1 = ext1;
 	}
 
@@ -178,7 +178,7 @@ public class WorkitemBean extends AbstractWorkflowBean {
 		return ext2;
 	}
 
-	public void setExt2(int ext2) {
+	public void setExt2(final int ext2) {
 		this.ext2 = ext2;
 	}
 

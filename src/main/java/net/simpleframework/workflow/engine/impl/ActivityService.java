@@ -227,16 +227,14 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			update(new String[] { "properties" }, nActivity);
 		}
 
+		List<ActivityBean> aborts = null;
+
 		boolean complete = false;
 		final Object _condition = eval(nActivity, to.getCondition());
-		if (_condition instanceof Boolean && ((Boolean) _condition).booleanValue()) {
-			complete = true;
-		}
-
-		final List<ActivityBean> aborts = new ArrayList<ActivityBean>();
-
-		if (!complete) {
-			final int count = Convert.toInt(_condition);
+		if (_condition instanceof Boolean) {
+			complete = ((Boolean) _condition).booleanValue();
+		} else if (_condition instanceof Number) {
+			final int count = ((Number) _condition).intValue();
 
 			// 判断合并环节之前是否还有活动的
 			ExpressionValue ev = null;
@@ -264,6 +262,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 					}
 				}
 			} else {
+				aborts = new ArrayList<ActivityBean>();
+
 				complete = false;
 				int completes = 0;
 				while ((pre = dq.next()) != null) {
@@ -282,7 +282,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 		if (complete) {
 			new ActivityComplete(nActivity).complete();
-			if (aborts.size() > 0) {
+			if (aborts != null && aborts.size() > 0) {
 				// 放弃未完成的
 				for (final ActivityBean activity : aborts) {
 					_abort(activity);
@@ -545,7 +545,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	public void doJump(final ActivityBean activity, final String taskname, final boolean bComplete) {
 		_assert(activity, EActivityStatus.running);
 
-		AbstractTaskNode tasknode = getTaskNode(activity);
+		final AbstractTaskNode tasknode = getTaskNode(activity);
 		final ProcessNode processNode = (ProcessNode) tasknode.getParent();
 		Node tasknode2 = processNode.getNodeById(taskname);
 		if (tasknode2 == null) {
