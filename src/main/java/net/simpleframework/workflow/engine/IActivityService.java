@@ -69,11 +69,11 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * 获取前一指定环节，获取的环节必须在创建链路上
 	 * 
 	 * @param activity
-	 * @param tasknode
+	 * @param taskname
 	 *        环节id或名称
 	 * @return
 	 */
-	ActivityBean getPreActivity(ActivityBean activity, String tasknode);
+	ActivityBean getPreActivity(ActivityBean activity, String taskname);
 
 	/**
 	 * 
@@ -119,19 +119,23 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * 跳转和回退的区别：跳转可以到任何一个有效的任务环节，按照模型创建参与者；回退只能是已运行过的任务，按运行历史创建参与者
 	 * 
 	 * @param activity
-	 * @param tasknode
+	 * @param taskname
 	 *        环节id或名称
+	 * @param bComplete
+	 *        是否完成当前环节
 	 */
-	void doJump(ActivityBean activity, String tasknode);
+	void doJump(ActivityBean activity, String taskname, boolean bComplete);
+
+	void doJump(ActivityBean activity, String taskname);
 
 	/**
 	 * 回退到指定的任务环节
 	 * 
 	 * @param activity
-	 * @param tasknode
+	 * @param taskname
 	 *        环节id或名称
 	 */
-	void doFallback(ActivityBean activity, String tasknode);
+	void doFallback(ActivityBean activity, String taskname);
 
 	void doFallback(ActivityBean activity);
 

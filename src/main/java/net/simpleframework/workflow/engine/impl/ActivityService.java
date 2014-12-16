@@ -24,6 +24,7 @@ import net.simpleframework.common.StringUtils;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.common.coll.CollectionUtils;
 import net.simpleframework.common.coll.KVMap;
+import net.simpleframework.ctx.common.xml.XmlElement;
 import net.simpleframework.ctx.task.ExecutorRunnable;
 import net.simpleframework.ctx.task.ITaskExecutor;
 import net.simpleframework.workflow.WorkflowException;
@@ -49,6 +50,7 @@ import net.simpleframework.workflow.schema.AbstractTaskNode;
 import net.simpleframework.workflow.schema.EVariableMode;
 import net.simpleframework.workflow.schema.EndNode;
 import net.simpleframework.workflow.schema.MergeNode;
+import net.simpleframework.workflow.schema.Node;
 import net.simpleframework.workflow.schema.ProcessNode;
 import net.simpleframework.workflow.schema.SubNode;
 import net.simpleframework.workflow.schema.SubNode.VariableMapping;
@@ -78,6 +80,10 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public void doComplete(final ActivityComplete activityComplete) {
+		_doComplete(activityComplete, true);
+	}
+
+	private void _doComplete(final ActivityComplete activityComplete, final boolean bComplete) {
 		final ActivityBean activity = activityComplete.getActivity();
 		if (isFinalStatus(activity)) {
 			throw WorkflowStatusException.of($m("ActivityService.2"));
@@ -104,6 +110,10 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			}
 		}
 
+		if (!bComplete) {
+			return;
+		}
+
 		activity.setStatus(EActivityStatus.complete);
 		activity.setCompleteDate(new Date());
 		update(new String[] { "completeDate", "status" }, activity);
@@ -120,16 +130,16 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			if (!TasknodeUtils.isInstanceShared(tasknode) && !TasknodeUtils.isSequential(tasknode)) {
 				// 多实例并行，处理响应数
 				final ArrayList<ActivityBean> al = new ArrayList<ActivityBean>();
-				int complete = 0;
+				int completes = 0;
 				for (final ActivityBean activity2 : getNextActivities(getPreActivity(activity))) {
 					if (activity2.getTasknodeId().equals(tasknode.getId())) {
 						al.add(activity2);
 						if (activity2.getStatus() == EActivityStatus.complete) {
-							complete++;
+							completes++;
 						}
 					}
 				}
-				if (complete >= TasknodeUtils.getResponseValue(tasknode, al.size())) {
+				if (completes >= TasknodeUtils.getResponseValue(tasknode, al.size())) {
 					for (int i = 0; i < al.size(); i++) {
 						_abort(al.get(i));
 					}
@@ -524,23 +534,39 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	@Override
-	public void doJump(final ActivityBean activity, final String tasknode) {
+	public void doJump(final ActivityBean activity, final String taskname, final boolean bComplete) {
 		_assert(activity, EActivityStatus.running);
-		// final ProcessNode processNode = (ProcessNode)
-		// activity.taskNode().parent();
-		//
-		// processNode.getNodeByName(tasknodeName);
+
+		final ProcessNode processNode = (ProcessNode) getTaskNode(activity).getParent();
+		Node tasknode = processNode.getNodeById(taskname);
+		if (tasknode == null) {
+			tasknode = processNode.getNodeByName(taskname);
+		}
+
+		if (tasknode instanceof UserNode || tasknode instanceof SubNode) {
+			final List<TransitionNode> transitions = new ArrayList<TransitionNode>();
+			transitions.add(new TransitionNode(new XmlElement(null), processNode));
+			final ActivityComplete aComplete = new ActivityComplete(activity, transitions);
+			_doComplete(aComplete, bComplete);
+		} else {
+			throw WorkflowException.of($m("ActivityService.4"));
+		}
 	}
 
 	@Override
-	public void doFallback(final ActivityBean activity, final String tasknode) {
+	public void doJump(final ActivityBean activity, final String taskname) {
+		doJump(activity, taskname, true);
+	}
+
+	@Override
+	public void doFallback(final ActivityBean activity, final String taskname) {
 		_assert(activity, EActivityStatus.running);
 		// 验证是否存在已完成的工作
 		if (wService.getWorkitems(activity, EWorkitemStatus.complete).size() > 0) {
 			throw WorkflowException.of($m("ActivityService.0"));
 		}
 		// 退回前一指定任务
-		final ActivityBean preActivity = getPreActivity(activity, tasknode);
+		final ActivityBean preActivity = getPreActivity(activity, taskname);
 		// 验证是否存在已完成的后续任务
 		for (final ActivityBean next : getNextActivities(preActivity)) {
 			if (next.getStatus() == EActivityStatus.complete) {
@@ -639,11 +665,11 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	@Override
-	public ActivityBean getPreActivity(final ActivityBean activity, final String tasknode) {
+	public ActivityBean getPreActivity(final ActivityBean activity, final String taskname) {
 		ActivityBean preActivity = activity;
-		while (preActivity != null && tasknode != null) {
-			if (tasknode.equals(preActivity.getTasknodeId())
-					|| tasknode.equals(getTaskNode(preActivity).getName())) {
+		while (preActivity != null && taskname != null) {
+			if (taskname.equals(preActivity.getTasknodeId())
+					|| taskname.equals(getTaskNode(preActivity).getName())) {
 				break;
 			}
 			preActivity = getPreActivity(preActivity);
