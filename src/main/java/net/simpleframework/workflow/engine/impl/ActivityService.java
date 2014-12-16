@@ -24,7 +24,6 @@ import net.simpleframework.common.StringUtils;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.common.coll.CollectionUtils;
 import net.simpleframework.common.coll.KVMap;
-import net.simpleframework.ctx.common.xml.XmlElement;
 import net.simpleframework.ctx.task.ExecutorRunnable;
 import net.simpleframework.ctx.task.ITaskExecutor;
 import net.simpleframework.workflow.WorkflowException;
@@ -534,28 +533,29 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	@Override
-	public void doJump(final ActivityBean activity, final String taskname, final boolean bComplete) {
-		_assert(activity, EActivityStatus.running);
-
-		final ProcessNode processNode = (ProcessNode) getTaskNode(activity).getParent();
-		Node tasknode = processNode.getNodeById(taskname);
-		if (tasknode == null) {
-			tasknode = processNode.getNodeByName(taskname);
-		}
-
-		if (tasknode instanceof UserNode || tasknode instanceof SubNode) {
-			final List<TransitionNode> transitions = new ArrayList<TransitionNode>();
-			transitions.add(new TransitionNode(new XmlElement(null), processNode));
-			final ActivityComplete aComplete = new ActivityComplete(activity, transitions);
-			_doComplete(aComplete, bComplete);
-		} else {
-			throw WorkflowException.of($m("ActivityService.4"));
-		}
+	public void doJump(final ActivityBean activity, final String taskname) {
+		doJump(activity, taskname, true);
 	}
 
 	@Override
-	public void doJump(final ActivityBean activity, final String taskname) {
-		doJump(activity, taskname, true);
+	public void doJump(final ActivityBean activity, final String taskname, final boolean bComplete) {
+		_assert(activity, EActivityStatus.running);
+
+		AbstractTaskNode tasknode = getTaskNode(activity);
+		final ProcessNode processNode = (ProcessNode) tasknode.getParent();
+		Node tasknode2 = processNode.getNodeById(taskname);
+		if (tasknode2 == null) {
+			tasknode2 = processNode.getNodeByName(taskname);
+		}
+
+		if (tasknode2 instanceof UserNode || tasknode2 instanceof SubNode) {
+			final List<TransitionNode> transitions = new ArrayList<TransitionNode>();
+			transitions.add(new TransitionNode(null, null).setFrom(tasknode.getId()).setTo(
+					tasknode2.getId()));
+			_doComplete(new ActivityComplete(activity, transitions), bComplete);
+		} else {
+			throw WorkflowException.of($m("ActivityService.4"));
+		}
 	}
 
 	@Override

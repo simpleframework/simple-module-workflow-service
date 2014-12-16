@@ -57,6 +57,11 @@ public class WorkitemBean extends AbstractWorkflowBean {
 	/* 取回工作项的引用 */
 	private ID retakeRef;
 
+	/* 扩展字段1 */
+	private String ext1;
+	/* 扩展字段2 */
+	private int ext2;
+
 	public EWorkitemStatus getStatus() {
 		return status != null ? status : EWorkitemStatus.running;
 	}
@@ -159,6 +164,22 @@ public class WorkitemBean extends AbstractWorkflowBean {
 
 	public void setRetakeRef(final ID retakeRef) {
 		this.retakeRef = retakeRef;
+	}
+
+	public String getExt1() {
+		return ext1;
+	}
+
+	public void setExt1(String ext1) {
+		this.ext1 = ext1;
+	}
+
+	public int getExt2() {
+		return ext2;
+	}
+
+	public void setExt2(int ext2) {
+		this.ext2 = ext2;
 	}
 
 	@Override
