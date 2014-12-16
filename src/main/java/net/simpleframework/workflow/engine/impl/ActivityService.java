@@ -167,6 +167,10 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			}
 		}
 
+		if (participants.size() == 0) {
+			throw WorkflowException.of($m("ActivityService.5"));
+		}
+
 		final ProcessBean process = getProcessBean(preActivity);
 		final boolean instanceShared = TasknodeUtils.isInstanceShared(to);
 		ActivityBean nActivity = null;

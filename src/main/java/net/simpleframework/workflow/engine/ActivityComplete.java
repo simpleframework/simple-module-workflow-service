@@ -1,7 +1,5 @@
 package net.simpleframework.workflow.engine;
 
-import static net.simpleframework.common.I18n.$m;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,7 +13,6 @@ import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.common.object.ObjectEx;
 import net.simpleframework.common.object.ObjectFactory;
 import net.simpleframework.ctx.script.IScriptEval;
-import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.participant.IParticipantHandler;
 import net.simpleframework.workflow.engine.participant.Participant;
 import net.simpleframework.workflow.engine.participant.ParticipantUtils;
@@ -126,8 +123,6 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 
 		if (participants.size() > 0) {
 			_participants.put(transition.getId(), participants);
-		} else {
-			throw WorkflowException.of($m("ActivityComplete.0"));
 		}
 	}
 
