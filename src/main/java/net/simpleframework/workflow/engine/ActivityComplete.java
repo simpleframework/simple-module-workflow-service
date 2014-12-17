@@ -1,6 +1,5 @@
 package net.simpleframework.workflow.engine;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -29,7 +28,7 @@ import net.simpleframework.workflow.schema.UserNode.RuleRole;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class ActivityComplete extends ObjectEx implements Serializable, IWorkflowServiceAware {
+public class ActivityComplete extends ObjectEx implements IWorkflowServiceAware {
 
 	private WorkitemBean workitem;
 
@@ -42,6 +41,9 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 		_transitions = new LinkedHashMap<String, TransitionNode>();
 		_participants = new LinkedHashMap<String, List<Participant>>();
 	}
+
+	/* 是否完成当前环节，当前环节可以不完成，而直接创建后续环节 */
+	private boolean bcomplete = true;
 
 	ActivityComplete(final WorkitemBean workitem) {
 		this.workitem = workitem;
@@ -128,6 +130,15 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 
 	public ActivityBean getActivity() {
 		return aService.getBean(activityId);
+	}
+
+	public boolean isBcomplete() {
+		return bcomplete;
+	}
+
+	public ActivityComplete setBcomplete(final boolean bcomplete) {
+		this.bcomplete = bcomplete;
+		return this;
 	}
 
 	public void complete() {
@@ -229,6 +240,4 @@ public class ActivityComplete extends ObjectEx implements Serializable, IWorkflo
 		_participants.clear();
 		_participants.putAll(participants);
 	}
-
-	private static final long serialVersionUID = -3129141441786781334L;
 }

@@ -1,12 +1,12 @@
 package net.simpleframework.workflow.engine;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.common.object.ObjectEx;
+import net.simpleframework.common.object.ObjectFactory.IObjectCreatorListener;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -14,7 +14,7 @@ import net.simpleframework.common.object.ObjectEx;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class WorkitemComplete extends ObjectEx implements Serializable, IWorkflowServiceAware {
+public class WorkitemComplete extends ObjectEx implements IWorkflowServiceAware {
 
 	private final ID workitemId;
 
@@ -39,13 +39,20 @@ public class WorkitemComplete extends ObjectEx implements Serializable, IWorkflo
 		}
 	}
 
-	private ActivityComplete activityComplete;
+	private ActivityComplete _activityComplete;
 
 	public ActivityComplete getActivityComplete() {
-		if (activityComplete == null) {
-			activityComplete = new ActivityComplete(getWorkitem());
+		return getActivityComplete(null);
+	}
+
+	public ActivityComplete getActivityComplete(final IObjectCreatorListener l) {
+		if (_activityComplete == null) {
+			_activityComplete = new ActivityComplete(getWorkitem());
+			if (l != null) {
+				l.onCreated(_activityComplete);
+			}
 		}
-		return activityComplete;
+		return _activityComplete;
 	}
 
 	public WorkitemBean getWorkitem() {
@@ -87,6 +94,4 @@ public class WorkitemComplete extends ObjectEx implements Serializable, IWorkflo
 		}
 		return workitemComplete;
 	}
-
-	private static final long serialVersionUID = 5112409107824255728L;
 }

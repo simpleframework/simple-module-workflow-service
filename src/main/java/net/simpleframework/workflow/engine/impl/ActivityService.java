@@ -79,10 +79,10 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public void doComplete(final ActivityComplete activityComplete) {
-		_doComplete(activityComplete, true);
+		_doComplete(activityComplete);
 	}
 
-	private void _doComplete(final ActivityComplete activityComplete, final boolean bComplete) {
+	private void _doComplete(final ActivityComplete activityComplete) {
 		final ActivityBean activity = activityComplete.getActivity();
 		if (isFinalStatus(activity)) {
 			throw WorkflowStatusException.of($m("ActivityService.2"));
@@ -109,7 +109,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			}
 		}
 
-		if (!bComplete) {
+		if (!activityComplete.isBcomplete()) {
 			return;
 		}
 
@@ -545,20 +545,23 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	public void doJump(final ActivityBean activity, final String taskname, final boolean bComplete) {
 		_assert(activity, EActivityStatus.running);
 
-		final AbstractTaskNode tasknode = getTaskNode(activity);
-		final ProcessNode processNode = (ProcessNode) tasknode.getParent();
-		Node tasknode2 = processNode.getNodeById(taskname);
-		if (tasknode2 == null) {
-			tasknode2 = processNode.getNodeByName(taskname);
-		}
-
-		if (tasknode2 instanceof UserNode || tasknode2 instanceof SubNode) {
-			final List<TransitionNode> transitions = new ArrayList<TransitionNode>();
-			transitions.add(new TransitionNode(null, null).setFrom(tasknode.getId()).setTo(
-					tasknode2.getId()));
-			_doComplete(new ActivityComplete(activity, transitions), bComplete);
+		if (taskname == null) {
+			_doComplete(new ActivityComplete(activity).setBcomplete(bComplete));
 		} else {
-			throw WorkflowException.of($m("ActivityService.4"));
+			final AbstractTaskNode from = getTaskNode(activity);
+			final ProcessNode processNode = (ProcessNode) from.getParent();
+			Node to = processNode.getNodeById(taskname);
+			if (to == null) {
+				to = processNode.getNodeByName(taskname);
+			}
+
+			if (to instanceof UserNode || to instanceof SubNode) {
+				final List<TransitionNode> transitions = new ArrayList<TransitionNode>();
+				transitions.add(new TransitionNode(null, null).setFrom(from.getId()).setTo(to.getId()));
+				_doComplete(new ActivityComplete(activity, transitions).setBcomplete(bComplete));
+			} else {
+				throw WorkflowException.of($m("ActivityService.4"));
+			}
 		}
 	}
 
