@@ -95,7 +95,14 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			for (final TransitionNode transition : activityComplete.getTransitions()) {
 				final AbstractTaskNode to = transition.to();
 				if (to instanceof UserNode) {
-					_doUserNode(activity, (UserNode) to, activityComplete.getParticipants(transition));
+					final UserNode _to = (UserNode) to;
+					_doUserNode(activity, _to, activityComplete.getParticipants(transition));
+					// 空节点直接完成
+					if (_to.isEmpty()) {
+						for (final ActivityBean next : getNextActivities(activity)) {
+							new ActivityComplete(next).complete();
+						}
+					}
 				} else if (to instanceof MergeNode) {
 					_doMergeNode(activity, (MergeNode) to);
 				} else if (to instanceof SubNode) {
@@ -155,42 +162,73 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 	}
 
+	/* 空节点的执行者 */
+	private static final String EMPTY_PARTICIPANTS = "empty_participants";
+
 	private void _doUserNode(final ActivityBean preActivity, final UserNode to,
 			final List<Participant> _participants) {
-		final ArrayList<Participant> participants = new ArrayList<Participant>();
-		final boolean sequential = TasknodeUtils.isSequential(to);
-		if (_participants != null && _participants.size() > 0) {
-			if (sequential) {
-				participants.add(_participants.remove(0));
-			} else {
-				participants.addAll(_participants);
-			}
-		}
-
-		if (participants.size() == 0) {
-			throw WorkflowException.of($m("ActivityService.5"));
-		}
-
 		final ProcessBean process = getProcessBean(preActivity);
 		final boolean instanceShared = TasknodeUtils.isInstanceShared(to);
-		ActivityBean nActivity = null;
-		for (final Participant participant : participants) {
-			if (!instanceShared || nActivity == null) {
-				nActivity = _create(process, to, preActivity);
-				// 设置后续参与者
-				if (sequential) {
-					PropSequential.set(nActivity, _participants);
+		if (to.isEmpty()) {
+			// 空节点不创建任务项，仅把定义参与者保存在属性里
+			if (_participants != null) {
+				if (instanceShared) {
+					final ActivityBean nActivity = _create(process, to, preActivity);
+					nActivity.getProperties().setProperty(EMPTY_PARTICIPANTS,
+							StringUtils.join(_participants, ";"));
+					insert(nActivity);
+				} else {
+					for (final Participant participant : _participants) {
+						final ActivityBean nActivity = _create(process, to, preActivity);
+						nActivity.getProperties().setProperty(EMPTY_PARTICIPANTS, participant.toString());
+						insert(nActivity);
+					}
 				}
-				insert(nActivity);
+			}
+		} else {
+			final ArrayList<Participant> participants = new ArrayList<Participant>();
+			final boolean sequential = TasknodeUtils.isSequential(to);
+			if (_participants != null && _participants.size() > 0) {
+				if (sequential) {
+					participants.add(_participants.remove(0));
+				} else {
+					participants.addAll(_participants);
+				}
 			}
 
-			// 设置过期
-			final int timoutHours = Convert.toInt(eval(nActivity, to.getTimoutHours()));
-			if (timoutHours > 0) {
-				doUpdateTimeoutDate(nActivity, timoutHours);
+			if (participants.size() == 0) {
+				throw WorkflowException.of($m("ActivityService.5"));
 			}
-			wService.insert(wService._create(nActivity, participant));
+
+			ActivityBean nActivity = null;
+			for (final Participant participant : participants) {
+				if (!instanceShared || nActivity == null) {
+					nActivity = _create(process, to, preActivity);
+					// 设置后续参与者
+					if (sequential) {
+						PropSequential.set(nActivity, _participants);
+					}
+					insert(nActivity);
+				}
+
+				// 设置过期
+				final int timoutHours = Convert.toInt(eval(nActivity, to.getTimoutHours()));
+				if (timoutHours > 0) {
+					doUpdateTimeoutDate(nActivity, timoutHours);
+				}
+				wService.insert(wService._create(nActivity, participant));
+			}
 		}
+	}
+
+	@Override
+	public List<Participant> getEmptyParticipants(final ActivityBean activity) {
+		final List<Participant> participants = new ArrayList<Participant>();
+		for (final String participant : StringUtils.split(
+				activity.getProperties().getProperty(EMPTY_PARTICIPANTS), ";")) {
+			participants.add(Participant.of(participant));
+		}
+		return participants;
 	}
 
 	private static final String MERGE_PRE_ACTIVITIES = "merge_pre_activities";

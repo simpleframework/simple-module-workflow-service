@@ -13,6 +13,7 @@ import net.simpleframework.workflow.engine.EWorkitemStatus;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.WorkitemBean;
 import net.simpleframework.workflow.engine.participant.IParticipantHandler.AbstractParticipantHandler;
+import net.simpleframework.workflow.schema.AbstractTaskNode;
 import net.simpleframework.workflow.schema.UserNode;
 import net.simpleframework.workflow.schema.UserNode.ERelativeType;
 
@@ -48,34 +49,38 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 			} else if (rType == ERelativeType.preNamedActivityParticipant) {
 				preActivity = aService.getPreActivity(activityComplete.getActivity(),
 						rRole.getPreActivity());
-
 			}
 
 			if (preActivity != null) {
-				WorkitemBean workitem = activityComplete.getWorkitem();
-				if (workitem == null) {
-					final List<WorkitemBean> list = wService.getWorkitems(preActivity,
-							EWorkitemStatus.complete);
-					if (list.size() > 0) {
-						workitem = list.get(0);
-					}
-				}
-
-				if (workitem != null) {
-					if (StringUtils.hasText(rRole.getRelative())) {
-						final Collection<Participant> _participants = permission.getRelativeParticipants(
-								workitem, rRole, variables);
-						if (_participants != null) {
-							participants.addAll(_participants);
+				final AbstractTaskNode tasknode = aService.getTaskNode(preActivity);
+				if (tasknode instanceof UserNode && ((UserNode) tasknode).isEmpty()) {
+					participants.addAll(aService.getEmptyParticipants(preActivity));
+				} else {
+					WorkitemBean workitem = activityComplete.getWorkitem();
+					if (workitem == null) {
+						final List<WorkitemBean> list = wService.getWorkitems(preActivity,
+								EWorkitemStatus.complete);
+						if (list.size() > 0) {
+							workitem = list.get(0);
 						}
-					} else {
-						participants.add(new Participant(workitem.getUserId(), workitem.getRoleId()));
-						// 其它已完成任务项
-						for (final WorkitemBean workitem2 : wService.getWorkitems(preActivity,
-								EWorkitemStatus.complete)) {
-							if (!workitem2.getId().equals(workitem.getId())) {
-								participants.add(new Participant(workitem2.getUserId(), workitem2
-										.getRoleId()));
+					}
+
+					if (workitem != null) {
+						if (StringUtils.hasText(rRole.getRelative())) {
+							final Collection<Participant> _participants = permission
+									.getRelativeParticipants(workitem, rRole, variables);
+							if (_participants != null) {
+								participants.addAll(_participants);
+							}
+						} else {
+							participants.add(new Participant(workitem.getUserId(), workitem.getRoleId()));
+							// 其它已完成任务项
+							for (final WorkitemBean workitem2 : wService.getWorkitems(preActivity,
+									EWorkitemStatus.complete)) {
+								if (!workitem2.getId().equals(workitem.getId())) {
+									participants.add(new Participant(workitem2.getUserId(), workitem2
+											.getRoleId()));
+								}
 							}
 						}
 					}

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.simpleframework.common.ID;
+import net.simpleframework.workflow.engine.participant.Participant;
 import net.simpleframework.workflow.schema.AbstractTaskNode;
 
 /**
@@ -182,4 +183,12 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	void doUpdateTimeoutDate(ActivityBean activity, Date timeoutDate);
 
 	void doUpdateTimeoutDate(ActivityBean activity, int hours);
+
+	/**
+	 * 获取空节点保存的参与者
+	 * 
+	 * @param activity
+	 * @return
+	 */
+	List<Participant> getEmptyParticipants(ActivityBean activity);
 }
