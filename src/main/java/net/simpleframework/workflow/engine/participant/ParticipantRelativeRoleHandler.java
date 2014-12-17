@@ -26,10 +26,8 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 
 	@Override
 	public Collection<Participant> getParticipants(final IScriptEval script,
-			final Map<String, Object> variables) {
+			final ActivityComplete activityComplete, final Map<String, Object> variables) {
 		final ArrayList<Participant> participants = new ArrayList<Participant>();
-		final ActivityComplete activityComplete = (ActivityComplete) variables
-				.get("activityComplete");
 		final UserNode.RelativeRole rRole = (UserNode.RelativeRole) getParticipantType(variables);
 		final ERelativeType rType = rRole.getRelativeType();
 		if (rType == ERelativeType.processInitiator) {
@@ -43,38 +41,42 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 			} else {
 				participants.add(new Participant(process.getUserId(), process.getRoleId()));
 			}
-
 		} else {
-			WorkitemBean workitem = activityComplete.getWorkitem();
 			ActivityBean preActivity = null;
 			if (rType == ERelativeType.preActivityParticipant) {
 				preActivity = activityComplete.getActivity();
 			} else if (rType == ERelativeType.preNamedActivityParticipant) {
 				preActivity = aService.getPreActivity(activityComplete.getActivity(),
 						rRole.getPreActivity());
-				if (preActivity != null) {
+
+			}
+
+			if (preActivity != null) {
+				WorkitemBean workitem = activityComplete.getWorkitem();
+				if (workitem == null) {
 					final List<WorkitemBean> list = wService.getWorkitems(preActivity,
 							EWorkitemStatus.complete);
 					if (list.size() > 0) {
 						workitem = list.get(0);
 					}
 				}
-			}
-			if (preActivity != null && workitem != null) {
-				if (StringUtils.hasText(rRole.getRelative())) {
-					final Collection<Participant> _participants = permission.getRelativeParticipants(
-							workitem, rRole, variables);
-					if (_participants != null) {
-						participants.addAll(_participants);
-					}
-				} else {
-					participants.add(new Participant(workitem.getUserId(), workitem.getRoleId()));
-					// 其它已完成任务项
-					for (final WorkitemBean workitem2 : wService.getWorkitems(preActivity,
-							EWorkitemStatus.complete)) {
-						if (!workitem2.getId().equals(workitem.getId())) {
-							participants
-									.add(new Participant(workitem2.getUserId(), workitem2.getRoleId()));
+
+				if (workitem != null) {
+					if (StringUtils.hasText(rRole.getRelative())) {
+						final Collection<Participant> _participants = permission.getRelativeParticipants(
+								workitem, rRole, variables);
+						if (_participants != null) {
+							participants.addAll(_participants);
+						}
+					} else {
+						participants.add(new Participant(workitem.getUserId(), workitem.getRoleId()));
+						// 其它已完成任务项
+						for (final WorkitemBean workitem2 : wService.getWorkitems(preActivity,
+								EWorkitemStatus.complete)) {
+							if (!workitem2.getId().equals(workitem.getId())) {
+								participants.add(new Participant(workitem2.getUserId(), workitem2
+										.getRoleId()));
+							}
 						}
 					}
 				}

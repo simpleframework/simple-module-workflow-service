@@ -7,6 +7,7 @@ import java.util.Map;
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.script.IScriptEval;
 import net.simpleframework.ctx.script.ScriptEvalUtils;
+import net.simpleframework.workflow.engine.ActivityComplete;
 import net.simpleframework.workflow.engine.participant.IParticipantHandler.AbstractParticipantHandler;
 
 /**
@@ -19,7 +20,7 @@ public class ParticipantUserHandler extends AbstractParticipantHandler {
 
 	@Override
 	public Collection<Participant> getParticipants(final IScriptEval script,
-			final Map<String, Object> variables) {
+			final ActivityComplete activityComplete, final Map<String, Object> variables) {
 		final ArrayList<Participant> participants = new ArrayList<Participant>();
 		final String participant = ScriptEvalUtils.replaceExpr(script, getParticipantType(variables)
 				.getParticipant());

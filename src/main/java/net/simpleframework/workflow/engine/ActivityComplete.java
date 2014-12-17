@@ -104,21 +104,20 @@ public class ActivityComplete extends ObjectEx implements IWorkflowServiceAware 
 		if (!(toTask instanceof UserNode)) {
 			return;
 		}
-		final KVMap variables = new KVMap().add("activityComplete", this).add("transition",
-				transition);
+		final KVMap variables = new KVMap().add("transition", transition);
 		final AbstractParticipantType pt = ((UserNode) toTask).getParticipantType();
 		final ArrayList<Participant> participants = new ArrayList<Participant>();
 		if (pt instanceof RuleRole) {
 			final IParticipantHandler hdl = (IParticipantHandler) ObjectFactory
 					.singleton(((UserNode) toTask).getParticipantType().getParticipant());
-			final Collection<Participant> _participants = hdl.getParticipants(script, variables);
+			final Collection<Participant> _participants = hdl.getParticipants(script, this, variables);
 			if (_participants != null) {
 				participants.addAll(_participants);
 			}
 		} else {
 			final IParticipantHandler hdl = ParticipantUtils.getParticipantHandler(pt.getClass());
 			Collection<Participant> _participants;
-			if (hdl != null && (_participants = hdl.getParticipants(script, variables)) != null) {
+			if (hdl != null && (_participants = hdl.getParticipants(script, this, variables)) != null) {
 				participants.addAll(_participants);
 			}
 		}

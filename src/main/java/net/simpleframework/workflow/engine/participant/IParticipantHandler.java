@@ -5,6 +5,7 @@ import java.util.Map;
 
 import net.simpleframework.ctx.script.IScriptEval;
 import net.simpleframework.workflow.IWorkflowHandler;
+import net.simpleframework.workflow.engine.ActivityComplete;
 import net.simpleframework.workflow.engine.IWorkflowServiceAware;
 import net.simpleframework.workflow.schema.AbstractParticipantType;
 import net.simpleframework.workflow.schema.TransitionNode;
@@ -25,7 +26,8 @@ public interface IParticipantHandler extends IWorkflowHandler, IWorkflowServiceA
 	 * @param variables
 	 * @return
 	 */
-	Collection<Participant> getParticipants(IScriptEval script, Map<String, Object> variables);
+	Collection<Participant> getParticipants(IScriptEval script, ActivityComplete activityComplete,
+			Map<String, Object> variables);
 
 	public abstract static class AbstractParticipantHandler implements IParticipantHandler {
 
