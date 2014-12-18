@@ -305,6 +305,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		final PermissionUser user = permission.getUser(userId);
 		process.setUserId(user.getId());
 		process.setDeptId(user.getDeptId());
+		process.setOrgId(user.getOrgId());
 		process.setUserText(user.getText());
 		process.setRoleId(roleId);
 
