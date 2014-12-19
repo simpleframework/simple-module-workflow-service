@@ -1,6 +1,7 @@
 package net.simpleframework.workflow.engine.ext;
 
 import net.simpleframework.module.common.content.impl.AbstractCommentService;
+import net.simpleframework.workflow.engine.IWorkflowContextAware;
 import net.simpleframework.workflow.engine.WorkitemBean;
 
 /**
@@ -10,7 +11,7 @@ import net.simpleframework.workflow.engine.WorkitemBean;
  *         http://www.simpleframework.net
  */
 public class WfCommentService extends AbstractCommentService<WfComment> implements
-		IWfCommentService {
+		IWfCommentService, IWorkflowContextAware {
 
 	@Override
 	public WfComment getCurComment(final WorkitemBean workitem) {

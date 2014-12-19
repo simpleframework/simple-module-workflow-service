@@ -156,7 +156,7 @@
         workitemid char(32) not null,
         deptid char(32) not null,
         taskname varchar(64) not null,
-        comment clob not null,
+        ccomment clob not null,
         primary key(id)
       );
     ]]>
