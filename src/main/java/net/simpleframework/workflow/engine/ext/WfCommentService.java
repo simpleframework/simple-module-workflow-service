@@ -1,6 +1,7 @@
 package net.simpleframework.workflow.engine.ext;
 
 import net.simpleframework.module.common.content.impl.AbstractCommentService;
+import net.simpleframework.workflow.engine.WorkitemBean;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -11,4 +12,8 @@ import net.simpleframework.module.common.content.impl.AbstractCommentService;
 public class WfCommentService extends AbstractCommentService<WfComment> implements
 		IWfCommentService {
 
+	@Override
+	public WfComment getCurComment(final WorkitemBean workitem) {
+		return getBean("workitemId=?", workitem.getId());
+	}
 }

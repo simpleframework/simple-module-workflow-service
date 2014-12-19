@@ -1,6 +1,7 @@
 package net.simpleframework.workflow.engine.ext;
 
 import net.simpleframework.module.common.content.ICommentService;
+import net.simpleframework.workflow.engine.WorkitemBean;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -10,4 +11,11 @@ import net.simpleframework.module.common.content.ICommentService;
  */
 public interface IWfCommentService extends ICommentService<WfComment> {
 
+	/**
+	 * 获取当前的评论
+	 * 
+	 * @param workitem
+	 * @return
+	 */
+	WfComment getCurComment(WorkitemBean workitem);
 }
