@@ -161,4 +161,17 @@
       );
     ]]>
   </tran-sql>
+  <tran-sql>
+    <![CDATA[
+      create table sf_workflow_comment_log (
+        id char(32) not null,
+        commentid char(32) not null,
+        createdate timestamp not null,
+        userid char(32) not null,
+        logtype tinyint not null,
+        ccomment clob not null,
+        primary key(id)
+      );
+    ]]>
+  </tran-sql>
 </sql-script>
