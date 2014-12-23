@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import net.simpleframework.common.ID;
+import net.simpleframework.ctx.permission.IPermissionHandler;
 import net.simpleframework.ctx.script.IScriptEval;
 import net.simpleframework.ctx.script.ScriptEvalUtils;
 import net.simpleframework.workflow.engine.ActivityComplete;
@@ -28,7 +29,8 @@ public class ParticipantRoleHandler extends AbstractParticipantHandler {
 		final ID roleId = permission.getRole(participant).getId();
 		final Iterator<ID> users = permission.users(roleId, null, variables);
 		while (users.hasNext()) {
-			participants.add(new Participant(users.next(), roleId));
+			final ID _roleId = (ID) variables.get(IPermissionHandler.CTX_ROLEID);
+			participants.add(new Participant(users.next(), _roleId != null ? _roleId : roleId));
 		}
 		return participants;
 	}

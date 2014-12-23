@@ -14,6 +14,7 @@ import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.common.coll.KVMap;
+import net.simpleframework.ctx.permission.IPermissionHandler;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.EProcessModelStatus;
 import net.simpleframework.workflow.engine.EVariableSource;
@@ -175,7 +176,9 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 				} else if (pt instanceof BaseRole) {
 					final ID roleId = permission.getRole(participant).getId();
 					if (permission.getUser(userId).isMember(roleId, variables)) {
-						items.add(new InitiateItem(processModel, userId, roleId, variables));
+						ID _roleId = (ID) variables.get(IPermissionHandler.CTX_ROLEID);
+						items.add(new InitiateItem(processModel, userId, _roleId != null ? _roleId
+								: roleId, variables));
 					}
 				}
 			} else {
