@@ -176,7 +176,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 				} else if (pt instanceof BaseRole) {
 					final ID roleId = permission.getRole(participant).getId();
 					if (permission.getUser(userId).isMember(roleId, variables)) {
-						ID _roleId = (ID) variables.get(IPermissionHandler.CTX_ROLEID);
+						final ID _roleId = (ID) variables.get(IPermissionHandler.CTX_ROLEID);
 						items.add(new InitiateItem(processModel, userId, _roleId != null ? _roleId
 								: roleId, variables));
 					}
