@@ -38,7 +38,7 @@
         status tinyint not null,
         userid char(32),
         deptid char(32),
-        orgid char(32),
+        domainid varchar(32),
         usertext varchar(32),
         createdate timestamp not null,
         roleid char(32),
