@@ -2,9 +2,7 @@ package net.simpleframework.workflow.engine;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
-import net.simpleframework.common.ID;
 import net.simpleframework.workflow.engine.participant.Participant;
 import net.simpleframework.workflow.schema.AbstractTaskNode;
 
@@ -164,7 +162,7 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 *        包含废止的
 	 * @return
 	 */
-	Map<ID, String> getParticipants(ActivityBean activity, boolean all);
+	List<Participant> getParticipants(ActivityBean activity, boolean all);
 
 	/**
 	 * 获取实际参与者
@@ -172,7 +170,7 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * @param activity
 	 * @return
 	 */
-	Map<ID, String> getParticipants2(ActivityBean activity);
+	List<Participant> getParticipants2(ActivityBean activity);
 
 	/**
 	 * 更新环节的过期时间

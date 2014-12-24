@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -772,24 +771,24 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	@Override
-	public Map<ID, String> getParticipants(final ActivityBean activity, final boolean all) {
-		final Map<ID, String> m = new LinkedHashMap<ID, String>();
+	public List<Participant> getParticipants(final ActivityBean activity, final boolean all) {
+		final List<Participant> list = new ArrayList<Participant>();
 		for (final WorkitemBean workitem : wService.getWorkitems(activity)) {
 			if (!all && workitem.getStatus().ordinal() > EWorkitemStatus.complete.ordinal()) {
 				continue;
 			}
-			m.put(workitem.getUserId(), workitem.getUserText());
+			list.add(new Participant(workitem.getUserId(), workitem.getRoleId()));
 		}
-		return m;
+		return list;
 	}
 
 	@Override
-	public Map<ID, String> getParticipants2(final ActivityBean activity) {
-		final Map<ID, String> m = new LinkedHashMap<ID, String>();
+	public List<Participant> getParticipants2(final ActivityBean activity) {
+		final List<Participant> list = new ArrayList<Participant>();
 		for (final WorkitemBean workitem : wService.getWorkitems(activity, EWorkitemStatus.complete)) {
-			m.put(workitem.getUserId2(), workitem.getUserText2());
+			list.add(new Participant(workitem.getUserId2(), workitem.getRoleId()));
 		}
-		return m;
+		return list;
 	}
 
 	@Override
