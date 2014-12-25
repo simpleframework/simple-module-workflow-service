@@ -100,7 +100,7 @@ public class ProcessBean extends AbstractWorkflowBean {
 		return domainId;
 	}
 
-	public void setDomainId(String domainId) {
+	public void setDomainId(final String domainId) {
 		this.domainId = domainId;
 	}
 
