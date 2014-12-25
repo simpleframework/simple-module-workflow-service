@@ -2,7 +2,9 @@ package net.simpleframework.workflow.engine.ext;
 
 import net.simpleframework.ado.FilterItem;
 import net.simpleframework.ado.FilterItems;
+import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
+import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
 import net.simpleframework.workflow.engine.IWorkflowContextAware;
 import net.simpleframework.workflow.engine.ext.WfCommentLog.ELogType;
@@ -17,8 +19,11 @@ public class WfCommentLogService extends AbstractDbBeanService<WfCommentLog> imp
 		IWfCommentLogService, IWorkflowContextAware {
 
 	@Override
-	public IDataQuery<WfCommentLog> queryLogs(final Object comment, final ELogType logType) {
-		final FilterItems items = FilterItems.of(new FilterItem("commentId", getIdParam(comment)));
+	public IDataQuery<WfCommentLog> queryLogs(final ID userId, final ELogType logType) {
+		if (userId == null) {
+			return DataQueryUtils.nullQuery();
+		}
+		final FilterItems items = FilterItems.of(new FilterItem("userId", userId));
 		if (logType != null) {
 			items.append(new FilterItem("logType", logType));
 		}
@@ -26,7 +31,13 @@ public class WfCommentLogService extends AbstractDbBeanService<WfCommentLog> imp
 	}
 
 	@Override
+	public WfCommentLog getHistoryLog(final WfComment comment) {
+		return getBean("commentId=? and logType=? and ccomment=?", comment.getId(), ELogType.history,
+				comment.getCcomment());
+	}
+
+	@Override
 	public int getLogSize() {
-		return 5;
+		return 10;
 	}
 }
