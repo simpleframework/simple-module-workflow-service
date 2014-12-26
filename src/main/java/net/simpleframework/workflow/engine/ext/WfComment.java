@@ -10,7 +10,7 @@ import net.simpleframework.module.common.content.AbstractComment;
  *         http://www.simpleframework.net
  */
 public class WfComment extends AbstractComment {
-	/* 工作项id */
+	/* 工作项id，每一个工作项只允许一个意见 */
 	private ID workitemId;
 	/* 用户所在部门，取自工作项 */
 	private ID deptId;

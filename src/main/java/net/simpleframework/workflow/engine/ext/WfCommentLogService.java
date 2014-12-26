@@ -1,5 +1,7 @@
 package net.simpleframework.workflow.engine.ext;
 
+import java.util.Date;
+
 import net.simpleframework.ado.FilterItem;
 import net.simpleframework.ado.FilterItems;
 import net.simpleframework.ado.query.DataQueryUtils;
@@ -31,9 +33,21 @@ public class WfCommentLogService extends AbstractDbBeanService<WfCommentLog> imp
 	}
 
 	@Override
-	public WfCommentLog getHistoryLog(final WfComment comment) {
-		return getBean("commentId=? and logType=? and ccomment=?", comment.getId(), ELogType.history,
-				comment.getCcomment());
+	public WfCommentLog getLog(final WfComment comment, final ELogType logType) {
+		return getBean("commentid=? and ccomment=? and logtype=?", comment.getId(),
+				comment.getCcomment(), logType);
+	}
+
+	@Override
+	public WfCommentLog insertLog(final WfComment comment, final ELogType logType) {
+		final WfCommentLog log = createBean();
+		log.setCommentId(comment.getId());
+		log.setCreateDate(new Date());
+		log.setUserId(comment.getUserId());
+		log.setCcomment(comment.getCcomment());
+		log.setLogType(logType);
+		insert(log);
+		return log;
 	}
 
 	@Override

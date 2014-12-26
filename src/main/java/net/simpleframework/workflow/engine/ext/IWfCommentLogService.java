@@ -21,7 +21,9 @@ public interface IWfCommentLogService extends IDbBeanService<WfCommentLog> {
 	 */
 	IDataQuery<WfCommentLog> queryLogs(ID userId, ELogType logType);
 
-	WfCommentLog getHistoryLog(WfComment comment);
+	WfCommentLog getLog(WfComment comment, ELogType logType);
+
+	WfCommentLog insertLog(WfComment comment, ELogType logType);
 
 	/**
 	 * 获取保存日志的记录个数

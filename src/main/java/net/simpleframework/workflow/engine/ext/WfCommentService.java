@@ -1,7 +1,5 @@
 package net.simpleframework.workflow.engine.ext;
 
-import java.util.Date;
-
 import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.module.common.content.impl.AbstractCommentService;
@@ -37,7 +35,7 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 					final WfComment comment = (WfComment) o;
 					if (lService.queryLogs(comment.getUserId(), ELogType.history).getCount() <= lService
 							.getLogSize()) {
-						insertLog(comment);
+						lService.insertLog(comment, ELogType.history);
 					}
 				}
 			}
@@ -49,21 +47,11 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 				if (ArrayUtils.isEmpty(columns) || ArrayUtils.contains(columns, "ccomment", true)) {
 					for (final Object o : beans) {
 						final WfComment comment = (WfComment) o;
-						if (lService.getHistoryLog(comment) == null) {
-							insertLog(comment);
+						if (lService.getLog(comment, ELogType.history) == null) {
+							lService.insertLog(comment, ELogType.history);
 						}
 					}
 				}
-			}
-
-			private void insertLog(final WfComment comment) {
-				final WfCommentLog log = lService.createBean();
-				log.setCommentId(comment.getId());
-				log.setCreateDate(new Date());
-				log.setUserId(comment.getUserId());
-				log.setCcomment(comment.getCcomment());
-				log.setLogType(ELogType.history);
-				lService.insert(log);
 			}
 		});
 	}
