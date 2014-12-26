@@ -33,9 +33,8 @@ public class WfCommentLogService extends AbstractDbBeanService<WfCommentLog> imp
 	}
 
 	@Override
-	public WfCommentLog getLog(final WfComment comment, final ELogType logType) {
-		return getBean("commentid=? and ccomment=? and logtype=?", comment.getId(),
-				comment.getCcomment(), logType);
+	public WfCommentLog getLog(final ID userId, final String ccomment, final ELogType logType) {
+		return getBean("userid=? and ccomment=? and logtype=?", userId, ccomment, logType);
 	}
 
 	@Override

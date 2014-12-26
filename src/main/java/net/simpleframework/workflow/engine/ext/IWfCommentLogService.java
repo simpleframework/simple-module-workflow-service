@@ -21,7 +21,7 @@ public interface IWfCommentLogService extends IDbBeanService<WfCommentLog> {
 	 */
 	IDataQuery<WfCommentLog> queryLogs(ID userId, ELogType logType);
 
-	WfCommentLog getLog(WfComment comment, ELogType logType);
+	WfCommentLog getLog(ID userId, String ccomment, ELogType logType);
 
 	WfCommentLog insertLog(WfComment comment, ELogType logType);
 

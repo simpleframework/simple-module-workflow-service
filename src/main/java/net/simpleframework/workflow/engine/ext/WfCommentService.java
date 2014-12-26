@@ -47,7 +47,7 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 				if (ArrayUtils.isEmpty(columns) || ArrayUtils.contains(columns, "ccomment", true)) {
 					for (final Object o : beans) {
 						final WfComment comment = (WfComment) o;
-						if (lService.getLog(comment, ELogType.history) == null) {
+						if (lService.getLog(comment.getUserId(), comment.getCcomment(), ELogType.history) == null) {
 							lService.insertLog(comment, ELogType.history);
 						}
 					}
