@@ -2,6 +2,8 @@ package net.simpleframework.workflow.engine.ext;
 
 import java.util.Date;
 
+import net.simpleframework.ado.ColumnData;
+import net.simpleframework.ado.EOrder;
 import net.simpleframework.ado.FilterItem;
 import net.simpleframework.ado.FilterItems;
 import net.simpleframework.ado.query.DataQueryUtils;
@@ -29,7 +31,7 @@ public class WfCommentLogService extends AbstractDbBeanService<WfCommentLog> imp
 		if (logType != null) {
 			items.append(new FilterItem("logType", logType));
 		}
-		return queryByParams(items);
+		return queryByParams(items, new ColumnData("createDate", EOrder.desc));
 	}
 
 	@Override
@@ -39,6 +41,14 @@ public class WfCommentLogService extends AbstractDbBeanService<WfCommentLog> imp
 
 	@Override
 	public WfCommentLog insertLog(final WfComment comment, final ELogType logType) {
+		if (logType == ELogType.history) {
+			final IDataQuery<WfCommentLog> dq = queryLogs(comment.getUserId(), ELogType.history);
+			final int count = dq.getCount();
+			if (count >= getLogSize()) {
+				dq.move(count - 2);
+				delete(dq.next().getId());
+			}
+		}
 		final WfCommentLog log = createBean();
 		log.setCommentId(comment.getId());
 		log.setCreateDate(new Date());
@@ -51,6 +61,6 @@ public class WfCommentLogService extends AbstractDbBeanService<WfCommentLog> imp
 
 	@Override
 	public int getLogSize() {
-		return 10;
+		return 8;
 	}
 }

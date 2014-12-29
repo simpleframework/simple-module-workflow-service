@@ -32,11 +32,7 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans) {
 				super.onAfterInsert(manager, beans);
 				for (final Object o : beans) {
-					final WfComment comment = (WfComment) o;
-					if (lService.queryLogs(comment.getUserId(), ELogType.history).getCount() <= lService
-							.getLogSize()) {
-						lService.insertLog(comment, ELogType.history);
-					}
+					lService.insertLog((WfComment) o, ELogType.history);
 				}
 			}
 
