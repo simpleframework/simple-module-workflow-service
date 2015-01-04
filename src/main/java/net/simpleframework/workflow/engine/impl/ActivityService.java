@@ -30,6 +30,7 @@ import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.ActivityComplete;
 import net.simpleframework.workflow.engine.EActivityAbortPolicy;
 import net.simpleframework.workflow.engine.EActivityStatus;
+import net.simpleframework.workflow.engine.EProcessModelStatus;
 import net.simpleframework.workflow.engine.EProcessStatus;
 import net.simpleframework.workflow.engine.EVariableSource;
 import net.simpleframework.workflow.engine.EWorkitemStatus;
@@ -88,6 +89,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 
 		final ProcessBean process = getProcessBean(activity);
+		mService._assert(pService.getProcessModel(process), EProcessModelStatus.deploy);
+
 		ActivityBean endActivity = null;
 		// 如果流程处在最终状态，则不创建后续环节
 		if (!pService.isFinalStatus(process)) {
