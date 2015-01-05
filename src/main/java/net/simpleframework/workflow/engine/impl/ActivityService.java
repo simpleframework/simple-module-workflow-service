@@ -89,6 +89,10 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 
 		final ProcessBean process = getProcessBean(activity);
+		if (process.getStatus() == EProcessStatus.suspended) {
+			throw WorkflowStatusException.of($m("WorkitemService.2"));
+		}
+
 		mService._assert(pService.getProcessModel(process), EProcessModelStatus.deploy);
 
 		ActivityBean endActivity = null;

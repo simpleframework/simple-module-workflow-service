@@ -14,6 +14,7 @@ import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.ActivityBean;
+import net.simpleframework.workflow.engine.ActivityComplete;
 import net.simpleframework.workflow.engine.DelegationBean;
 import net.simpleframework.workflow.engine.EActivityAbortPolicy;
 import net.simpleframework.workflow.engine.EActivityStatus;
@@ -68,9 +69,6 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			final ActivityBean activity = getActivity(workitem);
 			aService._assert(activity, EActivityStatus.running, EActivityStatus.timeout);
 			final ProcessBean process = aService.getProcessBean(activity);
-			if (process.getStatus() == EProcessStatus.suspended) {
-				throw WorkflowStatusException.of($m("WorkitemService.2"));
-			}
 
 			// 更新流程变量
 			final Map<String, Object> variables = workitemComplete.getVariables();
@@ -83,20 +81,25 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 				}
 			}
 
-			workitem.setStatus(EWorkitemStatus.complete);
-			workitem.setCompleteDate(new Date());
-			update(new String[] { "completeDate", "status" }, workitem);
+			final ActivityComplete activityComplete = workitemComplete.getActivityComplete();
+			// 如果环节设置为不完成，则也不完成任务项
+			boolean bcomplete = activityComplete.isBcomplete();
+			if (bcomplete) {
+				workitem.setStatus(EWorkitemStatus.complete);
+				workitem.setCompleteDate(new Date());
+				update(new String[] { "completeDate", "status" }, workitem);
 
-			// 设置委托完成
-			if (delegation != null) {
-				delegation.setCompleteDate(new Date());
-				delegation.setStatus(EDelegationStatus.complete);
-				dService.update(new String[] { "completeDate", "status" }, delegation);
+				// 设置委托完成
+				if (delegation != null) {
+					delegation.setCompleteDate(new Date());
+					delegation.setStatus(EDelegationStatus.complete);
+					dService.update(new String[] { "completeDate", "status" }, delegation);
+				}
 			}
 
 			if (workitemComplete.isAllCompleted()) {
-				aService.doComplete(workitemComplete.getActivityComplete());
-			} else {
+				aService.doComplete(activityComplete);
+			} else if (bcomplete) {
 				final List<?> list = PropSequential.list(activity);
 				if (list.size() > 0) { // 获取顺序执行的参与者
 					final AbstractTaskNode tasknode = aService.getTaskNode(activity);
