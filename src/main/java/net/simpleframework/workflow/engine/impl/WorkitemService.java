@@ -83,7 +83,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 			final ActivityComplete activityComplete = workitemComplete.getActivityComplete();
 			// 如果环节设置为不完成，则也不完成任务项
-			boolean bcomplete = activityComplete.isBcomplete();
+			final boolean bcomplete = activityComplete.isBcomplete();
 			if (bcomplete) {
 				workitem.setStatus(EWorkitemStatus.complete);
 				workitem.setCompleteDate(new Date());
@@ -99,7 +99,12 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 			if (workitemComplete.isAllCompleted()) {
 				aService.doComplete(activityComplete);
-			} else if (bcomplete) {
+			} else {
+				if (!bcomplete) {
+					// 如果环节不完成，则必须执行环节完成动作，否则抛出异常
+					throw WorkflowException.of($m("WorkitemService.6"));
+				}
+
 				final List<?> list = PropSequential.list(activity);
 				if (list.size() > 0) { // 获取顺序执行的参与者
 					final AbstractTaskNode tasknode = aService.getTaskNode(activity);
@@ -254,7 +259,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 	WorkitemBean _clone(final ActivityBean nActivity, final WorkitemBean workitem) {
 		final WorkitemBean nWorkitem = _create(nActivity, new Participant(workitem.getUserId(),
-				workitem.getRoleId()));
+				workitem.getRoleId(), workitem.getDeptId()));
 		insert(nWorkitem);
 
 		// 如果含有委托

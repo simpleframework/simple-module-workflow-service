@@ -40,7 +40,8 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 					participants.addAll(_participants);
 				}
 			} else {
-				participants.add(new Participant(process.getUserId(), process.getRoleId()));
+				participants.add(new Participant(process.getUserId(), process.getRoleId(), process
+						.getDeptId()));
 			}
 		} else {
 			ActivityBean preActivity = null;
@@ -73,13 +74,14 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 								participants.addAll(_participants);
 							}
 						} else {
-							participants.add(new Participant(workitem.getUserId(), workitem.getRoleId()));
+							participants.add(new Participant(workitem.getUserId(), workitem.getRoleId(),
+									workitem.getDeptId()));
 							// 其它已完成任务项
 							for (final WorkitemBean workitem2 : wService.getWorkitems(preActivity,
 									EWorkitemStatus.complete)) {
 								if (!workitem2.getId().equals(workitem.getId())) {
 									participants.add(new Participant(workitem2.getUserId(), workitem2
-											.getRoleId()));
+											.getRoleId(), workitem2.getDeptId()));
 								}
 							}
 						}

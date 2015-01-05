@@ -30,7 +30,9 @@ public class ParticipantRoleHandler extends AbstractParticipantHandler {
 		final Iterator<ID> users = permission.users(roleId, null, variables);
 		while (users.hasNext()) {
 			final ID _roleId = (ID) variables.get(IPermissionHandler.CTX_ROLEID);
-			participants.add(new Participant(users.next(), _roleId != null ? _roleId : roleId));
+			final ID _deptId = (ID) variables.get(IPermissionHandler.CTX_DEPTID);
+			participants.add(new Participant(users.next(), _roleId != null ? _roleId : roleId,
+					_deptId != null ? _deptId : null));
 		}
 		return participants;
 	}
