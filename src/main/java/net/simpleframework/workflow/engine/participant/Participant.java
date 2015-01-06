@@ -39,11 +39,11 @@ public class Participant implements IWorkflowServiceAware {
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder();
-		sb.append("userId=").append(userId).append(";roleId=");
+		sb.append(userId).append("#");
 		if (roleId != null) {
 			sb.append(roleId);
 		}
-		sb.append(";deptId=");
+		sb.append("#");
 		if (deptId != null) {
 			sb.append(deptId);
 		}
@@ -51,12 +51,9 @@ public class Participant implements IWorkflowServiceAware {
 	}
 
 	public static Participant of(final String participant) {
-		final String[] pArr = StringUtils.split(participant, ";");
+		final String[] pArr = StringUtils.split(participant, "#");
 		if (pArr.length == 3) {
-			final String a1 = StringUtils.split(pArr[0], "=")[1];
-			final String a2 = StringUtils.split(pArr[1], "=")[1];
-			final String a3 = StringUtils.split(pArr[2], "=")[1];
-			return new Participant(ID.of(a1), ID.of(a2), ID.of(a3));
+			return new Participant(ID.of(pArr[0]), ID.of(pArr[1]), ID.of(pArr[2]));
 		}
 		throw WorkflowException.of("Participant.of");
 	}
