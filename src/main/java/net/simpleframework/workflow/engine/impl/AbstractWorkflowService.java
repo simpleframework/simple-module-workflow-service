@@ -59,6 +59,12 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 			for (final String expr : defaultExpr) {
 				script.eval(expr);
 			}
+			final Package[] arr = workflowContext.getImportPackages();
+			if (arr != null) {
+				for (final Package p : arr) {
+					script.eval("import " + p.getName() + ".*;");
+				}
+			}
 			bean.setAttr("_ScriptEval", script);
 		}
 		return script;

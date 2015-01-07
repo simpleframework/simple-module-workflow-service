@@ -58,6 +58,11 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 	}
 
 	@Override
+	public Package[] getImportPackages() {
+		return null;
+	}
+
+	@Override
 	public DbEntityTable[] createEntityTables() {
 		return new DbEntityTable[] { new DbEntityTable(ProcessModelBean.class, "sf_workflow_model"),
 				new DbEntityTable(ProcessModelLobBean.class, "sf_workflow_model_lob").setNoCache(true),
