@@ -274,7 +274,10 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		List<ActivityBean> aborts = null;
 
 		boolean complete = false;
-		final Object _condition = eval(nActivity, to.getCondition());
+		Object _condition = eval(nActivity, to.getCondition());
+		if (_condition == null) {
+			_condition = 0;
+		}
 		if (_condition instanceof Boolean) {
 			complete = ((Boolean) _condition).booleanValue();
 		} else if (_condition instanceof Number) {
