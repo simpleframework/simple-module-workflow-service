@@ -714,6 +714,16 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	@Override
+	public List<ActivityBean> getNextAllActivities(final ActivityBean preActivity) {
+		final List<ActivityBean> l = new ArrayList<ActivityBean>();
+		for (final ActivityBean next : getNextActivities(preActivity)) {
+			l.add(next);
+			l.addAll(getNextActivities(next));
+		}
+		return l;
+	}
+
+	@Override
 	public ActivityBean getPreActivity(final ActivityBean activity) {
 		return activity != null ? getBean(activity.getPreviousId()) : null;
 	}

@@ -57,12 +57,12 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 				if (tasknode instanceof UserNode && ((UserNode) tasknode).isEmpty()) {
 					participants.addAll(aService.getEmptyParticipants(preActivity));
 				} else {
+					List<WorkitemBean> completes = null;
 					WorkitemBean workitem = activityComplete.getWorkitem();
-					if (workitem == null) {
-						final List<WorkitemBean> list = wService.getWorkitems(preActivity,
-								EWorkitemStatus.complete);
-						if (list.size() > 0) {
-							workitem = list.get(0);
+					if (workitem == null || !workitem.getActivityId().equals(preActivity.getId())) {
+						completes = wService.getWorkitems(preActivity, EWorkitemStatus.complete);
+						if (completes.size() > 0) {
+							workitem = completes.get(0);
 						}
 					}
 
@@ -77,8 +77,10 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 							participants.add(new Participant(workitem.getUserId(), workitem.getRoleId(),
 									workitem.getDeptId()));
 							// 其它已完成任务项
-							for (final WorkitemBean workitem2 : wService.getWorkitems(preActivity,
-									EWorkitemStatus.complete)) {
+							if (completes == null) {
+								completes = wService.getWorkitems(preActivity, EWorkitemStatus.complete);
+							}
+							for (final WorkitemBean workitem2 : completes) {
 								if (!workitem2.getId().equals(workitem.getId())) {
 									participants.add(new Participant(workitem2.getUserId(), workitem2
 											.getRoleId(), workitem2.getDeptId()));
