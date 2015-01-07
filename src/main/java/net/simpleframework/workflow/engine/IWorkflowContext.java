@@ -17,6 +17,13 @@ public interface IWorkflowContext extends IModuleContext {
 	static final String MODULE_NAME = "simple-workflow";
 
 	/**
+	 * 获取脚本执行时的缺省导入包
+	 * 
+	 * @return
+	 */
+	Package[] getImportPackages();
+
+	/**
 	 * 模型服务
 	 * 
 	 * @return
