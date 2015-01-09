@@ -906,7 +906,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			}
 
 			@Override
-			public void onAfterUpdate(final IDbEntityManager<?> manager, final String[] columns,
+			public void onBeforeUpdate(final IDbEntityManager<?> manager, final String[] columns,
 					final Object[] beans) {
 				super.onAfterUpdate(manager, columns, beans);
 
@@ -915,7 +915,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 					for (final Object bean : beans) {
 						final ActivityBean activity = (ActivityBean) bean;
 						for (final IWorkflowListener listener : getEventListeners(activity)) {
-							((IActivityListener) listener).onStatusChange(activity);
+							((IActivityListener) listener).onStatusChange(activity,
+									(EActivityStatus) queryFor("status", "id=?", activity.getId()));
 						}
 					}
 				}

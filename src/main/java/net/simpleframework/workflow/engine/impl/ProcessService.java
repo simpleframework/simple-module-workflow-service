@@ -368,7 +368,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 			}
 
 			@Override
-			public void onAfterUpdate(final IDbEntityManager<?> manager, final String[] columns,
+			public void onBeforeUpdate(final IDbEntityManager<?> manager, final String[] columns,
 					final Object[] beans) {
 				super.onAfterUpdate(manager, columns, beans);
 
@@ -376,7 +376,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 					for (final Object bean : beans) {
 						final ProcessBean process = (ProcessBean) bean;
 						for (final IWorkflowListener listener : getEventListeners(process)) {
-							((IProcessListener) listener).onStatusChange(process);
+							((IProcessListener) listener).onStatusChange(process,
+									(EProcessStatus) queryFor("status", "id=?", process.getId()));
 						}
 					}
 				}

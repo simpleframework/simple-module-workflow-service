@@ -1,6 +1,7 @@
 package net.simpleframework.workflow.engine.event;
 
 import net.simpleframework.workflow.engine.ActivityBean;
+import net.simpleframework.workflow.engine.EActivityStatus;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -22,12 +23,12 @@ public interface IActivityListener extends IWorkflowListener {
 	 * 
 	 * @param activity
 	 */
-	void onStatusChange(ActivityBean activity);
+	void onStatusChange(ActivityBean activity, EActivityStatus oStatus);
 
 	public static abstract class ActivityAdapter implements IActivityListener {
 
 		@Override
-		public void onStatusChange(final ActivityBean activity) {
+		public void onStatusChange(final ActivityBean activity, EActivityStatus oStatus) {
 		}
 	}
 }

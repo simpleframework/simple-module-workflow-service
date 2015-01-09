@@ -1,5 +1,6 @@
 package net.simpleframework.workflow.engine.event;
 
+import net.simpleframework.workflow.engine.EProcessStatus;
 import net.simpleframework.workflow.engine.InitiateItem;
 import net.simpleframework.workflow.engine.ProcessBean;
 
@@ -26,7 +27,13 @@ public interface IProcessListener extends IWorkflowListener {
 	 */
 	void onDelete(ProcessBean process);
 
-	void onStatusChange(ProcessBean process);
+	/**
+	 * 当流程状态改变时触发
+	 * 
+	 * @param process
+	 * @param oStatus
+	 */
+	void onStatusChange(ProcessBean process, EProcessStatus oStatus);
 
 	public static abstract class ProcessAdapter implements IProcessListener {
 
@@ -39,7 +46,7 @@ public interface IProcessListener extends IWorkflowListener {
 		}
 
 		@Override
-		public void onStatusChange(final ProcessBean process) {
+		public void onStatusChange(final ProcessBean process, EProcessStatus oStatus) {
 		}
 	}
 }
