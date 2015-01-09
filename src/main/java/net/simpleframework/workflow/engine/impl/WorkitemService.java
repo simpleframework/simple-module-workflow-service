@@ -247,6 +247,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		_status(workitem, EWorkitemStatus.abort);
 
 		if (!workitem.isReadMark()) { // 未读
+			workitem.setReadMark(true);
 			update(new String[] { "readMark" }, workitem);
 		}
 

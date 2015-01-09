@@ -234,7 +234,9 @@ public class ActivityComplete extends ObjectEx implements IWorkflowServiceAware 
 					}
 				}
 			}
-			participants.put(transition.getId(), al);
+			if (al.size() > 0) {
+				participants.put(transition.getId(), al);
+			}
 		}
 		_participants.clear();
 		_participants.putAll(participants);
