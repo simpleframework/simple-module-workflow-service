@@ -915,8 +915,10 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 					for (final Object bean : beans) {
 						final ActivityBean activity = (ActivityBean) bean;
 						for (final IWorkflowListener listener : getEventListeners(activity)) {
-							((IActivityListener) listener).onStatusChange(activity,
-									(EActivityStatus) queryFor("status", "id=?", activity.getId()));
+							((IActivityListener) listener).onStatusChange(
+									activity,
+									Convert.toEnum(EActivityStatus.class,
+											queryFor("status", "id=?", activity.getId())));
 						}
 					}
 				}

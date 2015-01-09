@@ -14,6 +14,7 @@ import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
+import net.simpleframework.common.Convert;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
 import net.simpleframework.common.coll.ArrayUtils;
@@ -376,8 +377,10 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 					for (final Object bean : beans) {
 						final ProcessBean process = (ProcessBean) bean;
 						for (final IWorkflowListener listener : getEventListeners(process)) {
-							((IProcessListener) listener).onStatusChange(process,
-									(EProcessStatus) queryFor("status", "id=?", process.getId()));
+							((IProcessListener) listener).onStatusChange(
+									process,
+									Convert.toEnum(EProcessStatus.class,
+											queryFor("status", "id=?", process.getId())));
 						}
 					}
 				}
