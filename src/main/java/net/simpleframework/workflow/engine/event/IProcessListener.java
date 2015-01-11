@@ -46,7 +46,7 @@ public interface IProcessListener extends IWorkflowListener {
 		}
 
 		@Override
-		public void onStatusChange(final ProcessBean process, EProcessStatus oStatus) {
+		public void onStatusChange(final ProcessBean process, final EProcessStatus oStatus) {
 		}
 	}
 }

@@ -28,7 +28,7 @@ public interface IActivityListener extends IWorkflowListener {
 	public static abstract class ActivityAdapter implements IActivityListener {
 
 		@Override
-		public void onStatusChange(final ActivityBean activity, EActivityStatus oStatus) {
+		public void onStatusChange(final ActivityBean activity, final EActivityStatus oStatus) {
 		}
 	}
 }
