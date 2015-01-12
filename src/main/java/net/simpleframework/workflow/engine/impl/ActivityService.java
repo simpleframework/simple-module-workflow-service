@@ -97,7 +97,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 		// 创建前事件
 		for (final IWorkflowListener listener : getEventListeners(activity)) {
-			((IActivityListener) listener).onBeforeCreate(activityComplete);
+			((IActivityListener) listener).onBeforeComplete(activityComplete);
 		}
 
 		ActivityBean endActivity = null;
@@ -174,7 +174,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 		// 创建后事件
 		for (final IWorkflowListener listener : getEventListeners(activity)) {
-			((IActivityListener) listener).onCreated(activityComplete);
+			((IActivityListener) listener).onCompleted(activityComplete);
 		}
 	}
 

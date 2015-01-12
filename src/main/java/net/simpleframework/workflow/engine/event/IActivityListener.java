@@ -17,14 +17,14 @@ public interface IActivityListener extends IWorkflowListener {
 	 * 
 	 * @param activityComplete
 	 */
-	void onBeforeCreate(ActivityComplete activityComplete);
+	void onBeforeComplete(ActivityComplete activityComplete);
 
 	/**
 	 * 环节创建后触发
 	 * 
 	 * @param activityComplete
 	 */
-	void onCreated(ActivityComplete activityComplete);
+	void onCompleted(ActivityComplete activityComplete);
 
 	/**
 	 * 过期检查
@@ -41,6 +41,18 @@ public interface IActivityListener extends IWorkflowListener {
 	void onStatusChange(ActivityBean activity, EActivityStatus oStatus);
 
 	public static abstract class ActivityAdapter implements IActivityListener {
+
+		@Override
+		public void onBeforeComplete(final ActivityComplete activityComplete) {
+		}
+
+		@Override
+		public void onCompleted(final ActivityComplete activityComplete) {
+		}
+
+		@Override
+		public void onTimeoutCheck(final ActivityBean activity) {
+		}
 
 		@Override
 		public void onStatusChange(final ActivityBean activity, final EActivityStatus oStatus) {
