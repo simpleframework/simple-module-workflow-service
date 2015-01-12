@@ -1,5 +1,6 @@
 package net.simpleframework.workflow.engine.event;
 
+import net.simpleframework.workflow.engine.EWorkitemStatus;
 import net.simpleframework.workflow.engine.WorkitemBean;
 
 /**
@@ -10,12 +11,11 @@ import net.simpleframework.workflow.engine.WorkitemBean;
  */
 public interface IWorkitemListener extends IWorkflowListener {
 
-	void onStatusChange(WorkitemBean workitem);
+	void onStatusChange(WorkitemBean workitem, EWorkitemStatus oStatus);
 
 	public static abstract class WorkitemAdapter implements IWorkitemListener {
-
 		@Override
-		public void onStatusChange(final WorkitemBean workitem) {
+		public void onStatusChange(final WorkitemBean workitem, final EWorkitemStatus oStatus) {
 		}
 	}
 }

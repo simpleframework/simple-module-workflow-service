@@ -95,6 +95,11 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 		mService._assert(pService.getProcessModel(process), EProcessModelStatus.deploy);
 
+		// 创建前事件
+		for (final IWorkflowListener listener : getEventListeners(activity)) {
+			((IActivityListener) listener).onBeforeCreate(activityComplete);
+		}
+
 		ActivityBean endActivity = null;
 		// 如果流程处在最终状态，则不创建后续环节
 		if (!pService.isFinalStatus(process)) {
@@ -165,6 +170,11 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			pService.update(new String[] { "completeDate", "status" }, process);
 
 			_backToProcess(process);
+		}
+
+		// 创建后事件
+		for (final IWorkflowListener listener : getEventListeners(activity)) {
+			((IActivityListener) listener).onCreated(activityComplete);
 		}
 	}
 

@@ -9,6 +9,7 @@ import java.util.Map;
 
 import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.query.IDataQuery;
+import net.simpleframework.common.Convert;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.ctx.permission.PermissionUser;
@@ -445,7 +446,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		addListener(new DbEntityAdapterEx() {
 
 			@Override
-			public void onAfterUpdate(final IDbEntityManager<?> manager, final String[] columns,
+			public void onBeforeUpdate(final IDbEntityManager<?> manager, final String[] columns,
 					final Object[] beans) {
 				super.onAfterUpdate(manager, columns, beans);
 
@@ -453,7 +454,10 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 					for (final Object bean : beans) {
 						final WorkitemBean workitem = (WorkitemBean) bean;
 						for (final IWorkflowListener listener : getEventListeners(workitem)) {
-							((IWorkitemListener) listener).onStatusChange(workitem);
+							((IWorkitemListener) listener).onStatusChange(
+									workitem,
+									Convert.toEnum(EWorkitemStatus.class,
+											queryFor("status", "id=?", workitem.getId())));
 						}
 					}
 				}

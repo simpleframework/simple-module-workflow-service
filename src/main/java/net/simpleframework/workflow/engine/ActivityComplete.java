@@ -73,6 +73,15 @@ public class ActivityComplete extends ObjectEx implements IWorkflowServiceAware 
 
 	private void doInit(final ActivityBean activity) {
 		activityId = activity.getId();
+		reset(activity);
+	}
+
+	private void reset(ActivityBean activity) {
+		if (activity == null) {
+			activity = aService.getBean(activityId);
+			_transitions.clear();
+			_participants.clear();
+		}
 
 		final AbstractTaskNode tasknode = aService.getTaskNode(activity);
 		final IScriptEval script;
@@ -88,11 +97,14 @@ public class ActivityComplete extends ObjectEx implements IWorkflowServiceAware 
 
 		// 解析条件正确的transition
 		TransitionUtils.doTransitions(tasknode, script, _transitions);
-
 		// 解析jobs
 		for (final TransitionNode transition : getTransitions()) {
 			putParticipant(transition, script);
 		}
+	}
+
+	public void reset() {
+		reset(null);
 	}
 
 	public WorkitemBean getWorkitem() {

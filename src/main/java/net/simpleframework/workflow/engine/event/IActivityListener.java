@@ -1,6 +1,7 @@
 package net.simpleframework.workflow.engine.event;
 
 import net.simpleframework.workflow.engine.ActivityBean;
+import net.simpleframework.workflow.engine.ActivityComplete;
 import net.simpleframework.workflow.engine.EActivityStatus;
 
 /**
@@ -10,6 +11,20 @@ import net.simpleframework.workflow.engine.EActivityStatus;
  *         http://www.simpleframework.net
  */
 public interface IActivityListener extends IWorkflowListener {
+
+	/**
+	 * 环节创建前触发
+	 * 
+	 * @param activityComplete
+	 */
+	void onBeforeCreate(ActivityComplete activityComplete);
+
+	/**
+	 * 环节创建后触发
+	 * 
+	 * @param activityComplete
+	 */
+	void onCreated(ActivityComplete activityComplete);
 
 	/**
 	 * 过期检查
