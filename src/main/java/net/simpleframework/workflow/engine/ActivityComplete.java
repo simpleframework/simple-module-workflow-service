@@ -232,8 +232,6 @@ public class ActivityComplete extends ObjectEx implements IWorkflowServiceAware 
 		if (participantIds == null) {
 			return;
 		}
-		final Set<String> keys = participantIds.keySet();
-		resetTransitions(keys.toArray(new String[keys.size()]));
 
 		final Map<String, List<Participant>> participants = new LinkedHashMap<String, List<Participant>>();
 		for (final TransitionNode transition : getTransitions()) {
@@ -252,5 +250,8 @@ public class ActivityComplete extends ObjectEx implements IWorkflowServiceAware 
 		}
 		_participants.clear();
 		_participants.putAll(participants);
+
+		final Set<String> keys = _participants.keySet();
+		resetTransitions(keys.toArray(new String[keys.size()]));
 	}
 }

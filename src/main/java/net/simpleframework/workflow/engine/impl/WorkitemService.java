@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import net.simpleframework.ado.FilterItems;
 import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.Convert;
@@ -391,6 +392,14 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		final StringBuilder sql = new StringBuilder("userId2=? and readMark=?")
 				.append(DEFAULT_ORDERBY);
 		return query(sql.toString(), userId, Boolean.FALSE);
+	}
+
+	@Override
+	public IDataQuery<WorkitemBean> getWorklist(final ID userId, FilterItems params) {
+		if (params == null) {
+			params = FilterItems.of();
+		}
+		return queryByParams(params.addEqual("userId", userId), DEFAULT_ORDER);
 	}
 
 	@Override

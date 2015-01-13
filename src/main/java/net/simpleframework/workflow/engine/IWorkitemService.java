@@ -3,6 +3,7 @@ package net.simpleframework.workflow.engine;
 import java.util.Date;
 import java.util.List;
 
+import net.simpleframework.ado.FilterItems;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 
@@ -56,6 +57,8 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	 * @return
 	 */
 	IDataQuery<WorkitemBean> getUnreadWorklist(ID userId);
+
+	IDataQuery<WorkitemBean> getWorklist(ID userId, FilterItems params);
 
 	/**
 	 * 完成当前的工作项
