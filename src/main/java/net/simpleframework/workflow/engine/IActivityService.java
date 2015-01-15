@@ -58,6 +58,13 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	List<ActivityBean> getNextActivities(ActivityBean preActivity);
 
 	/**
+	 * 
+	 * @param preActivity
+	 * @return
+	 */
+	List<ActivityBean> getLastNextActivities(ActivityBean preActivity);
+
+	/**
 	 * 获取指定环节的所有后续环节实例
 	 * 
 	 * @param preActivity

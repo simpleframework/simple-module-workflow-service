@@ -122,7 +122,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	private void _createStartNode(final ProcessBean process, final List<TransitionNode> transitions) {
 		// 创建开始任务
 		final StartNode startNode = _getProcessNode(process).startNode();
-		final ActivityBean sActivity = aService._create(process, startNode, null);
+		final ActivityBean sActivity = aService._create(process, startNode, null, new Date());
 		aService.insert(sActivity);
 		if (transitions == null) {
 			new ActivityComplete(sActivity).complete();

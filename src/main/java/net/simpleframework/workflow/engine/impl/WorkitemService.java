@@ -118,7 +118,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 						_createSequentialWorkitem(activity, o);
 					} else {
 						// 多实例，创建环节实例，同时完成当前环节
-						final ActivityBean nActivity = aService._create(process, tasknode, activity);
+						final ActivityBean nActivity = aService._create(process, tasknode, activity,
+								new Date());
 						PropSequential.set(nActivity, list);
 						aService.insert(nActivity);
 						_createSequentialWorkitem(nActivity, o);
@@ -136,7 +137,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 	void _createSequentialWorkitem(final ActivityBean activity, final Object o) {
 		if (o instanceof Participant) {
-			insert(_create(activity, (Participant) o));
+			insert(_create(activity, (Participant) o, new Date()));
 		} else if (o instanceof WorkitemBean) {
 			_clone(activity, (WorkitemBean) o);
 		}
@@ -151,6 +152,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 		final AbstractTaskNode tn = aService.getTaskNode(activity);
 		ActivityBean nActivity = null;
+		Date createDate = new Date();
 		final EActivityStatus aStatus = activity.getStatus();
 		if (aStatus == EActivityStatus.complete) {
 			// 检测后续环节
@@ -183,7 +185,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 								aService.update(new String[] { "properties" }, nextActivity);
 							} else if (status2 == EActivityStatus.complete) {
 								final ActivityBean mActivity = aService._create(tasknode,
-										aService.getBean(nextActivity.getPreviousId()));
+										aService.getBean(nextActivity.getPreviousId()), createDate);
 								aService._setMergePreActivities(mActivity, preActivities.toArray());
 								aService.insert(mActivity);
 								// 放弃
@@ -202,7 +204,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 				}
 			}
 			// 创建新的环节
-			nActivity = aService._create(tn, aService.getBean(activity.getPreviousId()));
+			nActivity = aService._create(tn, aService.getBean(activity.getPreviousId()), createDate);
 			aService.insert(nActivity);
 		} else if (aStatus == EActivityStatus.running) {
 			nActivity = activity;
@@ -262,7 +264,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 	WorkitemBean _clone(final ActivityBean nActivity, final WorkitemBean workitem) {
 		final WorkitemBean nWorkitem = _create(nActivity, new Participant(workitem.getUserId(),
-				workitem.getRoleId(), workitem.getDeptId()));
+				workitem.getRoleId(), workitem.getDeptId()), new Date());
 		insert(nWorkitem);
 
 		// 如果含有委托
@@ -432,11 +434,11 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		pService.delete(processId);
 	}
 
-	WorkitemBean _create(final ActivityBean activity, final Participant participant) {
+	WorkitemBean _create(final ActivityBean activity, final Participant participant, Date createDate) {
 		final WorkitemBean workitem = createBean();
 		workitem.setProcessId(activity.getProcessId());
 		workitem.setActivityId(activity.getId());
-		workitem.setCreateDate(new Date());
+		workitem.setCreateDate(createDate);
 
 		final PermissionUser user = permission.getUser(participant.userId);
 		workitem.setUserId(user.getId());

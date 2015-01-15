@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -100,6 +101,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			((IActivityListener) listener).onBeforeComplete(activityComplete);
 		}
 
+		final Date createDate = new Date();
 		ActivityBean endActivity = null;
 		// 如果流程处在最终状态，则不创建后续环节
 		if (!pService.isFinalStatus(process)) {
@@ -107,7 +109,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				final AbstractTaskNode to = transition.to();
 				if (to instanceof UserNode) {
 					final UserNode _to = (UserNode) to;
-					_doUserNode(activity, _to, activityComplete.getParticipants(transition));
+					_doUserNode(activity, _to, activityComplete.getParticipants(transition), createDate);
 					// 空节点直接完成
 					if (_to.isEmpty()) {
 						for (final ActivityBean next : getNextActivities(activity)) {
@@ -115,11 +117,11 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 						}
 					}
 				} else if (to instanceof MergeNode) {
-					_doMergeNode(activity, (MergeNode) to);
+					_doMergeNode(activity, (MergeNode) to, createDate);
 				} else if (to instanceof SubNode) {
-					_doSubNode(activity, (SubNode) to);
+					_doSubNode(activity, (SubNode) to, createDate);
 				} else if (to instanceof EndNode) {
-					endActivity = _create(process, to, activity);
+					endActivity = _create(process, to, activity, createDate);
 					endActivity.setStatus(EActivityStatus.complete);
 					endActivity.setCompleteDate(new Date());
 					insert(endActivity);
@@ -180,20 +182,20 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	private static final String EMPTY_PARTICIPANTS = "empty_participants";
 
 	private void _doUserNode(final ActivityBean preActivity, final UserNode to,
-			final List<Participant> _participants) {
+			final List<Participant> _participants, final Date createDate) {
 		final ProcessBean process = getProcessBean(preActivity);
 		final boolean instanceShared = TasknodeUtils.isInstanceShared(to);
 		if (to.isEmpty()) {
 			// 空节点不创建任务项，仅把定义参与者保存在属性里
 			if (_participants != null) {
 				if (instanceShared) {
-					final ActivityBean nActivity = _create(process, to, preActivity);
+					final ActivityBean nActivity = _create(process, to, preActivity, createDate);
 					nActivity.getProperties().setProperty(EMPTY_PARTICIPANTS,
 							StringUtils.join(_participants, ";"));
 					insert(nActivity);
 				} else {
 					for (final Participant participant : _participants) {
-						final ActivityBean nActivity = _create(process, to, preActivity);
+						final ActivityBean nActivity = _create(process, to, preActivity, createDate);
 						nActivity.getProperties().setProperty(EMPTY_PARTICIPANTS, participant.toString());
 						insert(nActivity);
 					}
@@ -217,7 +219,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			ActivityBean nActivity = null;
 			for (final Participant participant : participants) {
 				if (!instanceShared || nActivity == null) {
-					nActivity = _create(process, to, preActivity);
+					nActivity = _create(process, to, preActivity, createDate);
 					// 设置后续参与者
 					if (sequential) {
 						PropSequential.set(nActivity, _participants);
@@ -230,7 +232,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				if (timoutHours > 0) {
 					doUpdateTimeoutDate(nActivity, timoutHours);
 				}
-				wService.insert(wService._create(nActivity, participant));
+				wService.insert(wService._create(nActivity, participant, createDate));
 			}
 		}
 	}
@@ -247,13 +249,14 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	private static final String MERGE_PRE_ACTIVITIES = "merge_pre_activities";
 
-	private void _doMergeNode(final ActivityBean preActivity, final MergeNode to) {
+	private void _doMergeNode(final ActivityBean preActivity, final MergeNode to,
+			final Date createDate) {
 		// 当前的合并环节，单实例
 		ActivityBean nActivity = null;
 		IDataQuery<ActivityBean> dq = query("processId=? and tasknodeId=?",
 				preActivity.getProcessId(), to.getId());
 		if (dq.getCount() == 0) {
-			insert(nActivity = _create(to, preActivity));
+			insert(nActivity = _create(to, preActivity, createDate));
 		} else {
 			// 查找非最终态的实例
 			ActivityBean activity;
@@ -265,7 +268,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			}
 			// 如果全部是最终态，则创建，可能由于回退造成
 			if (nActivity == null) {
-				insert(nActivity = _create(to, preActivity));
+				insert(nActivity = _create(to, preActivity, createDate));
 			}
 		}
 
@@ -401,8 +404,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		new ActivityComplete(activity).complete();
 	}
 
-	private void _doSubNode(final ActivityBean preActivity, final SubNode to) {
-		final ActivityBean nActivity = _create(to, preActivity);
+	private void _doSubNode(final ActivityBean preActivity, final SubNode to, final Date createDate) {
+		final ActivityBean nActivity = _create(to, preActivity, createDate);
 		insert(nActivity);
 
 		final String url = to.getUrl();
@@ -662,7 +665,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			preActivity = getBean(oActivity.getPreviousId());
 		}
 		// 新建一个克隆节点
-		final ActivityBean nActivity = _create(to, preActivity);
+		final ActivityBean nActivity = _create(to, preActivity, new Date());
 		insert(nActivity);
 		if (to instanceof UserNode) {
 			// 克隆工作项
@@ -719,6 +722,24 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			}
 		}
 		return list;
+	}
+
+	@Override
+	public List<ActivityBean> getLastNextActivities(final ActivityBean preActivity) {
+		final Map<Date, List<ActivityBean>> cache = new HashMap<Date, List<ActivityBean>>();
+		Date last = null;
+		for (final ActivityBean activity : getNextActivities(preActivity)) {
+			final Date k = activity.getCreateDate();
+			List<ActivityBean> l = cache.get(k);
+			if (l == null) {
+				cache.put(k, l = new ArrayList<ActivityBean>());
+			}
+			l.add(activity);
+			if (last == null || last.before(k)) {
+				last = k;
+			}
+		}
+		return cache.get(last);
 	}
 
 	@Override
@@ -855,12 +876,13 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 	}
 
-	ActivityBean _create(final AbstractTaskNode tasknode, final ActivityBean preActivity) {
-		return _create(null, tasknode, preActivity);
+	ActivityBean _create(final AbstractTaskNode tasknode, final ActivityBean preActivity,
+			final Date createDate) {
+		return _create(null, tasknode, preActivity, createDate);
 	}
 
 	ActivityBean _create(ProcessBean process, final AbstractTaskNode tasknode,
-			final ActivityBean preActivity) {
+			final ActivityBean preActivity, final Date createDate) {
 		if (process == null && preActivity != null) {
 			process = getProcessBean(preActivity);
 		}
