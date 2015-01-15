@@ -127,49 +127,47 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			}
 		}
 
-		if (!activityComplete.isBcomplete()) {
-			return;
-		}
+		if (activityComplete.isBcomplete()) {
+			activity.setStatus(EActivityStatus.complete);
+			activity.setCompleteDate(new Date());
+			update(new String[] { "completeDate", "status" }, activity);
 
-		activity.setStatus(EActivityStatus.complete);
-		activity.setCompleteDate(new Date());
-		update(new String[] { "completeDate", "status" }, activity);
-
-		final AbstractTaskNode tasknode = getTaskNode(activity);
-		if (tasknode instanceof UserNode) {
-			// 放弃未完成的工作项
-			for (final WorkitemBean workitem : wService.getWorkitems(activity)) {
-				if (!wService.isFinalStatus(workitem)) {
-					wService._abort(workitem);
+			final AbstractTaskNode tasknode = getTaskNode(activity);
+			if (tasknode instanceof UserNode) {
+				// 放弃未完成的工作项
+				for (final WorkitemBean workitem : wService.getWorkitems(activity)) {
+					if (!wService.isFinalStatus(workitem)) {
+						wService._abort(workitem);
+					}
 				}
-			}
 
-			if (!TasknodeUtils.isInstanceShared(tasknode) && !TasknodeUtils.isSequential(tasknode)) {
-				// 多实例并行，处理响应数
-				final ArrayList<ActivityBean> al = new ArrayList<ActivityBean>();
-				int completes = 0;
-				for (final ActivityBean activity2 : getNextActivities(getPreActivity(activity))) {
-					if (activity2.getTasknodeId().equals(tasknode.getId())) {
-						al.add(activity2);
-						if (activity2.getStatus() == EActivityStatus.complete) {
-							completes++;
+				if (!TasknodeUtils.isInstanceShared(tasknode) && !TasknodeUtils.isSequential(tasknode)) {
+					// 多实例并行，处理响应数
+					final ArrayList<ActivityBean> al = new ArrayList<ActivityBean>();
+					int completes = 0;
+					for (final ActivityBean activity2 : getNextActivities(getPreActivity(activity))) {
+						if (activity2.getTasknodeId().equals(tasknode.getId())) {
+							al.add(activity2);
+							if (activity2.getStatus() == EActivityStatus.complete) {
+								completes++;
+							}
+						}
+					}
+					if (completes >= TasknodeUtils.getResponseValue(tasknode, al.size())) {
+						for (int i = 0; i < al.size(); i++) {
+							_abort(al.get(i));
 						}
 					}
 				}
-				if (completes >= TasknodeUtils.getResponseValue(tasknode, al.size())) {
-					for (int i = 0; i < al.size(); i++) {
-						_abort(al.get(i));
-					}
-				}
 			}
-		}
 
-		if (endActivity != null) {
-			process.setStatus(EProcessStatus.complete);
-			process.setCompleteDate(endActivity.getCompleteDate());
-			pService.update(new String[] { "completeDate", "status" }, process);
+			if (endActivity != null) {
+				process.setStatus(EProcessStatus.complete);
+				process.setCompleteDate(endActivity.getCompleteDate());
+				pService.update(new String[] { "completeDate", "status" }, process);
 
-			_backToProcess(process);
+				_backToProcess(process);
+			}
 		}
 
 		// 创建后事件
