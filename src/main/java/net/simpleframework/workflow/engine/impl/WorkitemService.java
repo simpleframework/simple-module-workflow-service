@@ -459,7 +459,6 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		super.onInit();
 
 		addListener(new DbEntityAdapterEx() {
-
 			@Override
 			public void onBeforeUpdate(final IDbEntityManager<?> manager, final String[] columns,
 					final Object[] beans) {
