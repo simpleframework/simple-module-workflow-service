@@ -50,6 +50,8 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	 */
 	IDataQuery<WorkitemBean> getWorklist(ID userId, EWorkitemStatus... status);
 
+	IDataQuery<WorkitemBean> getWorklist(ID userId, FilterItems items, EWorkitemStatus... status);
+
 	/**
 	 * 获取未读的工作列表
 	 * 
@@ -57,8 +59,6 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	 * @return
 	 */
 	IDataQuery<WorkitemBean> getUnreadWorklist(ID userId);
-
-	IDataQuery<WorkitemBean> getWorklist(ID userId, FilterItems params);
 
 	/**
 	 * 完成当前的工作项

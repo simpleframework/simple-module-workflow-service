@@ -9,6 +9,7 @@ import java.util.Map;
 
 import net.simpleframework.ado.FilterItems;
 import net.simpleframework.ado.db.IDbEntityManager;
+import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.Convert;
 import net.simpleframework.common.ID;
@@ -365,6 +366,12 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 	@Override
 	public IDataQuery<WorkitemBean> getWorklist(final ID userId, final EWorkitemStatus... status) {
+		return getWorklist(userId, null, status);
+	}
+
+	@Override
+	public IDataQuery<WorkitemBean> getWorklist(final ID userId, FilterItems items,
+			final EWorkitemStatus... status) {
 		final StringBuilder sql = new StringBuilder("userId2=?");
 		final ArrayList<Object> params = new ArrayList<Object>();
 		params.add(userId);
@@ -378,6 +385,11 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 				params.add(s);
 			}
 			sql.append(")");
+		}
+		if (items != null && items.size() > 0) {
+			final ExpressionValue eVal = toExpressionValue(items);
+			sql.append(" and (").append(eVal.getExpression()).append(")");
+			params.addAll(ArrayUtils.asList(eVal.getValues()));
 		}
 		sql.append(DEFAULT_ORDERBY);
 		return query(sql.toString(), params.toArray());
@@ -394,14 +406,6 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		final StringBuilder sql = new StringBuilder("userId2=? and readMark=?")
 				.append(DEFAULT_ORDERBY);
 		return query(sql.toString(), userId, Boolean.FALSE);
-	}
-
-	@Override
-	public IDataQuery<WorkitemBean> getWorklist(final ID userId, FilterItems params) {
-		if (params == null) {
-			params = FilterItems.of();
-		}
-		return queryByParams(params.addEqual("userId", userId), DEFAULT_ORDER);
 	}
 
 	@Override
