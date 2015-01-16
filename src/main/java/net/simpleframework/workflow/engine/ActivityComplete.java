@@ -236,11 +236,14 @@ public class ActivityComplete extends ObjectEx implements IWorkflowServiceAware 
 		final Map<String, List<Participant>> participants = new LinkedHashMap<String, List<Participant>>();
 		for (final TransitionNode transition : getTransitions()) {
 			final ArrayList<Participant> al = new ArrayList<Participant>();
-			for (final String id : participantIds.get(transition.getId())) {
-				for (final Participant participant : getParticipants(transition)) {
-					if (id.equals(participant.toString())) {
-						al.add(participant);
-						break;
+			final String[] arr = participantIds.get(transition.getId());
+			if (arr != null) {
+				for (final String id : arr) {
+					for (final Participant participant : getParticipants(transition)) {
+						if (id.equals(participant.toString())) {
+							al.add(participant);
+							break;
+						}
 					}
 				}
 			}
