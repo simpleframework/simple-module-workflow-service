@@ -153,7 +153,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 		final AbstractTaskNode tn = aService.getTaskNode(activity);
 		ActivityBean nActivity = null;
-		Date createDate = new Date();
+		final Date createDate = new Date();
 		final EActivityStatus aStatus = activity.getStatus();
 		if (aStatus == EActivityStatus.complete) {
 			// 检测后续环节
@@ -370,7 +370,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	@Override
-	public IDataQuery<WorkitemBean> getWorklist(final ID userId, FilterItems items,
+	public IDataQuery<WorkitemBean> getWorklist(final ID userId, final FilterItems items,
 			final EWorkitemStatus... status) {
 		final StringBuilder sql = new StringBuilder("userId2=?");
 		final ArrayList<Object> params = new ArrayList<Object>();
@@ -438,7 +438,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		pService.delete(processId);
 	}
 
-	WorkitemBean _create(final ActivityBean activity, final Participant participant, Date createDate) {
+	WorkitemBean _create(final ActivityBean activity, final Participant participant,
+			final Date createDate) {
 		final WorkitemBean workitem = createBean();
 		workitem.setProcessId(activity.getProcessId());
 		workitem.setActivityId(activity.getId());
