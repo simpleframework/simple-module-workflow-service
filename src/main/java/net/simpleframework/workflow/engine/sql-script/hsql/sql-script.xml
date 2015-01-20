@@ -33,6 +33,7 @@
       create table sf_workflow_process (
         id char(32) not null,
         modelid char(32) not null,
+        modelname varchar(64) not null, 
         title varchar(128),
         version varchar(16) not null,
         status tinyint not null,

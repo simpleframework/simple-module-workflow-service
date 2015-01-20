@@ -16,7 +16,10 @@ import net.simpleframework.common.ID;
 @EntityInterceptor(listenerTypes = { "net.simpleframework.module.log.EntityUpdateLogAdapter",
 		"net.simpleframework.module.log.EntityDeleteLogAdapter" }, columns = { "title", "status" })
 public class ProcessBean extends AbstractWorkflowBean {
+	/* 模型id */
 	private ID modelId;
+	/* 模型名称 */
+	private String modelName;
 
 	private String version;
 
@@ -46,6 +49,14 @@ public class ProcessBean extends AbstractWorkflowBean {
 
 	public void setModelId(final ID modelId) {
 		this.modelId = modelId;
+	}
+
+	public String getModelName() {
+		return modelName;
+	}
+
+	public void setModelName(String modelName) {
+		this.modelName = modelName;
 	}
 
 	public String getVersion() {

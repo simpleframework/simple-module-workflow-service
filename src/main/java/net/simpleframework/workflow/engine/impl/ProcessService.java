@@ -298,6 +298,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 			final String title) {
 		final ProcessBean process = createBean();
 		process.setModelId(processModel.getId());
+		process.setModelName(processModel.getModelName());
 		process.setTitle(title);
 		process.setCreateDate(new Date());
 		final ProcessDocument doc = mService.getProcessDocument(processModel);
