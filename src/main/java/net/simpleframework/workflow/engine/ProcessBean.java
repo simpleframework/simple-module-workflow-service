@@ -55,7 +55,7 @@ public class ProcessBean extends AbstractWorkflowBean {
 		return modelName;
 	}
 
-	public void setModelName(String modelName) {
+	public void setModelName(final String modelName) {
 		this.modelName = modelName;
 	}
 
