@@ -12,6 +12,7 @@ import java.util.Properties;
 import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.db.common.ExpressionValue;
+import net.simpleframework.ado.db.common.SQLValue;
 import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.Convert;
@@ -213,8 +214,35 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 			}
 			sql.append(")");
 		}
-		sql.append(" order by createDate desc");
+		sql.append(" order by createdate desc");
 		return query(sql.toString(), params.toArray());
+	}
+
+	@Override
+	public IDataQuery<ProcessBean> getProcessList(final ID userId, final EProcessStatus... status) {
+		if (userId == null) {
+			return DataQueryUtils.nullQuery();
+		}
+		StringBuilder sql = new StringBuilder();
+		final ArrayList<Object> params = new ArrayList<Object>();
+		sql.append("select p.* from ").append(getTablename(ProcessBean.class))
+				.append(" p left join ").append(getTablename(WorkitemBean.class))
+				.append(" w on p.id=w.processid where w.userid=?");
+		params.add(userId);
+		if (status != null && status.length > 0) {
+			sql.append(" and (");
+			int i = 0;
+			for (final EProcessStatus s : status) {
+				if (i++ > 0) {
+					sql.append(" or ");
+				}
+				sql.append("p.status=?");
+				params.add(s);
+			}
+			sql.append(")");
+		}
+		sql.append(" group by w.processid order by p.createdate desc");
+		return getEntityManager().queryBeans(new SQLValue(sql.toString(), params.toArray()));
 	}
 
 	@Override

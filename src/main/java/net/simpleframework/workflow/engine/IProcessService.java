@@ -3,6 +3,7 @@ package net.simpleframework.workflow.engine;
 import java.util.Properties;
 
 import net.simpleframework.ado.query.IDataQuery;
+import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.workflow.schema.ProcessDocument;
 
@@ -59,6 +60,15 @@ public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 	 * @return
 	 */
 	IDataQuery<ProcessBean> getProcessList(ProcessModelBean processModel, EProcessStatus... status);
+
+	/**
+	 * 获取经办的流程实例
+	 * 
+	 * @param userId
+	 * @param status
+	 * @return
+	 */
+	IDataQuery<ProcessBean> getProcessList(ID userId, EProcessStatus... status);
 
 	/**
 	 * 挂起流程
