@@ -10,6 +10,7 @@ import java.util.Map;
 import net.simpleframework.ado.FilterItems;
 import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.db.common.ExpressionValue;
+import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.Convert;
 import net.simpleframework.common.ID;
@@ -352,14 +353,22 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	public List<WorkitemBean> getWorkitems(final ActivityBean activity,
 			final EWorkitemStatus... status) {
 		final List<WorkitemBean> workitems = new ArrayList<WorkitemBean>();
-		WorkitemBean workitem;
-		final IDataQuery<WorkitemBean> dq = query("activityId=?", activity.getId());
-		while ((workitem = dq.next()) != null) {
-			if (ArrayUtils.isEmpty(status) || ArrayUtils.contains(status, workitem.getStatus())) {
-				workitems.add(workitem);
+		if (activity != null) {
+			WorkitemBean workitem;
+			final IDataQuery<WorkitemBean> dq = query("activityId=?", activity.getId());
+			while ((workitem = dq.next()) != null) {
+				if (ArrayUtils.isEmpty(status) || ArrayUtils.contains(status, workitem.getStatus())) {
+					workitems.add(workitem);
+				}
 			}
 		}
 		return workitems;
+	}
+
+	@Override
+	public List<WorkitemBean> getWorkitems(final ProcessBean process, final ID userId,
+			final EWorkitemStatus... status) {
+		return DataQueryUtils.toList(_getWorklist(process, userId, (FilterItems) null, status));
 	}
 
 	private static final String DEFAULT_ORDERBY = " order by topmark desc, createdate desc";
@@ -372,9 +381,21 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	@Override
 	public IDataQuery<WorkitemBean> getWorklist(final ID userId, final FilterItems items,
 			final EWorkitemStatus... status) {
-		final StringBuilder sql = new StringBuilder("userId2=?");
+		return _getWorklist(null, userId, items, status);
+	}
+
+	private IDataQuery<WorkitemBean> _getWorklist(final ProcessBean process, final ID userId,
+			final FilterItems items, final EWorkitemStatus... status) {
+		final StringBuilder sql = new StringBuilder("1=1");
 		final ArrayList<Object> params = new ArrayList<Object>();
-		params.add(userId);
+		if (process != null) {
+			sql.append(" and processid=?");
+			params.add(process.getId());
+		}
+		if (userId != null) {
+			sql.append(" and userid2=?");
+			params.add(userId);
+		}
 		if (status != null && status.length > 0) {
 			sql.append(" and (");
 			for (final EWorkitemStatus s : status) {
