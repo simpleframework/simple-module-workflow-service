@@ -223,7 +223,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		if (userId == null) {
 			return DataQueryUtils.nullQuery();
 		}
-		StringBuilder sql = new StringBuilder();
+		final StringBuilder sql = new StringBuilder();
 		final ArrayList<Object> params = new ArrayList<Object>();
 		sql.append("select p.* from ").append(getTablename(ProcessBean.class))
 				.append(" p left join ").append(getTablename(WorkitemBean.class))
