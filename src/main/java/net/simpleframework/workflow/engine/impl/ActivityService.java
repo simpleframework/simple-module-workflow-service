@@ -856,7 +856,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	void _doActivityTimeout() {
-		final IDataQuery<ActivityBean> dq = query("timeoutDate is not null and status<=?",
+		final IDataQuery<ActivityBean> dq = query(
+				"timeoutdate is not null and (status=? or status=?)", EActivityStatus.running,
 				EActivityStatus.timeout).setFetchSize(0);
 		ActivityBean activity;
 		final Date n = new Date();
@@ -864,11 +865,13 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			if (pService.isFinalStatus(getProcessBean(activity))) {
 				continue;
 			}
-			if (activity.getStatus() != EActivityStatus.timeout && n.after(activity.getTimeoutDate())) {
+			final EActivityStatus status = activity.getStatus();
+			if (status != EActivityStatus.timeout && n.after(activity.getTimeoutDate())) {
 				// 设置过期状态
 				activity.setStatus(EActivityStatus.timeout);
 				update(new String[] { "timeoutDate" }, activity);
 			}
+
 			// 触发超期检测事件，比如一些通知
 			for (final IWorkflowListener listener : getEventListeners(activity)) {
 				((IActivityListener) listener).onTimeoutCheck(activity);

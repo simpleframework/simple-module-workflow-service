@@ -40,4 +40,13 @@ public class WorkflowSettings extends PropertiesContextSettings {
 	public long getTimeoutCheckPeriod() {
 		return 60 * 5; // 单位秒
 	}
+
+	/**
+	 * 获取将要过期的警告时间，单位小时
+	 * 
+	 * @return
+	 */
+	public int getHoursToTimeoutWarning() {
+		return 8;
+	}
 }
