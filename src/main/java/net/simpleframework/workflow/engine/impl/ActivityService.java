@@ -869,7 +869,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			if (status != EActivityStatus.timeout && n.after(activity.getTimeoutDate())) {
 				// 设置过期状态
 				activity.setStatus(EActivityStatus.timeout);
-				update(new String[] { "timeoutDate" }, activity);
+				update(new String[] { "status" }, activity);
 			}
 
 			// 触发超期检测事件，比如一些通知
@@ -916,7 +916,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 		// 启动过期监控
 		final ITaskExecutor taskExecutor = workflowContext.getTaskExecutor();
-		taskExecutor.addScheduledTask(settings.getTimeoutCheckPeriod(), new ExecutorRunnable() {
+		taskExecutor.addScheduledTask(0, settings.getTimeoutCheckPeriod(), new ExecutorRunnable() {
 			@Override
 			protected void task() throws Exception {
 				_doActivityTimeout();
