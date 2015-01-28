@@ -439,7 +439,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	void _doRemoteSubActivity(final ActivityBean activity) {
 		final ID activityId = activity.getId();
 		final ITaskExecutor taskExecutor = workflowContext.getTaskExecutor();
-		taskExecutor.addScheduledTask(settings.getSubActivityPeriod(), new ExecutorRunnable() {
+		taskExecutor.addScheduledTask(wfSettings.getSubActivityPeriod(), new ExecutorRunnable() {
 			@Override
 			protected void task() throws Exception {
 				final ActivityBean nActivity = getBean(activityId);
@@ -455,7 +455,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				final EActivityStatus status = nActivity.getStatus();
 				if (status == EActivityStatus.running) {
 					// 模型名称、主流程的地址及实例id
-					data.add(IProcessRemote.SERVERURL, settings.getServerUrl());
+					data.add(IProcessRemote.SERVERURL, wfSettings.getServerUrl());
 					data.add(IProcessRemote.SUB_ACTIVITYID, nActivity.getId());
 					data.add(IProcessRemote.MODEL, sub.getModel());
 					int i = 0;
@@ -916,7 +916,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 		// 启动过期监控
 		final ITaskExecutor taskExecutor = workflowContext.getTaskExecutor();
-		taskExecutor.addScheduledTask(0, settings.getTimeoutCheckPeriod(), new ExecutorRunnable() {
+		taskExecutor.addScheduledTask(0, wfSettings.getTimeoutCheckPeriod(), new ExecutorRunnable() {
 			@Override
 			protected void task() throws Exception {
 				_doActivityTimeout();

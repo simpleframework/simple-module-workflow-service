@@ -11,7 +11,8 @@ import net.simpleframework.workflow.engine.participant.IWorkflowPermissionHandle
  */
 public interface IWorkflowServiceAware extends IWorkflowContextAware {
 
-	static final WorkflowSettings settings = (WorkflowSettings) workflowContext.getContextSettings();
+	static final WorkflowSettings wfSettings = (WorkflowSettings) workflowContext
+			.getContextSettings();
 
 	static final IProcessModelService mService = workflowContext.getProcessModelService();
 	static final IProcessService pService = workflowContext.getProcessService();
