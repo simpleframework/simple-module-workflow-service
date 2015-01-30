@@ -307,7 +307,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				ev.addValues(t.from().getId());
 			}
 
-			dq = getEntityManager().queryBeans(ev.addExpression(")"));
+			dq = query(ev.addExpression(")"));
 			ActivityBean pre;
 
 			if (count <= 0 || count >= dq.getCount()) {

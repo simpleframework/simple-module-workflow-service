@@ -202,18 +202,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		final ArrayList<Object> params = new ArrayList<Object>();
 		sql.append("modelId=?");
 		params.add(processModel.getId());
-		if (status != null && status.length > 0) {
-			sql.append(" and (");
-			int i = 0;
-			for (final EProcessStatus s : status) {
-				if (i++ > 0) {
-					sql.append(" or ");
-				}
-				sql.append("status=?");
-				params.add(s);
-			}
-			sql.append(")");
-		}
+		buildStatusSQL(sql, params, null, status);
 		sql.append(" order by createdate desc");
 		return query(sql.toString(), params.toArray());
 	}
@@ -229,6 +218,30 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 				.append(" p left join ").append(getTablename(WorkitemBean.class))
 				.append(" w on p.id=w.processid where w.userid=?");
 		params.add(userId);
+		buildStatusSQL(sql, params, "p", status);
+		sql.append(" group by w.processid order by p.createdate desc");
+		return query(new SQLValue(sql.toString(), params.toArray()));
+	}
+
+	@Override
+	public IDataQuery<ProcessBean> getProcessListInDept(final ID deptId,
+			final EProcessStatus... status) {
+		if (deptId == null) {
+			return DataQueryUtils.nullQuery();
+		}
+		final StringBuilder sql = new StringBuilder();
+		final ArrayList<Object> params = new ArrayList<Object>();
+		sql.append("select p.*, count(*) as c from ").append(getTablename(ProcessBean.class))
+				.append(" p left join ").append(getTablename(WorkitemBean.class))
+				.append(" w on p.id=w.processid where w.deptid=?");
+		params.add(deptId);
+		buildStatusSQL(sql, params, "p", status);
+		sql.append(" group by w.processid order by p.createdate desc");
+		return query(new SQLValue(sql.toString(), params.toArray()));
+	}
+
+	private void buildStatusSQL(final StringBuilder sql, ArrayList<Object> params,
+			final String alias, final EProcessStatus... status) {
 		if (status != null && status.length > 0) {
 			sql.append(" and (");
 			int i = 0;
@@ -236,13 +249,14 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 				if (i++ > 0) {
 					sql.append(" or ");
 				}
-				sql.append("p.status=?");
+				if (alias != null) {
+					sql.append(alias).append(".");
+				}
+				sql.append("status=?");
 				params.add(s);
 			}
 			sql.append(")");
 		}
-		sql.append(" group by w.processid order by p.createdate desc");
-		return getEntityManager().queryBeans(new SQLValue(sql.toString(), params.toArray()));
 	}
 
 	@Override
