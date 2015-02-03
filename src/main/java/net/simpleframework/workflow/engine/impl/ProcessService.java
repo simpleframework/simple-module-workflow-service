@@ -240,7 +240,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		return query(new SQLValue(sql.toString(), params.toArray()));
 	}
 
-	private void buildStatusSQL(final StringBuilder sql, ArrayList<Object> params,
+	private void buildStatusSQL(final StringBuilder sql, final ArrayList<Object> params,
 			final String alias, final EProcessStatus... status) {
 		if (status != null && status.length > 0) {
 			sql.append(" and (");
