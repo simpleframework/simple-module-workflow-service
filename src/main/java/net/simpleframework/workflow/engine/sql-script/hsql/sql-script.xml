@@ -112,6 +112,7 @@
         createdate timestamp not null,
         completedate timestamp,
         readmark bit not null,
+        readdate timestamp,
         topmark bit not null,
         retakeref char(32),
         ext1 varchar(64),

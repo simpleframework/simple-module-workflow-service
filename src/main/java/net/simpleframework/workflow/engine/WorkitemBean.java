@@ -49,6 +49,8 @@ public class WorkitemBean extends AbstractWorkflowBean {
 	/* 是否已读 */
 	@ColumnMeta(columnText = "#(WorkitemBean.0)")
 	private boolean readMark;
+	/* 第一次阅读时间 */
+	private Date readDate;
 
 	/* 是否置顶 */
 	@ColumnMeta(columnText = "#(WorkitemBean.1)")
@@ -148,6 +150,14 @@ public class WorkitemBean extends AbstractWorkflowBean {
 
 	public void setReadMark(final boolean readMark) {
 		this.readMark = readMark;
+	}
+
+	public Date getReadDate() {
+		return readDate;
+	}
+
+	public void setReadDate(final Date readDate) {
+		this.readDate = readDate;
 	}
 
 	public boolean isTopMark() {
