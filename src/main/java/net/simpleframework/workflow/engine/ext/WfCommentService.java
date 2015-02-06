@@ -18,7 +18,7 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 
 	@Override
 	public WfComment getCurComment(final WorkitemBean workitem) {
-		return getBean("workitemId=?", workitem.getId());
+		return workitem == null ? null : getBean("workitemId=?", workitem.getId());
 	}
 
 	@Override
