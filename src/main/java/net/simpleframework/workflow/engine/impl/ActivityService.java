@@ -532,7 +532,9 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 		if (!isFinalStatus(activity)) {
 			// fallback可以理解为abort
-			_status(activity, fallback ? EActivityStatus.fallback : EActivityStatus.abort);
+			activity.setStatus(fallback ? EActivityStatus.fallback : EActivityStatus.abort);
+			activity.setCompleteDate(new Date());
+			update(new String[] { "status", "completeDate" }, activity);
 		}
 	}
 
