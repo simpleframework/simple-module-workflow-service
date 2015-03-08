@@ -214,8 +214,9 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		}
 		final StringBuilder sql = new StringBuilder();
 		final ArrayList<Object> params = new ArrayList<Object>();
-		sql.append("select p.*, count(*) as c from ").append(getTablename(ProcessBean.class))
-				.append(" p left join ").append(getTablename(WorkitemBean.class))
+		sql.append("select p.*, count(*) as c, w.id as workitemid from ")
+				.append(getTablename(ProcessBean.class)).append(" p left join ")
+				.append(getTablename(WorkitemBean.class))
 				.append(" w on p.id=w.processid where w.userid=?");
 		params.add(userId);
 		buildStatusSQL(sql, params, "p", status);
@@ -231,8 +232,9 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		}
 		final StringBuilder sql = new StringBuilder();
 		final ArrayList<Object> params = new ArrayList<Object>();
-		sql.append("select p.*, count(*) as c from ").append(getTablename(ProcessBean.class))
-				.append(" p left join ").append(getTablename(WorkitemBean.class))
+		sql.append("select p.*, count(*) as c, w.id as workitemid from ")
+				.append(getTablename(ProcessBean.class)).append(" p left join ")
+				.append(getTablename(WorkitemBean.class))
 				.append(" w on p.id=w.processid where w.deptid=?");
 		params.add(deptId);
 		buildStatusSQL(sql, params, "p", status);
