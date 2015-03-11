@@ -43,6 +43,8 @@ import net.simpleframework.workflow.engine.remote.IProcessRemote;
  */
 public abstract class WorkflowContext extends AbstractADOModuleContext implements IWorkflowContext,
 		IDbEntityTableRegistry {
+	/* 机构管理员角色 */
+	public static String ROLE_WORKFLOW_MANAGER;
 
 	@Override
 	public void onInit(final IApplicationContext application) throws Exception {
