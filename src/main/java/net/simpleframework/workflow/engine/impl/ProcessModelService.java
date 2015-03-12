@@ -164,7 +164,8 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 			final AbstractProcessStartupType startupType = getProcessDocument(processModel)
 					.getProcessNode().getStartupType();
 			if (startupType instanceof Manual) {
-				final KVMap variables = new KVMap().add("model", processModel);
+				final KVMap variables = new KVMap().add("model", processModel).add(
+						PermissionConst.VAL_USERID, userId);
 				final AbstractParticipantType pt = ((Manual) startupType).getParticipantType();
 				final String participant = pt.getParticipant();
 				if (pt instanceof User) {
@@ -174,9 +175,9 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 								.getRoleId(), variables));
 					}
 				} else if (pt instanceof BaseRole) {
-					final ID roleId = permission.getRole(participant).getId();
+					final ID roleId = permission.getRole(participant, variables).getId();
 					if (permission.getUser(userId).isMember(roleId, variables)) {
-						final ID _roleId = (ID) variables.get(PermissionConst.CTX_ROLEID);
+						final ID _roleId = (ID) variables.get(PermissionConst.VAR_ROLEID);
 						items.add(new InitiateItem(processModel, userId, _roleId != null ? _roleId
 								: roleId, variables));
 					}

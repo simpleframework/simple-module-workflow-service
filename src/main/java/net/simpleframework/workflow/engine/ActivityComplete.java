@@ -11,6 +11,7 @@ import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.common.object.ObjectEx;
 import net.simpleframework.common.object.ObjectFactory;
+import net.simpleframework.ctx.permission.PermissionConst;
 import net.simpleframework.ctx.script.IScriptEval;
 import net.simpleframework.workflow.engine.participant.IParticipantHandler;
 import net.simpleframework.workflow.engine.participant.Participant;
@@ -116,7 +117,9 @@ public class ActivityComplete extends ObjectEx implements IWorkflowServiceAware 
 		if (!(toTask instanceof UserNode)) {
 			return;
 		}
-		final KVMap variables = new KVMap().add("transition", transition);
+
+		final KVMap variables = new KVMap().add("transition", transition).add(
+				PermissionConst.VAL_USERID, pService.getBean(getActivity().getProcessId()).getUserId());
 		final AbstractParticipantType pt = ((UserNode) toTask).getParticipantType();
 		final ArrayList<Participant> participants = new ArrayList<Participant>();
 		if (pt instanceof RuleRole) {

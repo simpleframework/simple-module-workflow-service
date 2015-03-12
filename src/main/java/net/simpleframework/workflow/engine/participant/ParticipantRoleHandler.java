@@ -26,11 +26,11 @@ public class ParticipantRoleHandler extends AbstractParticipantHandler {
 		final ArrayList<Participant> participants = new ArrayList<Participant>();
 		final String participant = ScriptEvalUtils.replaceExpr(script, getParticipantType(variables)
 				.getParticipant());
-		final ID roleId = permission.getRole(participant).getId();
+		final ID roleId = permission.getRole(participant, variables).getId();
 		final Iterator<ID> users = permission.users(roleId, null, variables);
 		while (users.hasNext()) {
-			final ID _roleId = (ID) variables.get(PermissionConst.CTX_ROLEID);
-			final ID _deptId = (ID) variables.get(PermissionConst.CTX_DEPTID);
+			final ID _roleId = (ID) variables.get(PermissionConst.VAR_ROLEID);
+			final ID _deptId = (ID) variables.get(PermissionConst.VAR_DEPTID);
 			participants.add(new Participant(users.next(), _roleId != null ? _roleId : roleId,
 					_deptId != null ? _deptId : null));
 		}
