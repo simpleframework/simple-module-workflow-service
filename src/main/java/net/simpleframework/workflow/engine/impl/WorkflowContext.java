@@ -82,7 +82,12 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 
 	@Override
 	protected Module createModule() {
-		return new Module().setName(MODULE_NAME).setText($m("WorkflowContext.0")).setOrder(31);
+		return new Module() {
+			@Override
+			public String getManagerRole() {
+				return ROLE_WORKFLOW_MANAGER;
+			}
+		}.setName(MODULE_NAME).setText($m("WorkflowContext.0")).setOrder(31);
 	}
 
 	@Override
