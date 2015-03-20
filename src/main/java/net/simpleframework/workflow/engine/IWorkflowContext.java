@@ -30,6 +30,8 @@ public interface IWorkflowContext extends IModuleContext {
 	 */
 	IProcessModelService getProcessModelService();
 
+	IProcessModelDomainRService getProcessModelDomainRService();
+
 	/**
 	 * 流程实例服务
 	 * 

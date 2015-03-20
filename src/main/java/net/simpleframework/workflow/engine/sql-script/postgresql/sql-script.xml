@@ -28,6 +28,18 @@
       );
     ]]>
 	</tran-sql>
+  <tran-sql>
+    <![CDATA[
+      create table sf_workflow_model_domain (
+        id char(32) not null,
+        modelid char(32) not null,
+        domainid char(32) not null,       
+        processcount int4 not null,
+        unique(modelid, domainid),
+        primary key(id)
+      );
+    ]]>
+  </tran-sql>
 	<tran-sql>
     <![CDATA[
       create table sf_workflow_process (
@@ -39,7 +51,7 @@
         status int2 not null,
         userid char(32),
         deptid char(32),
-        domainid varchar(32),
+        domainid char(32),
         usertext varchar(32),
         createdate timestamp not null,
         roleid char(32),

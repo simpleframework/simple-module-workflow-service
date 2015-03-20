@@ -193,15 +193,18 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
-	public IDataQuery<ProcessBean> getProcessList(final ProcessModelBean processModel,
-			final EProcessStatus... status) {
-		if (processModel == null) {
-			return DataQueryUtils.nullQuery();
-		}
-		final StringBuilder sql = new StringBuilder();
+	public IDataQuery<ProcessBean> getProcessList(final ID domainId,
+			final ProcessModelBean processModel, final EProcessStatus... status) {
+		final StringBuilder sql = new StringBuilder("1=1");
 		final ArrayList<Object> params = new ArrayList<Object>();
-		sql.append("modelId=?");
-		params.add(processModel.getId());
+		if (domainId != null) {
+			sql.append(" and domainId=?");
+			params.add(domainId);
+		}
+		if (processModel != null) {
+			sql.append(" and modelId=?");
+			params.add(processModel.getId());
+		}
 		buildStatusSQL(sql, params, null, status);
 		sql.append(" order by createdate desc");
 		return query(sql.toString(), params.toArray());
@@ -353,7 +356,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		process.setDeptId(user.getDept().getId());
 		final ID domainId = user.getDept().getDomainId();
 		if (domainId != null) {
-			process.setDomainId(domainId.toString());
+			process.setDomainId(domainId);
 		}
 
 		process.setUserText(user.getText());
@@ -373,9 +376,11 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 				for (final Object bean : beans) {
 					// 更新流程实例计数
-					final ProcessModelBean processModel = getProcessModel((ProcessBean) bean);
-					processModel.setProcessCount(getProcessList(processModel).getCount());
+					final ProcessBean process = (ProcessBean) bean;
+					final ProcessModelBean processModel = getProcessModel(process);
+					processModel.setProcessCount(getProcessList(null, processModel).getCount());
 					mService.update(new String[] { "processCount" }, processModel);
+
 				}
 			}
 
@@ -385,7 +390,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 				for (final ProcessBean process : coll(paramsValue)) {
 					// 更新流程实例计数
 					final ProcessModelBean processModel = getProcessModel(process);
-					processModel.setProcessCount(getProcessList(processModel).getCount());
+					processModel.setProcessCount(getProcessList(null, processModel).getCount());
 					mService.update(new String[] { "processCount" }, processModel);
 				}
 			}

@@ -14,6 +14,7 @@ import net.simpleframework.workflow.engine.ActivityLobBean;
 import net.simpleframework.workflow.engine.DelegationBean;
 import net.simpleframework.workflow.engine.IActivityService;
 import net.simpleframework.workflow.engine.IDelegationService;
+import net.simpleframework.workflow.engine.IProcessModelDomainRService;
 import net.simpleframework.workflow.engine.IProcessModelService;
 import net.simpleframework.workflow.engine.IProcessService;
 import net.simpleframework.workflow.engine.IWorkflowContext;
@@ -21,6 +22,7 @@ import net.simpleframework.workflow.engine.IWorkitemService;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.ProcessLobBean;
 import net.simpleframework.workflow.engine.ProcessModelBean;
+import net.simpleframework.workflow.engine.ProcessModelDomainR;
 import net.simpleframework.workflow.engine.ProcessModelLobBean;
 import net.simpleframework.workflow.engine.VariableBean;
 import net.simpleframework.workflow.engine.VariableLogBean;
@@ -68,6 +70,7 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 	public DbEntityTable[] createEntityTables() {
 		return new DbEntityTable[] { new DbEntityTable(ProcessModelBean.class, "sf_workflow_model"),
 				new DbEntityTable(ProcessModelLobBean.class, "sf_workflow_model_lob").setNoCache(true),
+				new DbEntityTable(ProcessModelDomainR.class, "sf_workflow_model_domain"),
 				new DbEntityTable(ProcessBean.class, "sf_workflow_process"),
 				new DbEntityTable(ProcessLobBean.class, "sf_workflow_process_lob").setNoCache(true),
 				new DbEntityTable(DelegationBean.class, "sf_workflow_delegation"),
@@ -93,6 +96,11 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 	@Override
 	public IProcessModelService getProcessModelService() {
 		return singleton(ProcessModelService.class);
+	}
+
+	@Override
+	public IProcessModelDomainRService getProcessModelDomainRService() {
+		return singleton(ProcessModelDomainRService.class);
 	}
 
 	@Override

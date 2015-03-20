@@ -36,7 +36,7 @@ public class ProcessBean extends AbstractWorkflowBean {
 	/* 流程启动者所在的部门id */
 	private ID deptId;
 	/* 流程启动者所在的域，等于机构id */
-	private String domainId;
+	private ID domainId;
 
 	/* 用户和角色显示名 */
 	private String userText;
@@ -107,11 +107,11 @@ public class ProcessBean extends AbstractWorkflowBean {
 		this.deptId = deptId;
 	}
 
-	public String getDomainId() {
+	public ID getDomainId() {
 		return domainId;
 	}
 
-	public void setDomainId(final String domainId) {
+	public void setDomainId(final ID domainId) {
 		this.domainId = domainId;
 	}
 
