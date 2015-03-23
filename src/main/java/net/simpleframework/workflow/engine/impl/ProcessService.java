@@ -371,7 +371,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 				}
 			}
 
-			private void updateProcessCount(ProcessBean process) {
+			private void updateProcessCount(final ProcessBean process) {
 				// 更新流程实例计数
 				final ProcessModelBean processModel = getProcessModel(process);
 				processModel.setProcessCount(getProcessList(null, processModel).getCount());
