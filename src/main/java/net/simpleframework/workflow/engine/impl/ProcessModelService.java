@@ -68,6 +68,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 			bean.setUserText(permission.getUser(userId).toString());
 		}
 		bean.setModelName(processNode.getName());
+		bean.setModelVer(processNode.getVersion().toString());
 		bean.setModelText(processNode.getText());
 		bean.setCreateDate(new Date());
 
@@ -89,6 +90,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 			final ProcessDocument document = new ProcessDocument(model);
 			final ProcessNode processNode = document.getProcessNode();
 			processModel.setModelName(processNode.getName());
+			processModel.setModelVer(processNode.getVersion().toString());
 			processModel.setModelText(processNode.getText());
 			update(processModel);
 

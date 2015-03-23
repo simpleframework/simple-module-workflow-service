@@ -14,10 +14,10 @@ import net.simpleframework.common.StringUtils;
 @EntityInterceptor(listenerTypes = { "net.simpleframework.module.log.EntityUpdateLogAdapter",
 		"net.simpleframework.module.log.EntityDeleteLogAdapter" }, columns = { "status" })
 public class ProcessModelBean extends AbstractWorkflowBean {
-
 	/* 模型名称 */
 	private String modelName;
-
+	/* 模型版本 */
+	private String modelVer;
 	/* 显示名称 */
 	private String modelText;
 
@@ -42,8 +42,16 @@ public class ProcessModelBean extends AbstractWorkflowBean {
 		this.modelName = modelName;
 	}
 
+	public String getModelVer() {
+		return modelVer;
+	}
+
+	public void setModelVer(String modelVer) {
+		this.modelVer = modelVer;
+	}
+
 	public String getModelText() {
-		return modelText;
+		return StringUtils.hasText(modelText) ? modelText : getModelName();
 	}
 
 	public void setModelText(final String modelText) {
@@ -84,8 +92,7 @@ public class ProcessModelBean extends AbstractWorkflowBean {
 
 	@Override
 	public String toString() {
-		final String txt = getModelText();
-		return StringUtils.hasText(txt) ? txt : getModelName();
+		return getModelText();
 	}
 
 	private static final long serialVersionUID = 6413648325601228584L;

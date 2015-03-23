@@ -8,6 +8,7 @@
       create table sf_workflow_model (
         id char(32) not null,
         modelname varchar2(64 char) not null, 
+        modelver varchar2(16 char) not null,
         modeltext varchar2(128 char),
         status number(4) not null,
         userid char(32) not null,
