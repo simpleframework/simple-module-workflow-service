@@ -401,17 +401,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			sql.append(" and userid2=?");
 			params.add(userId);
 		}
-		if (status != null && status.length > 0) {
-			sql.append(" and (");
-			for (final EWorkitemStatus s : status) {
-				if (params.size() > 1) {
-					sql.append(" or ");
-				}
-				sql.append("status=?");
-				params.add(s);
-			}
-			sql.append(")");
-		}
+		buildStatusSQL(sql, params, null, status);
 		if (items != null && items.size() > 0) {
 			final ExpressionValue eVal = toExpressionValue(items);
 			sql.append(" and (").append(eVal.getExpression()).append(")");
