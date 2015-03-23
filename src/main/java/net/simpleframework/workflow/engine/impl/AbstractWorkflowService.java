@@ -201,6 +201,25 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 		update(new String[] { "status" }, t);
 	}
 
+	protected void buildStatusSQL(final StringBuilder sql, final ArrayList<Object> params,
+			final String alias, final Enum<?>... status) {
+		if (status != null && status.length > 0) {
+			sql.append(" and (");
+			int i = 0;
+			for (final Enum<?> s : status) {
+				if (i++ > 0) {
+					sql.append(" or ");
+				}
+				if (alias != null) {
+					sql.append(alias).append(".");
+				}
+				sql.append("status=?");
+				params.add(s);
+			}
+			sql.append(")");
+		}
+	}
+
 	protected static ProcessModelService mService = (ProcessModelService) IWorkflowServiceAware.mService;
 	protected static ProcessService pService = (ProcessService) IWorkflowServiceAware.pService;
 	protected static ActivityService aService = (ActivityService) IWorkflowServiceAware.aService;

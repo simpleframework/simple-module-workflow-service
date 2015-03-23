@@ -31,11 +31,13 @@ import net.simpleframework.workflow.engine.EProcessModelStatus;
 import net.simpleframework.workflow.engine.EProcessStatus;
 import net.simpleframework.workflow.engine.EVariableSource;
 import net.simpleframework.workflow.engine.EWorkitemStatus;
+import net.simpleframework.workflow.engine.IProcessModelDomainRService;
 import net.simpleframework.workflow.engine.IProcessService;
 import net.simpleframework.workflow.engine.InitiateItem;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.ProcessLobBean;
 import net.simpleframework.workflow.engine.ProcessModelBean;
+import net.simpleframework.workflow.engine.ProcessModelDomainR;
 import net.simpleframework.workflow.engine.WorkitemBean;
 import net.simpleframework.workflow.engine.event.IProcessListener;
 import net.simpleframework.workflow.engine.event.IWorkflowListener;
@@ -245,25 +247,6 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		return query(new SQLValue(sql.toString(), params.toArray()));
 	}
 
-	private void buildStatusSQL(final StringBuilder sql, final ArrayList<Object> params,
-			final String alias, final EProcessStatus... status) {
-		if (status != null && status.length > 0) {
-			sql.append(" and (");
-			int i = 0;
-			for (final EProcessStatus s : status) {
-				if (i++ > 0) {
-					sql.append(" or ");
-				}
-				if (alias != null) {
-					sql.append(alias).append(".");
-				}
-				sql.append("status=?");
-				params.add(s);
-			}
-			sql.append(")");
-		}
-	}
-
 	@Override
 	public void doSuspend(final ProcessBean process) {
 		_assert(process, EProcessStatus.running);
@@ -368,19 +351,15 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	public void onInit() throws Exception {
 		super.onInit();
 
-		addListener(new DbEntityAdapterEx() {
+		final IProcessModelDomainRService drService = workflowContext.getProcessModelDomainRService();
 
+		addListener(new DbEntityAdapterEx() {
 			@Override
 			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans) {
 				super.onAfterInsert(manager, beans);
-
 				for (final Object bean : beans) {
 					// 更新流程实例计数
-					final ProcessBean process = (ProcessBean) bean;
-					final ProcessModelBean processModel = getProcessModel(process);
-					processModel.setProcessCount(getProcessList(null, processModel).getCount());
-					mService.update(new String[] { "processCount" }, processModel);
-
+					updateProcessCount((ProcessBean) bean);
 				}
 			}
 
@@ -388,11 +367,20 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 			public void onAfterDelete(final IDbEntityManager<?> manager, final IParamsValue paramsValue) {
 				super.onAfterDelete(manager, paramsValue);
 				for (final ProcessBean process : coll(paramsValue)) {
-					// 更新流程实例计数
-					final ProcessModelBean processModel = getProcessModel(process);
-					processModel.setProcessCount(getProcessList(null, processModel).getCount());
-					mService.update(new String[] { "processCount" }, processModel);
+					updateProcessCount(process);
 				}
+			}
+
+			private void updateProcessCount(ProcessBean process) {
+				// 更新流程实例计数
+				final ProcessModelBean processModel = getProcessModel(process);
+				processModel.setProcessCount(getProcessList(null, processModel).getCount());
+				mService.update(new String[] { "processCount" }, processModel);
+
+				final ID domainId = process.getDomainId();
+				final ProcessModelDomainR r = drService.getProcessModelDomainR(domainId, processModel);
+				r.setProcessCount(getProcessList(domainId, processModel).getCount());
+				drService.update(new String[] { "processCount" }, r);
 			}
 
 			@Override

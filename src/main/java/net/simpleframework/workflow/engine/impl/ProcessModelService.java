@@ -10,6 +10,7 @@ import java.util.Map;
 import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.db.common.ExpressionValue;
+import net.simpleframework.ado.db.common.SQLValue;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.ArrayUtils;
@@ -22,6 +23,7 @@ import net.simpleframework.workflow.engine.IProcessModelService;
 import net.simpleframework.workflow.engine.InitiateItem;
 import net.simpleframework.workflow.engine.InitiateItems;
 import net.simpleframework.workflow.engine.ProcessModelBean;
+import net.simpleframework.workflow.engine.ProcessModelDomainR;
 import net.simpleframework.workflow.engine.ProcessModelLobBean;
 import net.simpleframework.workflow.engine.event.IProcessModelListener;
 import net.simpleframework.workflow.engine.event.IWorkflowListener;
@@ -103,23 +105,23 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 
 	@Override
 	public IDataQuery<ProcessModelBean> getModelList(final EProcessModelStatus... status) {
-		final StringBuilder sql = new StringBuilder();
+		final StringBuilder sql = new StringBuilder("1=1");
 		final ArrayList<Object> params = new ArrayList<Object>();
-		sql.append("1=1");
-		if (status != null && status.length > 0) {
-			sql.append(" and (");
-			int i = 0;
-			for (final EProcessModelStatus s : status) {
-				if (i++ > 0) {
-					sql.append(" or ");
-				}
-				sql.append("status=?");
-				params.add(s);
-			}
-			sql.append(")");
-		}
-		sql.append(DEFAULT_ORDERBY);
-		return query(sql.toString(), params.toArray());
+		buildStatusSQL(sql, params, null, status);
+		return query(sql.append(DEFAULT_ORDERBY).toString(), params.toArray());
+	}
+
+	@Override
+	public IDataQuery<ProcessModelBean> getModelListByDomain(ID domainId,
+			EProcessModelStatus... status) {
+		final StringBuilder sql = new StringBuilder("select m.* from ")
+				.append(getTablename(ProcessModelDomainR.class)).append(" d left join ")
+				.append(getTablename(ProcessModelBean.class))
+				.append(" m on d.modelid = m.id where d.domainid=?");
+		final ArrayList<Object> params = new ArrayList<Object>();
+		params.add(domainId);
+		buildStatusSQL(sql, params, "m", status);
+		return getEntityManager().queryBeans(new SQLValue(sql.toString(), params.toArray()));
 	}
 
 	@Override

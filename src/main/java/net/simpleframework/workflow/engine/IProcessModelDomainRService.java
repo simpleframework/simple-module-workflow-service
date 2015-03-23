@@ -1,5 +1,6 @@
 package net.simpleframework.workflow.engine;
 
+import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.IDbBeanService;
 
 /**
@@ -10,4 +11,12 @@ import net.simpleframework.ctx.service.ado.db.IDbBeanService;
  */
 public interface IProcessModelDomainRService extends IDbBeanService<ProcessModelDomainR> {
 
+	/**
+	 * 获取流程模型与域(机构)的关系
+	 * 
+	 * @param processModel
+	 * @param domainId
+	 * @return
+	 */
+	ProcessModelDomainR getProcessModelDomainR(ID domainId, ProcessModelBean processModel);
 }

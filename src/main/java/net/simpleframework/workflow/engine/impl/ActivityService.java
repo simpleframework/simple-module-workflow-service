@@ -573,18 +573,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		final ArrayList<Object> params = new ArrayList<Object>();
 		sql.append("processId=?");
 		params.add(processBean.getId());
-		if (status != null && status.length > 0) {
-			sql.append(" and (");
-			int i = 0;
-			for (final EActivityStatus s : status) {
-				if (i++ > 0) {
-					sql.append(" or ");
-				}
-				sql.append("status=?");
-				params.add(s);
-			}
-			sql.append(")");
-		}
+		buildStatusSQL(sql, params, null, status);
 		sql.append(" order by createDate asc");
 		return DataQueryUtils.toList(query(sql.toString(), params.toArray()));
 	}

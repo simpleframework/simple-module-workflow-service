@@ -56,6 +56,15 @@ public interface IProcessModelService extends IWorkflowService<ProcessModelBean>
 	IDataQuery<ProcessModelBean> getModelList(EProcessModelStatus... status);
 
 	/**
+	 * 获取某域下的模型列表
+	 * 
+	 * @param domainId
+	 * @param status
+	 * @return
+	 */
+	IDataQuery<ProcessModelBean> getModelListByDomain(ID domainId, EProcessModelStatus... status);
+
+	/**
 	 * 
 	 * @param userId
 	 * @return
