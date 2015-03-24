@@ -116,7 +116,8 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 	@Override
 	public IDataQuery<ProcessModelBean> getModelListByDomain(final ID domainId,
 			final EProcessModelStatus... status) {
-		final StringBuilder sql = new StringBuilder("select m.* from ")
+		final StringBuilder sql = new StringBuilder(
+				"select m.*, d.processCount as processCount2 from ")
 				.append(getTablename(ProcessModelDomainR.class)).append(" d left join ")
 				.append(getTablename(ProcessModelBean.class))
 				.append(" m on d.modelid = m.id where d.domainid=?");
