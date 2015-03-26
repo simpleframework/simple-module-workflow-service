@@ -31,6 +31,8 @@ public class WorkitemBean extends AbstractWorkflowBean {
 	private ID userId;
 	/* 用户所在的部门id */
 	private ID deptId;
+	/* 用户所在的域，等于机构id */
+	private ID domainId;
 
 	/* 任务分派的角色id */
 	private ID roleId;
@@ -42,6 +44,8 @@ public class WorkitemBean extends AbstractWorkflowBean {
 	private ID userId2;
 	/* 实际执行用户显示名 */
 	private String userText2;
+	/* 实际执行的用户所在的部门 */
+	private ID deptId2;
 
 	/* 实际完成时间 */
 	private Date completeDate;
@@ -104,6 +108,14 @@ public class WorkitemBean extends AbstractWorkflowBean {
 		this.deptId = deptId;
 	}
 
+	public ID getDomainId() {
+		return domainId;
+	}
+
+	public void setDomainId(final ID domainId) {
+		this.domainId = domainId;
+	}
+
 	public ID getRoleId() {
 		return roleId;
 	}
@@ -134,6 +146,14 @@ public class WorkitemBean extends AbstractWorkflowBean {
 
 	public void setUserText2(final String userText2) {
 		this.userText2 = userText2;
+	}
+
+	public ID getDeptId2() {
+		return deptId2;
+	}
+
+	public void setDeptId2(ID deptId2) {
+		this.deptId2 = deptId2;
 	}
 
 	public Date getCompleteDate() {

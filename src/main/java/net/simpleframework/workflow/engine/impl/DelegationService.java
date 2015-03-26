@@ -9,6 +9,7 @@ import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.db.common.SQLValue;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
+import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.ctx.task.ExecutorRunnable;
 import net.simpleframework.ctx.task.ITaskExecutor;
 import net.simpleframework.workflow.WorkflowException;
@@ -124,9 +125,15 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 			final ID userId = workitem.getUserId();
 			workitem.setUserId2(status == EWorkitemStatus.delegate ? delegation.getUserId() : userId);
 			final ID userId2 = workitem.getUserId2();
-			workitem.setUserText2(userId.equals(userId2) ? null : permission.getUser(userId2)
-					.toString());
-			wService.update(new String[] { "status", "userId2", "userText2" }, workitem);
+			if (userId.equals(userId2)) {
+				workitem.setUserText2(null);
+				workitem.setDeptId2(null);
+			} else {
+				PermissionUser user2 = permission.getUser(userId2);
+				workitem.setUserText2(user2.getText());
+				workitem.setDeptId2(user2.getDept().getId());
+			}
+			wService.update(new String[] { "status", "userId2", "userText2", "deptId2" }, workitem);
 		}
 	}
 
