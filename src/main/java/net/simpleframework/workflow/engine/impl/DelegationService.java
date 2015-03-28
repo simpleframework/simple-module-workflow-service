@@ -129,7 +129,7 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 				workitem.setUserText2(null);
 				workitem.setDeptId2(null);
 			} else {
-				PermissionUser user2 = permission.getUser(userId2);
+				final PermissionUser user2 = permission.getUser(userId2);
 				workitem.setUserText2(user2.getText());
 				workitem.setDeptId2(user2.getDept().getId());
 			}
