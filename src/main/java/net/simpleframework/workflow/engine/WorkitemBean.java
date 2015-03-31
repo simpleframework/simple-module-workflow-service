@@ -16,29 +16,16 @@ import net.simpleframework.common.StringUtils;
 @EntityInterceptor(listenerTypes = { "net.simpleframework.module.log.EntityUpdateLogAdapter",
 		"net.simpleframework.module.log.EntityDeleteLogAdapter" }, columns = { "status", "readMark",
 		"topMark" })
-public class WorkitemBean extends AbstractWorkflowBean {
+public class WorkitemBean extends AbstractWorkitemBean {
 	/* 状态 */
 	@ColumnMeta(columnText = "#(AbstractWorkflowBean.0)")
 	private EWorkitemStatus status;
 
-	/* 流程实例id */
-	private ID processId;
-
 	/* 关联的环节id */
 	private ID activityId;
 
-	/* 任务分派的用户id */
-	private ID userId;
-	/* 用户所在的部门id */
-	private ID deptId;
-	/* 用户所在的域，等于机构id */
-	private ID domainId;
-
 	/* 任务分派的角色id */
 	private ID roleId;
-
-	/* 用户显示名 */
-	private String userText;
 
 	/* 实际执行的用户id，缺省值=userId */
 	private ID userId2;
@@ -50,23 +37,8 @@ public class WorkitemBean extends AbstractWorkflowBean {
 	/* 实际完成时间 */
 	private Date completeDate;
 
-	/* 是否已读 */
-	@ColumnMeta(columnText = "#(WorkitemBean.0)")
-	private boolean readMark;
-	/* 第一次阅读时间 */
-	private Date readDate;
-
-	/* 是否置顶 */
-	@ColumnMeta(columnText = "#(WorkitemBean.1)")
-	private boolean topMark;
-
 	/* 取回工作项的引用 */
 	private ID retakeRef;
-
-	/* 扩展字段1 */
-	private String ext1;
-	/* 扩展字段2 */
-	private int ext2;
 
 	public EWorkitemStatus getStatus() {
 		return status != null ? status : EWorkitemStatus.running;
@@ -74,14 +46,6 @@ public class WorkitemBean extends AbstractWorkflowBean {
 
 	public void setStatus(final EWorkitemStatus status) {
 		this.status = status;
-	}
-
-	public ID getProcessId() {
-		return processId;
-	}
-
-	public void setProcessId(final ID processId) {
-		this.processId = processId;
 	}
 
 	public ID getActivityId() {
@@ -92,44 +56,12 @@ public class WorkitemBean extends AbstractWorkflowBean {
 		this.activityId = activityId;
 	}
 
-	public ID getUserId() {
-		return userId;
-	}
-
-	public void setUserId(final ID userId) {
-		this.userId = userId;
-	}
-
-	public ID getDeptId() {
-		return deptId;
-	}
-
-	public void setDeptId(final ID deptId) {
-		this.deptId = deptId;
-	}
-
-	public ID getDomainId() {
-		return domainId;
-	}
-
-	public void setDomainId(final ID domainId) {
-		this.domainId = domainId;
-	}
-
 	public ID getRoleId() {
 		return roleId;
 	}
 
 	public void setRoleId(final ID roleId) {
 		this.roleId = roleId;
-	}
-
-	public String getUserText() {
-		return userText;
-	}
-
-	public void setUserText(final String userText) {
-		this.userText = userText;
 	}
 
 	public ID getUserId2() {
@@ -164,52 +96,12 @@ public class WorkitemBean extends AbstractWorkflowBean {
 		this.completeDate = completeDate;
 	}
 
-	public boolean isReadMark() {
-		return readMark;
-	}
-
-	public void setReadMark(final boolean readMark) {
-		this.readMark = readMark;
-	}
-
-	public Date getReadDate() {
-		return readDate;
-	}
-
-	public void setReadDate(final Date readDate) {
-		this.readDate = readDate;
-	}
-
-	public boolean isTopMark() {
-		return topMark;
-	}
-
-	public void setTopMark(final boolean topMark) {
-		this.topMark = topMark;
-	}
-
 	public ID getRetakeRef() {
 		return retakeRef;
 	}
 
 	public void setRetakeRef(final ID retakeRef) {
 		this.retakeRef = retakeRef;
-	}
-
-	public String getExt1() {
-		return ext1;
-	}
-
-	public void setExt1(final String ext1) {
-		this.ext1 = ext1;
-	}
-
-	public int getExt2() {
-		return ext2;
-	}
-
-	public void setExt2(final int ext2) {
-		this.ext2 = ext2;
 	}
 
 	@Override

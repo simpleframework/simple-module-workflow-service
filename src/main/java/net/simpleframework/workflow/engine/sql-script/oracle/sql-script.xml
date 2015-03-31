@@ -165,6 +165,27 @@
 	</tran-sql>
   <tran-sql>
     <![CDATA[
+      create table sf_workflow_workview (
+        id char(32) not null,
+        parentid char(32),
+        processid char(32) not null,
+        workitemid char(32) not null,
+        userid char(32) not null,
+        usertext varchar2(32 char) not null,
+        deptid char(32),
+        domainid char(32),
+        createdate timestamp not null,
+        readmark number(1) not null,
+        readdate timestamp,
+        topmark number(1) not null,
+        ext1 varchar2(64 char),
+        ext2 number(11) not null,
+        primary key(id)
+      );
+    ]]>
+  </tran-sql>
+  <tran-sql>
+    <![CDATA[
       create table sf_workflow_comment (
         id char(32) not null,
         contentid char(32) not null,
