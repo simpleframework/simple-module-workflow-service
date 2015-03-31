@@ -60,6 +60,8 @@ public interface IWorkflowContext extends IModuleContext {
 	 */
 	IDelegationService getDelegationService();
 
+	IWorkviewService getWorkviewService();
+
 	/**
 	 * 参与者模型接口
 	 * 

@@ -19,6 +19,7 @@ import net.simpleframework.workflow.engine.IProcessModelService;
 import net.simpleframework.workflow.engine.IProcessService;
 import net.simpleframework.workflow.engine.IWorkflowContext;
 import net.simpleframework.workflow.engine.IWorkitemService;
+import net.simpleframework.workflow.engine.IWorkviewService;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.ProcessLobBean;
 import net.simpleframework.workflow.engine.ProcessModelBean;
@@ -119,13 +120,13 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 	}
 
 	@Override
-	public ContextSettings getContextSettings() {
-		return singleton(WorkflowSettings.class);
+	public IDelegationService getDelegationService() {
+		return singleton(DelegationService.class);
 	}
 
 	@Override
-	public IDelegationService getDelegationService() {
-		return singleton(DelegationService.class);
+	public IWorkviewService getWorkviewService() {
+		return singleton(WorkviewService.class);
 	}
 
 	@Override
@@ -148,5 +149,10 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 		IPermissionHandler pHandler;
 		return ((pHandler = getPermission()) instanceof IWorkflowPermissionHandler ? (IWorkflowPermissionHandler) pHandler
 				: null);
+	}
+
+	@Override
+	public ContextSettings getContextSettings() {
+		return singleton(WorkflowSettings.class);
 	}
 }
