@@ -118,7 +118,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 			final EProcessModelStatus... status) {
 		final StringBuilder sql = new StringBuilder(
 				"select m.*, d.processCount as processCount2 from ")
-				.append(getTablename(ProcessModelDomainR.class)).append(" d left join ")
+				.append(getTablename(ProcessModelDomainR.class)).append(" d right join ")
 				.append(getTablename(ProcessModelBean.class))
 				.append(" m on d.modelid = m.id where d.domainid=?");
 		final ArrayList<Object> params = new ArrayList<Object>();
@@ -264,9 +264,10 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 
 					// 删除lob
 					getEntityManager(ProcessModelLobBean.class).delete(new ExpressionValue("id=?", id));
-
 					// 删除流程变量，静态
 					vService.deleteVariables(EVariableSource.model, id);
+					// 删除domian
+					drService.deleteWith("modelId=?", id);
 				}
 			}
 

@@ -31,7 +31,6 @@ import net.simpleframework.workflow.engine.EProcessModelStatus;
 import net.simpleframework.workflow.engine.EProcessStatus;
 import net.simpleframework.workflow.engine.EVariableSource;
 import net.simpleframework.workflow.engine.EWorkitemStatus;
-import net.simpleframework.workflow.engine.IProcessModelDomainRService;
 import net.simpleframework.workflow.engine.IProcessService;
 import net.simpleframework.workflow.engine.InitiateItem;
 import net.simpleframework.workflow.engine.ProcessBean;
@@ -350,8 +349,6 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	@Override
 	public void onInit() throws Exception {
 		super.onInit();
-
-		final IProcessModelDomainRService drService = workflowContext.getProcessModelDomainRService();
 
 		addListener(new DbEntityAdapterEx() {
 			@Override

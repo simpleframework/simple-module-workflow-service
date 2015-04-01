@@ -225,6 +225,7 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 	protected static ActivityService aService = (ActivityService) IWorkflowServiceAware.aService;
 	protected static WorkitemService wService = (WorkitemService) IWorkflowServiceAware.wService;
 	protected static DelegationService dService = (DelegationService) IWorkflowServiceAware.dService;
+	protected static ProcessModelDomainRService drService = (ProcessModelDomainRService) IWorkflowServiceAware.drService;
 
 	protected static VariableService vService;
 

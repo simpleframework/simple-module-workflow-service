@@ -1,7 +1,9 @@
 package net.simpleframework.workflow.engine.impl;
 
+import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
 import net.simpleframework.workflow.engine.IWorkviewService;
+import net.simpleframework.workflow.engine.WorkitemBean;
 import net.simpleframework.workflow.engine.WorkviewBean;
 
 /**
@@ -12,4 +14,9 @@ import net.simpleframework.workflow.engine.WorkviewBean;
  */
 public class WorkviewService extends AbstractDbBeanService<WorkviewBean> implements
 		IWorkviewService {
+
+	@Override
+	public WorkviewBean[] createWorkviews(final WorkitemBean workitem, final ID... userIds) {
+		return null;
+	}
 }

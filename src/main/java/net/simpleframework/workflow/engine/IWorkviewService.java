@@ -1,5 +1,6 @@
 package net.simpleframework.workflow.engine;
 
+import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.IDbBeanService;
 
 /**
@@ -9,4 +10,13 @@ import net.simpleframework.ctx.service.ado.db.IDbBeanService;
  *         http://www.simpleframework.net
  */
 public interface IWorkviewService extends IDbBeanService<WorkviewBean>, IWorkflowServiceAware {
+
+	/**
+	 * 创建待阅项
+	 * 
+	 * @param workitem
+	 * @param userIds
+	 * @return
+	 */
+	WorkviewBean[] createWorkviews(WorkitemBean workitem, ID... userIds);
 }

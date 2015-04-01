@@ -15,6 +15,8 @@ public interface IWorkflowServiceAware extends IWorkflowContextAware {
 			.getContextSettings();
 
 	static final IProcessModelService mService = workflowContext.getProcessModelService();
+	static final IProcessModelDomainRService drService = workflowContext
+			.getProcessModelDomainRService();
 	static final IProcessService pService = workflowContext.getProcessService();
 	static final IActivityService aService = workflowContext.getActivityService();
 	static final IWorkitemService wService = workflowContext.getWorkitemService();
