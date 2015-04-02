@@ -52,12 +52,12 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 	@Override
 	public ActivityBean getActivity(final WorkitemBean workitem) {
-		return aService.getBean(workitem.getActivityId());
+		return workitem == null ? null : aService.getBean(workitem.getActivityId());
 	}
 
 	@Override
 	public ProcessBean getProcessBean(final WorkitemBean workitem) {
-		return pService.getBean(workitem.getProcessId());
+		return workitem == null ? null : pService.getBean(workitem.getProcessId());
 	}
 
 	@Override
