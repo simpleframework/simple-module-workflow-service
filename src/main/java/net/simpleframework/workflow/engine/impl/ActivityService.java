@@ -37,7 +37,7 @@ import net.simpleframework.workflow.engine.EVariableSource;
 import net.simpleframework.workflow.engine.EWorkitemStatus;
 import net.simpleframework.workflow.engine.IActivityService;
 import net.simpleframework.workflow.engine.IMappingVal;
-import net.simpleframework.workflow.engine.IWorkflowForm;
+import net.simpleframework.workflow.engine.IWorkitemForm;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.PropSequential;
 import net.simpleframework.workflow.engine.TasknodeUtils;
@@ -797,7 +797,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	@Override
-	public IWorkflowForm getWorkflowForm(final ActivityBean activity) {
+	public IWorkitemForm getWorkitemForm(final ActivityBean activity) {
 		String formClass = null;
 		final AbstractTaskNode tasknode = getTaskNode(activity);
 		if (tasknode instanceof UserNode) {
@@ -806,7 +806,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		if (formClass == null) {
 			formClass = ((ProcessNode) tasknode.getParent()).getFormClass();
 		}
-		return (IWorkflowForm) (formClass != null ? singleton(formClass) : null);
+		return (IWorkitemForm) (formClass != null ? singleton(formClass) : null);
 	}
 
 	@Override

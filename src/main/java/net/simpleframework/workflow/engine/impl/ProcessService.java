@@ -32,6 +32,7 @@ import net.simpleframework.workflow.engine.EProcessStatus;
 import net.simpleframework.workflow.engine.EVariableSource;
 import net.simpleframework.workflow.engine.EWorkitemStatus;
 import net.simpleframework.workflow.engine.IProcessService;
+import net.simpleframework.workflow.engine.IWorkviewForm;
 import net.simpleframework.workflow.engine.InitiateItem;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.ProcessLobBean;
@@ -62,14 +63,15 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public ProcessDocument getProcessDocument(final ProcessBean process) {
-		ProcessDocument doc = (ProcessDocument) process.getAttr(ATTR_PROCESS_DOCUMENT);
-		if (doc == null) {
-			final ProcessLobBean lob = getEntityManager(ProcessLobBean.class).getBean(process.getId());
-			if (lob != null) {
-				process.setAttr(ATTR_PROCESS_DOCUMENT,
-						doc = new ProcessDocument(lob.getProcessSchema()));
-			}
-		}
+		final ProcessDocument doc = process.getAttrCache(ATTR_PROCESS_DOCUMENT,
+				new IVal<ProcessDocument>() {
+					@Override
+					public ProcessDocument get() {
+						final ProcessLobBean lob = getEntityManager(ProcessLobBean.class).getBean(
+								process.getId());
+						return lob != null ? new ProcessDocument(lob.getProcessSchema()) : null;
+					}
+				});
 		return doc != null ? doc : mService.getProcessDocument(getProcessModel(process));
 	}
 
@@ -344,6 +346,12 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		process.setUserText(user.getText());
 		process.setRoleId(roleId);
 		return process;
+	}
+
+	@Override
+	public IWorkviewForm getWorkviewForm(final ProcessBean process) {
+		final String viewClass = getProcessDocument(process).getProcessNode().getViewClass();
+		return (IWorkviewForm) (viewClass != null ? singleton(viewClass) : null);
 	}
 
 	@Override

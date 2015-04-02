@@ -53,21 +53,23 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 	 * @return
 	 */
 	public IScriptEval getScriptEval(final T bean) {
-		IScriptEval script = (IScriptEval) bean.getAttr("_ScriptEval");
-		if (script == null) {
-			script = ScriptEvalFactory.createDefaultScriptEval(createVariables(bean));
-			for (final String expr : defaultExpr) {
-				script.eval(expr);
-			}
-			final Package[] arr = workflowContext.getImportPackages();
-			if (arr != null) {
-				for (final Package p : arr) {
-					script.eval("import " + p.getName() + ".*;");
+		return bean.getAttrCache("_ScriptEval", new IVal<IScriptEval>() {
+			@Override
+			public IScriptEval get() {
+				final IScriptEval script = ScriptEvalFactory
+						.createDefaultScriptEval(createVariables(bean));
+				for (final String expr : defaultExpr) {
+					script.eval(expr);
 				}
+				final Package[] arr = workflowContext.getImportPackages();
+				if (arr != null) {
+					for (final Package p : arr) {
+						script.eval("import " + p.getName() + ".*;");
+					}
+				}
+				return script;
 			}
-			bean.setAttr("_ScriptEval", script);
-		}
-		return script;
+		});
 	}
 
 	protected Object eval(final T bean, final String script) {

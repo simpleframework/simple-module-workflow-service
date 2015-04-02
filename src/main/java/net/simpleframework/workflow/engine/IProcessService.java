@@ -125,4 +125,12 @@ public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 	 * @param title
 	 */
 	void doUpdateTitle(ProcessBean process, String title);
+
+	/**
+	 * 获取待阅表单
+	 * 
+	 * @param process
+	 * @return
+	 */
+	IWorkviewForm getWorkviewForm(ProcessBean process);
 }

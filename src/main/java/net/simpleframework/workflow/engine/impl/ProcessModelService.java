@@ -46,14 +46,14 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 
 	@Override
 	public ProcessDocument getProcessDocument(final ProcessModelBean processModel) {
-		ProcessDocument doc = (ProcessDocument) processModel.getAttr(ATTR_PROCESS_DOCUMENT);
-		if (doc == null) {
-			final ProcessModelLobBean lob = getEntityManager(ProcessModelLobBean.class).getBean(
-					processModel.getId());
-			processModel.setAttr(ATTR_PROCESS_DOCUMENT,
-					doc = new ProcessDocument(lob.getProcessSchema()));
-		}
-		return doc;
+		return processModel.getAttrCache(ATTR_PROCESS_DOCUMENT, new IVal<ProcessDocument>() {
+			@Override
+			public ProcessDocument get() {
+				final ProcessModelLobBean lob = getEntityManager(ProcessModelLobBean.class).getBean(
+						processModel.getId());
+				return new ProcessDocument(lob.getProcessSchema());
+			}
+		});
 	}
 
 	@Override
