@@ -180,6 +180,7 @@
         topmark bit not null,
         ext1 varchar(64),
         ext2 int not null,
+        unique (processid, userid),
         primary key(id)
       );
     ]]>

@@ -27,7 +27,6 @@ public class ProcessModelBean extends AbstractWorkflowBean {
 
 	/* 模型创建者 */
 	private ID userId;
-
 	/* 用户显示名 */
 	private String userText;
 

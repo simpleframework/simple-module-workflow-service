@@ -1,6 +1,10 @@
 package net.simpleframework.workflow.engine.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.simpleframework.common.ID;
+import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
 import net.simpleframework.workflow.engine.IWorkviewService;
 import net.simpleframework.workflow.engine.WorkitemBean;
@@ -16,7 +20,23 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 		IWorkviewService {
 
 	@Override
-	public WorkviewBean[] createWorkviews(final WorkitemBean workitem, final ID... userIds) {
-		return null;
+	public List<WorkviewBean> createWorkviews(final WorkitemBean workitem, final ID... userIds) {
+		List<WorkviewBean> list = new ArrayList<WorkviewBean>();
+		for (ID id : userIds) {
+			WorkviewBean workview = createBean();
+			workview.setWorkitemId(workitem.getId());
+			workview.setProcessId(workitem.getProcessId());
+
+			final PermissionUser user = permission.getUser(id);
+			workview.setUserId(user.getId());
+			workview.setUserText(user.getText());
+			workview.setDeptId(user.getDept().getId());
+			final ID domainId = user.getDept().getDomainId();
+			if (domainId != null) {
+				workview.setDomainId(domainId);
+			}
+			insert(workview);
+		}
+		return list;
 	}
 }

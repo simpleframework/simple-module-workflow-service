@@ -1,5 +1,7 @@
 package net.simpleframework.workflow.engine;
 
+import java.util.List;
+
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.IDbBeanService;
 
@@ -18,5 +20,5 @@ public interface IWorkviewService extends IDbBeanService<WorkviewBean>, IWorkflo
 	 * @param userIds
 	 * @return
 	 */
-	WorkviewBean[] createWorkviews(WorkitemBean workitem, ID... userIds);
+	List<WorkviewBean> createWorkviews(WorkitemBean workitem, ID... userIds);
 }
