@@ -21,4 +21,13 @@ public interface IWorkviewService extends IDbBeanService<WorkviewBean>, IWorkflo
 	 * @return
 	 */
 	List<WorkviewBean> createWorkviews(WorkitemBean workitem, ID... userIds);
+
+	/**
+	 * 获取待阅bean对象
+	 * 
+	 * @param processId
+	 * @param userId
+	 * @return
+	 */
+	WorkviewBean getWorkviewBean(Object processId, Object userId);
 }
