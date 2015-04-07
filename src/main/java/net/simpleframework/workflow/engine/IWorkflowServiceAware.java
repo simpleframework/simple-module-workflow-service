@@ -20,6 +20,7 @@ public interface IWorkflowServiceAware extends IWorkflowContextAware {
 	static final IProcessService pService = workflowContext.getProcessService();
 	static final IActivityService aService = workflowContext.getActivityService();
 	static final IWorkitemService wService = workflowContext.getWorkitemService();
+	static final IWorkviewService vService = workflowContext.getWorkviewService();
 	static final IDelegationService dService = workflowContext.getDelegationService();
 	static final IWorkflowPermissionHandler permission = workflowContext.getParticipantService();
 }
