@@ -21,13 +21,13 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 
 	@Override
 	public List<WorkviewBean> createWorkviews(final WorkitemBean workitem, final ID... userIds) {
-		List<WorkviewBean> list = new ArrayList<WorkviewBean>();
-		for (ID id : userIds) {
-			ID processId = workitem.getProcessId();
+		final List<WorkviewBean> list = new ArrayList<WorkviewBean>();
+		for (final ID id : userIds) {
+			final ID processId = workitem.getProcessId();
 			if (getWorkviewBean(processId, id) != null) {
 				continue;
 			}
-			WorkviewBean workview = createBean();
+			final WorkviewBean workview = createBean();
 			workview.setWorkitemId(workitem.getId());
 			workview.setProcessId(processId);
 
@@ -45,7 +45,7 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 	}
 
 	@Override
-	public WorkviewBean getWorkviewBean(Object processId, Object userId) {
+	public WorkviewBean getWorkviewBean(final Object processId, final Object userId) {
 		return getBean("processId=? and userId=?", getIdParam(processId), getIdParam(userId));
 	}
 }
