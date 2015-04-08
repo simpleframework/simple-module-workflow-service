@@ -226,13 +226,14 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 	protected static ProcessService pService = (ProcessService) IWorkflowServiceAware.pService;
 	protected static ActivityService aService = (ActivityService) IWorkflowServiceAware.aService;
 	protected static WorkitemService wService = (WorkitemService) IWorkflowServiceAware.wService;
+	protected static WorkviewService vService = (WorkviewService) IWorkflowServiceAware.vService;
 	protected static DelegationService dService = (DelegationService) IWorkflowServiceAware.dService;
 	protected static ProcessModelDomainRService drService = (ProcessModelDomainRService) IWorkflowServiceAware.drService;
 
-	protected static VariableService vService;
+	protected static VariableService varService;
 
 	static void doStartup() {
-		vService = singleton(VariableService.class);
+		varService = singleton(VariableService.class);
 	}
 
 	static final String ATTR_PROCESS_DOCUMENT = "_processdocument";

@@ -778,7 +778,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	@Override
 	public Object getVariable(final ActivityBean activity, final String name) {
 		final VariableNode variableNode = getTaskNode(activity).getVariableNodeByName(name);
-		return vService.getVariableValue(activity, variableNode);
+		return varService.getVariableValue(activity, variableNode);
 	}
 
 	@Override
@@ -788,7 +788,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public void setVariable(final ActivityBean activity, final String[] names, final Object[] values) {
-		vService.setVariableValue(activity, names, values);
+		varService.setVariableValue(activity, names, values);
 	}
 
 	@Override
@@ -925,7 +925,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 					// 删除任务环节
 					wService.deleteWith("activityId=?", id);
 					// 删除环节变量
-					vService.deleteVariables(EVariableSource.activity, id);
+					varService.deleteVariables(EVariableSource.activity, id);
 				}
 			}
 

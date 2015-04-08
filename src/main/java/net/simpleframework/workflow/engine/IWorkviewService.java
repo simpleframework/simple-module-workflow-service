@@ -2,6 +2,7 @@ package net.simpleframework.workflow.engine;
 
 import java.util.List;
 
+import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.IDbBeanService;
 
@@ -30,4 +31,12 @@ public interface IWorkviewService extends IDbBeanService<WorkviewBean>, IWorkflo
 	 * @return
 	 */
 	WorkviewBean getWorkviewBean(Object processId, Object userId);
+
+	/**
+	 * 获取指定用户的待阅
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	IDataQuery<WorkviewBean> getWorkviewsList(ID userId);
 }

@@ -287,7 +287,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	@Override
 	public Object getVariable(final ProcessBean process, final String name) {
 		final VariableNode variableNode = _getProcessNode(process).getVariableNodeByName(name);
-		return vService.getVariableValue(process, variableNode);
+		return varService.getVariableValue(process, variableNode);
 	}
 
 	@Override
@@ -297,7 +297,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public void setVariable(final ProcessBean process, final String[] names, final Object[] values) {
-		vService.setVariableValue(process, names, values);
+		varService.setVariableValue(process, names, values);
 	}
 
 	@Override
@@ -407,9 +407,11 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 					// 删除任务环节
 					aService.deleteWith("processId=?", id);
+					// 删除待阅
+					vService.deleteWith("processId=?", id);
 
 					// 删除流程变量
-					vService.deleteVariables(EVariableSource.process, id);
+					varService.deleteVariables(EVariableSource.process, id);
 				}
 			}
 

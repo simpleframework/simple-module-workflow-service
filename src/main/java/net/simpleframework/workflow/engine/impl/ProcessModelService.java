@@ -265,7 +265,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 					// 删除lob
 					getEntityManager(ProcessModelLobBean.class).delete(new ExpressionValue("id=?", id));
 					// 删除流程变量，静态
-					vService.deleteVariables(EVariableSource.model, id);
+					varService.deleteVariables(EVariableSource.model, id);
 					// 删除domian
 					drService.deleteWith("modelId=?", id);
 				}

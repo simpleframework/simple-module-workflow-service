@@ -3,6 +3,8 @@ package net.simpleframework.workflow.engine.impl;
 import java.util.Collection;
 import java.util.Map;
 
+import net.simpleframework.ado.IParamsValue;
+import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.db.common.SqlUtils;
 import net.simpleframework.common.Convert;
 import net.simpleframework.common.ID;
@@ -162,5 +164,20 @@ public class VariableService extends AbstractDbBeanService<VariableBean> impleme
 	void deleteVariables(final EVariableSource source, final Object... beanIds) {
 		deleteWith("variableSource=? and " + SqlUtils.getIdsSQLParam("sourceId", beanIds.length),
 				ArrayUtils.add(new Object[] { source }, beanIds));
+	}
+
+	@Override
+	public void onInit() throws Exception {
+		super.onInit();
+
+		addListener(new DbEntityAdapterEx() {
+			@Override
+			public void onBeforeDelete(IDbEntityManager<?> manager, IParamsValue paramsValue) {
+				super.onBeforeDelete(manager, paramsValue);
+				// for (final VariableBean var : coll(paramsValue)) {
+				// getEntityManager(VariableLogBean.class);
+				// }
+			}
+		});
 	}
 }
