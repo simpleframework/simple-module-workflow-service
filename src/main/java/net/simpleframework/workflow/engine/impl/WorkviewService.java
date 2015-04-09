@@ -21,7 +21,7 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 		IWorkviewService {
 
 	@Override
-	public IDataQuery<WorkviewBean> getWorkviewsList(ID userId) {
+	public IDataQuery<WorkviewBean> getWorkviewsList(final ID userId) {
 		return query("userId=?", userId);
 	}
 
