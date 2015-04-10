@@ -32,7 +32,7 @@ import net.simpleframework.workflow.engine.EProcessStatus;
 import net.simpleframework.workflow.engine.EVariableSource;
 import net.simpleframework.workflow.engine.EWorkitemStatus;
 import net.simpleframework.workflow.engine.IProcessService;
-import net.simpleframework.workflow.engine.IWorkviewForm;
+import net.simpleframework.workflow.engine.IWorkflowView;
 import net.simpleframework.workflow.engine.InitiateItem;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.ProcessLobBean;
@@ -351,9 +351,12 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
-	public IWorkviewForm getWorkviewForm(final ProcessBean process) {
+	public IWorkflowView getWorkflowView(final ProcessBean process) {
+		if (process == null) {
+			return null;
+		}
 		final String viewClass = getProcessDocument(process).getProcessNode().getViewClass();
-		return (IWorkviewForm) (viewClass != null ? singleton(viewClass) : null);
+		return (IWorkflowView) (viewClass != null ? singleton(viewClass) : null);
 	}
 
 	@Override

@@ -167,7 +167,7 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * @param activity
 	 * @return
 	 */
-	IWorkitemForm getWorkitemForm(ActivityBean activity);
+	IWorkflowForm getWorkflowForm(ActivityBean activity);
 
 	/**
 	 * 获取定义参与者

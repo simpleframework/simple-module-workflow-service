@@ -63,8 +63,8 @@ public class WorkitemComplete extends ObjectEx implements IWorkflowServiceAware 
 		return allCompleted;
 	}
 
-	public IWorkitemForm getWorkflowForm() {
-		return aService.getWorkitemForm(wService.getActivity(getWorkitem()));
+	public IWorkflowForm getWorkflowForm() {
+		return aService.getWorkflowForm(wService.getActivity(getWorkitem()));
 	}
 
 	public void complete(final Map<String, String> parameters) {

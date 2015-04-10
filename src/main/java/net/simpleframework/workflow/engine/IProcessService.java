@@ -132,5 +132,5 @@ public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 	 * @param process
 	 * @return
 	 */
-	IWorkviewForm getWorkviewForm(ProcessBean process);
+	IWorkflowView getWorkflowView(ProcessBean process);
 }
