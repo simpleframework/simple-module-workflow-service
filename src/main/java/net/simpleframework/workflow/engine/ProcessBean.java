@@ -43,6 +43,11 @@ public class ProcessBean extends AbstractWorkflowBean {
 
 	private Properties properties;
 
+	/* 意见数 */
+	private int comments;
+	/* 浏览数 */
+	private int views;
+
 	public ID getModelId() {
 		return modelId;
 	}
@@ -140,6 +145,22 @@ public class ProcessBean extends AbstractWorkflowBean {
 
 	public void setProperties(final Properties properties) {
 		this.properties = properties;
+	}
+
+	public int getComments() {
+		return comments;
+	}
+
+	public void setComments(int comments) {
+		this.comments = comments;
+	}
+
+	public int getViews() {
+		return views;
+	}
+
+	public void setViews(int views) {
+		this.views = views;
 	}
 
 	@Override

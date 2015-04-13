@@ -57,6 +57,8 @@
         createdate datetime not null,
         roleid char(32),
         completedate datetime,
+        comments int not null,
+        views int not null,
         properties text,
         primary key(id)
       );

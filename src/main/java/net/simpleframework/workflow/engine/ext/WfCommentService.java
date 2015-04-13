@@ -1,9 +1,11 @@
 package net.simpleframework.workflow.engine.ext;
 
+import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.module.common.content.impl.AbstractCommentService;
-import net.simpleframework.workflow.engine.IWorkflowContextAware;
+import net.simpleframework.workflow.engine.IWorkflowServiceAware;
+import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.WorkitemBean;
 import net.simpleframework.workflow.engine.ext.WfCommentLog.ELogType;
 
@@ -14,7 +16,7 @@ import net.simpleframework.workflow.engine.ext.WfCommentLog.ELogType;
  *         http://www.simpleframework.net
  */
 public class WfCommentService extends AbstractCommentService<WfComment> implements
-		IWfCommentService, IWorkflowContextAware {
+		IWfCommentService, IWorkflowServiceAware {
 
 	@Override
 	public WfComment getCurComment(final WorkitemBean workitem) {
@@ -32,8 +34,26 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans) {
 				super.onAfterInsert(manager, beans);
 				for (final Object o : beans) {
-					lService.insertLog((WfComment) o, ELogType.history);
+					final WfComment c = (WfComment) o;
+					lService.insertLog(c, ELogType.history);
+
+					// 更新process
+					updateCommentCount(c);
 				}
+			}
+
+			@Override
+			public void onAfterDelete(IDbEntityManager<?> manager, IParamsValue paramsValue) {
+				super.onAfterDelete(manager, paramsValue);
+				for (final WfComment c : coll(paramsValue)) {
+					updateCommentCount(c);
+				}
+			}
+
+			private void updateCommentCount(WfComment c) {
+				final ProcessBean process = pService.getBean(c.getContentId());
+				process.setComments(count("contentId=?", process.getId()));
+				pService.update(new String[] { "comments" }, process);
 			}
 
 			@Override

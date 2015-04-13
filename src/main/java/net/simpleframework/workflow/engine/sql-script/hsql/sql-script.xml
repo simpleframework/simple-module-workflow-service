@@ -57,6 +57,8 @@
         createdate timestamp not null,
         roleid char(32),
         completedate timestamp,
+        comments int not null,
+        views int not null,
         properties clob,
         primary key(id)
       );
