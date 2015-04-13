@@ -304,6 +304,10 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	@Override
 	public void doReadMark(final WorkitemBean workitem) {
 		_doReadMark(workitem, false);
+
+		// 设置新到意见标记
+		workitem.setNcommentFlag(false);
+		update(new String[] { "ncommentFlag" }, workitem);
 	}
 
 	private void _doReadMark(final WorkitemBean workitem, final boolean unread) {
@@ -320,7 +324,6 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	@Override
 	public void doUnTopMark(final WorkitemBean workitem) {
 		_doTopMark(workitem, true);
-
 	}
 
 	@Override
