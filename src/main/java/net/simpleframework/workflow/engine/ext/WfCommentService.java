@@ -1,9 +1,12 @@
 package net.simpleframework.workflow.engine.ext;
 
+import java.util.List;
+
 import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.module.common.content.impl.AbstractCommentService;
+import net.simpleframework.workflow.engine.EWorkitemStatus;
 import net.simpleframework.workflow.engine.IWorkflowServiceAware;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.WorkitemBean;
@@ -23,6 +26,20 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 		return workitem == null ? null : getBean("workitemId=?", workitem.getId());
 	}
 
+	protected void updateWorkitemCommentFlag(final WfComment c, final boolean insert) {
+		// 更新工作项ncommentFlag标识
+		final ProcessBean process = pService.getBean(c.getContentId());
+		if (process != null) {
+			final List<WorkitemBean> list = wService.getWorkitems(process, null,
+					EWorkitemStatus.running, EWorkitemStatus.delegate);
+			for (final WorkitemBean w : list) {
+				w.setNcommentFlag(insert);
+			}
+			wService.update(new String[] { "ncommentFlag" },
+					list.toArray(new WorkitemBean[list.size()]));
+		}
+	}
+
 	@Override
 	public void onInit() throws Exception {
 		super.onInit();
@@ -38,7 +55,8 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 					lService.insertLog(c, ELogType.history);
 
 					// 更新process
-					updateCommentCount(c);
+					updateProcessComments(c);
+					updateWorkitemCommentFlag(c, true);
 				}
 			}
 
@@ -46,11 +64,12 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 			public void onAfterDelete(final IDbEntityManager<?> manager, final IParamsValue paramsValue) {
 				super.onAfterDelete(manager, paramsValue);
 				for (final WfComment c : coll(paramsValue)) {
-					updateCommentCount(c);
+					updateProcessComments(c);
+					updateWorkitemCommentFlag(c, false);
 				}
 			}
 
-			private void updateCommentCount(final WfComment c) {
+			private void updateProcessComments(final WfComment c) {
 				final ProcessBean process = pService.getBean(c.getContentId());
 				process.setComments(count("contentId=?", process.getId()));
 				pService.update(new String[] { "comments" }, process);
