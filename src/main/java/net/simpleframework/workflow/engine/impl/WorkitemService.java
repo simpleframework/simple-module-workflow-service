@@ -392,7 +392,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	protected String getDefaultOrderby() {
-		return " order by topmark desc, ncommentFlag desc, createdate desc";
+		return " order by topmark desc, ncommentflag desc, createdate desc";
 	}
 
 	private IDataQuery<WorkitemBean> _getWorklist(final ProcessBean process, final ID userId,
