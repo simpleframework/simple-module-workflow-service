@@ -43,14 +43,14 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 			}
 
 			@Override
-			public void onAfterDelete(IDbEntityManager<?> manager, IParamsValue paramsValue) {
+			public void onAfterDelete(final IDbEntityManager<?> manager, final IParamsValue paramsValue) {
 				super.onAfterDelete(manager, paramsValue);
 				for (final WfComment c : coll(paramsValue)) {
 					updateCommentCount(c);
 				}
 			}
 
-			private void updateCommentCount(WfComment c) {
+			private void updateCommentCount(final WfComment c) {
 				final ProcessBean process = pService.getBean(c.getContentId());
 				process.setComments(count("contentId=?", process.getId()));
 				pService.update(new String[] { "comments" }, process);

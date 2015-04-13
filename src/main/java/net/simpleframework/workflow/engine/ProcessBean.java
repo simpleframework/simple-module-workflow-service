@@ -151,7 +151,7 @@ public class ProcessBean extends AbstractWorkflowBean {
 		return comments;
 	}
 
-	public void setComments(int comments) {
+	public void setComments(final int comments) {
 		this.comments = comments;
 	}
 
@@ -159,7 +159,7 @@ public class ProcessBean extends AbstractWorkflowBean {
 		return views;
 	}
 
-	public void setViews(int views) {
+	public void setViews(final int views) {
 		this.views = views;
 	}
 
