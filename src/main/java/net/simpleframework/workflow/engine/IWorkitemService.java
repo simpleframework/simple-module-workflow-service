@@ -103,13 +103,6 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	void doTopMark(WorkitemBean workitem);
 
 	/**
-	 * 取消意见新到标识
-	 * 
-	 * @param workitem
-	 */
-	void doUnNcomments(WorkitemBean workitem);
-
-	/**
 	 * 设置工作项委托
 	 * 
 	 * @param workitem

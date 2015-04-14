@@ -1,12 +1,9 @@
 package net.simpleframework.workflow.engine.ext;
 
-import java.util.List;
-
 import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.module.common.content.impl.AbstractCommentService;
-import net.simpleframework.workflow.engine.EWorkitemStatus;
 import net.simpleframework.workflow.engine.IWorkflowServiceAware;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.WorkitemBean;
@@ -30,15 +27,16 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 		// 更新工作项ncomments数量
 		final ProcessBean process = pService.getBean(c.getContentId());
 		if (process != null) {
-			final List<WorkitemBean> list = wService.getWorkitems(process, null,
-					EWorkitemStatus.running, EWorkitemStatus.delegate);
-			for (final WorkitemBean w : list) {
-				if (insert)
-					w.setNcomments(w.getNcomments() + 1);
-				else
-					w.setNcomments(w.getNcomments() - 1);
-			}
-			wService.update(new String[] { "ncomments" }, list.toArray(new WorkitemBean[list.size()]));
+			// final List<WorkitemBean> list = wService.getWorkitems(process, null,
+			// EWorkitemStatus.running, EWorkitemStatus.delegate);
+			// for (final WorkitemBean w : list) {
+			// if (insert)
+			// w.setNcomments(w.getNcomments() + 1);
+			// else
+			// w.setNcomments(w.getNcomments() - 1);
+			// }
+			// wService.update(new String[] { "ncomments" }, list.toArray(new
+			// WorkitemBean[list.size()]));
 		}
 	}
 

@@ -333,15 +333,6 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	@Override
-	public void doUnNcomments(WorkitemBean workitem) {
-		// 设置新到意见标记
-		if (workitem.getNcomments() > 0) {
-			workitem.setNcomments(0);
-			update(new String[] { "ncomments" }, workitem);
-		}
-	}
-
-	@Override
 	public void doWorkitemDelegation(final WorkitemBean workitem, final ID userId,
 			final Date dStartDate, final Date dCompleteDate, final String description) {
 		if (workitem.getUserId().equals(userId)) {

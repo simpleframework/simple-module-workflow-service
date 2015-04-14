@@ -13,7 +13,7 @@ public class WfUserComment extends AbstractUserAwareBean {
 	/* 流程id */
 	private ID contentId;
 	/* 新到意见数 */
-	private int comments;
+	private int ncomments;
 
 	public ID getContentId() {
 		return contentId;
@@ -23,12 +23,12 @@ public class WfUserComment extends AbstractUserAwareBean {
 		this.contentId = contentId;
 	}
 
-	public int getComments() {
-		return comments;
+	public int getNcomments() {
+		return ncomments;
 	}
 
-	public void setComments(int comments) {
-		this.comments = comments;
+	public void setNcomments(int ncomments) {
+		this.ncomments = ncomments;
 	}
 
 	private static final long serialVersionUID = -4193189280207725892L;
