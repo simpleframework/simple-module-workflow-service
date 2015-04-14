@@ -29,6 +29,8 @@ import net.simpleframework.workflow.engine.event.IWorkCalendarListener;
 import net.simpleframework.workflow.engine.event.IWorkCalendarListener.WorkCalendarAdapter;
 import net.simpleframework.workflow.engine.event.IWorkflowListener;
 import net.simpleframework.workflow.engine.event.IWorkitemListener;
+import net.simpleframework.workflow.engine.ext.WfCommentService;
+import net.simpleframework.workflow.engine.ext.WfUserCommentService;
 import net.simpleframework.workflow.schema.AbstractTaskNode;
 import net.simpleframework.workflow.schema.ProcessNode;
 
@@ -229,6 +231,9 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 	protected static WorkviewService vService = (WorkviewService) IWorkflowServiceAware.vService;
 	protected static DelegationService dService = (DelegationService) IWorkflowServiceAware.dService;
 	protected static ProcessModelDomainRService drService = (ProcessModelDomainRService) IWorkflowServiceAware.drService;
+	protected static WfCommentService commentService = (WfCommentService) IWorkflowServiceAware.commentService;
+	protected static WfUserCommentService uCommentService = (WfUserCommentService) workflowContext
+			.getWfUserCommentService();
 
 	protected static VariableService varService;
 

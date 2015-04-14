@@ -415,6 +415,10 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 					// 删除流程变量
 					varService.deleteVariables(EVariableSource.process, id);
+
+					// 删除意见
+					commentService.deleteWith("contentId=?", id);
+					uCommentService.deleteWith("contentId=?", id);
 				}
 			}
 

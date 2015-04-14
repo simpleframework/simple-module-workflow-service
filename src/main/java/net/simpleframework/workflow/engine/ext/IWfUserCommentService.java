@@ -1,5 +1,6 @@
 package net.simpleframework.workflow.engine.ext;
 
+import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.IDbBeanService;
 
 /**
@@ -10,4 +11,10 @@ import net.simpleframework.ctx.service.ado.db.IDbBeanService;
  */
 public interface IWfUserCommentService extends IDbBeanService<WfUserComment> {
 
+	/**
+	 * @param userId
+	 * @param contentId
+	 * @return
+	 */
+	WfUserComment getUserComment(ID userId, ID contentId);
 }

@@ -1,5 +1,8 @@
 package net.simpleframework.workflow.engine.ext;
 
+import java.util.Date;
+
+import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
 import net.simpleframework.workflow.engine.IWorkflowContextAware;
 
@@ -11,4 +14,16 @@ import net.simpleframework.workflow.engine.IWorkflowContextAware;
  */
 public class WfUserCommentService extends AbstractDbBeanService<WfUserComment> implements
 		IWfUserCommentService, IWorkflowContextAware {
+
+	@Override
+	public WfUserComment getUserComment(ID userId, ID contentId) {
+		WfUserComment ucomment = getBean("userId=? and contentId=?", userId, contentId);
+		if (ucomment == null) {
+			ucomment = createBean();
+			ucomment.setCreateDate(new Date());
+			ucomment.setUserId(userId);
+			ucomment.setContentId(contentId);
+		}
+		return ucomment;
+	}
 }

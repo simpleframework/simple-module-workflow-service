@@ -23,7 +23,7 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 		return workitem == null ? null : getBean("workitemId=?", workitem.getId());
 	}
 
-	protected void updateWorkitemCommentFlag(final WfComment c, final boolean insert) {
+	protected void updateUserComments(final WfComment c, final boolean insert) {
 		// 更新工作项ncomments数量
 		final ProcessBean process = pService.getBean(c.getContentId());
 		if (process != null) {
@@ -44,7 +44,8 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 	public void onInit() throws Exception {
 		super.onInit();
 
-		final IWfCommentLogService lService = workflowContext.getCommentLogService();
+		final WfCommentLogService lService = (WfCommentLogService) workflowContext
+				.getCommentLogService();
 
 		addListener(new DbEntityAdapterEx() {
 			@Override
@@ -56,7 +57,7 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 
 					// 更新process
 					updateProcessComments(c);
-					updateWorkitemCommentFlag(c, true);
+					updateUserComments(c, true);
 				}
 			}
 
@@ -64,8 +65,11 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 			public void onAfterDelete(final IDbEntityManager<?> manager, final IParamsValue paramsValue) {
 				super.onAfterDelete(manager, paramsValue);
 				for (final WfComment c : coll(paramsValue)) {
+					// 删除关联的意见
+					lService.deleteWith("commentId=?", c.getId());
+
 					updateProcessComments(c);
-					updateWorkitemCommentFlag(c, false);
+					updateUserComments(c, false);
 				}
 			}
 
