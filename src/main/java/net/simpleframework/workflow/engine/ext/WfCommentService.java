@@ -1,9 +1,11 @@
 package net.simpleframework.workflow.engine.ext;
 
+import java.util.Date;
 import java.util.List;
 
 import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
+import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.module.common.content.impl.AbstractCommentService;
 import net.simpleframework.workflow.engine.EWorkitemStatus;
@@ -33,7 +35,16 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 			final List<WorkitemBean> list = wService.getWorkitems(process, null,
 					EWorkitemStatus.running, EWorkitemStatus.delegate);
 			for (final WorkitemBean w : list) {
-				final WfCommentUser commentUser = uService.getCommentUser(w);
+				ID userId = w.getUserId();
+				ID processId = w.getProcessId();
+				WfCommentUser commentUser = uService.getCommentUser(userId, processId);
+				if (commentUser == null) {
+					commentUser = uService.createBean();
+					commentUser.setCreateDate(new Date());
+					commentUser.setUserId(userId);
+					commentUser.setContentId(processId);
+					uService.insert(commentUser);
+				}
 				commentUser.setNcomments(commentUser.getNcomments() + i);
 				uService.update(new String[] { "ncomments" }, commentUser);
 			}

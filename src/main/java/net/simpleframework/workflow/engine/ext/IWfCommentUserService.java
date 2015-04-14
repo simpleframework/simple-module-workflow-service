@@ -2,7 +2,6 @@ package net.simpleframework.workflow.engine.ext;
 
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.IDbBeanService;
-import net.simpleframework.workflow.engine.WorkitemBean;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -14,12 +13,10 @@ public interface IWfCommentUserService extends IDbBeanService<WfCommentUser> {
 
 	/**
 	 * @param userId
-	 * @param contentId
+	 * @param content
 	 * @return
 	 */
-	WfCommentUser getCommentUser2(ID userId, ID contentId);
+	WfCommentUser getCommentUser(ID userId, Object content);
 
-	WfCommentUser getCommentUser(WorkitemBean workitem);
-
-	void resetCommentUser(ID userId, ID contentId);
+	void resetCommentUser(ID userId, Object content);
 }
