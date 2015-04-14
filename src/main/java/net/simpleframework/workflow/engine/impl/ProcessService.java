@@ -418,7 +418,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 					// 删除意见
 					commentService.deleteWith("contentId=?", id);
-					uCommentService.deleteWith("contentId=?", id);
+					commentUserService.deleteWith("contentId=?", id);
 				}
 			}
 

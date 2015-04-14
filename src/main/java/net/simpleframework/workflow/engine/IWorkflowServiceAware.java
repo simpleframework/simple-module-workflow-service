@@ -1,6 +1,7 @@
 package net.simpleframework.workflow.engine;
 
 import net.simpleframework.workflow.engine.ext.IWfCommentService;
+import net.simpleframework.workflow.engine.ext.IWfCommentUserService;
 import net.simpleframework.workflow.engine.impl.WorkflowSettings;
 import net.simpleframework.workflow.engine.participant.IWorkflowPermissionHandler;
 
@@ -23,6 +24,9 @@ public interface IWorkflowServiceAware extends IWorkflowContextAware {
 	static final IWorkitemService wService = workflowContext.getWorkitemService();
 	static final IWorkviewService vService = workflowContext.getWorkviewService();
 	static final IDelegationService dService = workflowContext.getDelegationService();
+
 	static final IWfCommentService commentService = workflowContext.getCommentService();
+	static final IWfCommentUserService commentUserService = workflowContext.getCommentUserService();
+
 	static final IWorkflowPermissionHandler permission = workflowContext.getParticipantService();
 }

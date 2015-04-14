@@ -1,9 +1,12 @@
 package net.simpleframework.workflow.engine.ext;
 
+import java.util.List;
+
 import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.module.common.content.impl.AbstractCommentService;
+import net.simpleframework.workflow.engine.EWorkitemStatus;
 import net.simpleframework.workflow.engine.IWorkflowServiceAware;
 import net.simpleframework.workflow.engine.ProcessBean;
 import net.simpleframework.workflow.engine.WorkitemBean;
@@ -23,20 +26,17 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 		return workitem == null ? null : getBean("workitemId=?", workitem.getId());
 	}
 
-	protected void updateUserComments(final WfComment c, final boolean insert) {
-		// 更新工作项ncomments数量
+	protected void updateUserComments(final WfComment c, final int i) {
 		final ProcessBean process = pService.getBean(c.getContentId());
 		if (process != null) {
-			// final List<WorkitemBean> list = wService.getWorkitems(process, null,
-			// EWorkitemStatus.running, EWorkitemStatus.delegate);
-			// for (final WorkitemBean w : list) {
-			// if (insert)
-			// w.setNcomments(w.getNcomments() + 1);
-			// else
-			// w.setNcomments(w.getNcomments() - 1);
-			// }
-			// wService.update(new String[] { "ncomments" }, list.toArray(new
-			// WorkitemBean[list.size()]));
+			final IWfCommentUserService uService = workflowContext.getCommentUserService();
+			final List<WorkitemBean> list = wService.getWorkitems(process, null,
+					EWorkitemStatus.running, EWorkitemStatus.delegate);
+			for (final WorkitemBean w : list) {
+				final WfCommentUser commentUser = uService.getCommentUser(w);
+				commentUser.setNcomments(commentUser.getNcomments() + i);
+				uService.update(new String[] { "ncomments" }, commentUser);
+			}
 		}
 	}
 
@@ -57,7 +57,7 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 
 					// 更新process
 					updateProcessComments(c);
-					updateUserComments(c, true);
+					updateUserComments(c, 1);
 				}
 			}
 
@@ -69,7 +69,7 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 					lService.deleteWith("commentId=?", c.getId());
 
 					updateProcessComments(c);
-					updateUserComments(c, false);
+					updateUserComments(c, -1);
 				}
 			}
 

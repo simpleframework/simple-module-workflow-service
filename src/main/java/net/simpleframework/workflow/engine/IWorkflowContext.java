@@ -3,7 +3,7 @@ package net.simpleframework.workflow.engine;
 import net.simpleframework.ctx.IModuleContext;
 import net.simpleframework.workflow.engine.ext.IWfCommentLogService;
 import net.simpleframework.workflow.engine.ext.IWfCommentService;
-import net.simpleframework.workflow.engine.ext.IWfUserCommentService;
+import net.simpleframework.workflow.engine.ext.IWfCommentUserService;
 import net.simpleframework.workflow.engine.participant.IWorkflowPermissionHandler;
 import net.simpleframework.workflow.engine.remote.IProcessRemote;
 
@@ -70,7 +70,7 @@ public interface IWorkflowContext extends IModuleContext {
 	 */
 	IWfCommentService getCommentService();
 
-	IWfUserCommentService getWfUserCommentService();
+	IWfCommentUserService getCommentUserService();
 
 	IWfCommentLogService getCommentLogService();
 

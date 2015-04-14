@@ -31,13 +31,13 @@ import net.simpleframework.workflow.engine.WorkitemBean;
 import net.simpleframework.workflow.engine.WorkviewBean;
 import net.simpleframework.workflow.engine.ext.IWfCommentLogService;
 import net.simpleframework.workflow.engine.ext.IWfCommentService;
-import net.simpleframework.workflow.engine.ext.IWfUserCommentService;
+import net.simpleframework.workflow.engine.ext.IWfCommentUserService;
 import net.simpleframework.workflow.engine.ext.WfComment;
 import net.simpleframework.workflow.engine.ext.WfCommentLog;
 import net.simpleframework.workflow.engine.ext.WfCommentLogService;
 import net.simpleframework.workflow.engine.ext.WfCommentService;
-import net.simpleframework.workflow.engine.ext.WfUserComment;
-import net.simpleframework.workflow.engine.ext.WfUserCommentService;
+import net.simpleframework.workflow.engine.ext.WfCommentUser;
+import net.simpleframework.workflow.engine.ext.WfCommentUserService;
 import net.simpleframework.workflow.engine.participant.IWorkflowPermissionHandler;
 import net.simpleframework.workflow.engine.remote.DefaultProcessRemote;
 import net.simpleframework.workflow.engine.remote.IProcessRemote;
@@ -86,7 +86,7 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 				new DbEntityTable(VariableBean.class, "sf_workflow_variable"),
 				new DbEntityTable(VariableLogBean.class, "sf_workflow_variable_log"),
 				new DbEntityTable(WfComment.class, "sf_workflow_comment"),
-				new DbEntityTable(WfUserComment.class, "sf_workflow_comment_user"),
+				new DbEntityTable(WfCommentUser.class, "sf_workflow_comment_user"),
 				new DbEntityTable(WfCommentLog.class, "sf_workflow_comment_log") };
 	}
 
@@ -141,8 +141,8 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 	}
 
 	@Override
-	public IWfUserCommentService getWfUserCommentService() {
-		return singleton(WfUserCommentService.class);
+	public IWfCommentUserService getCommentUserService() {
+		return singleton(WfCommentUserService.class);
 	}
 
 	@Override
