@@ -86,7 +86,7 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 				new DbEntityTable(VariableBean.class, "sf_workflow_variable"),
 				new DbEntityTable(VariableLogBean.class, "sf_workflow_variable_log"),
 				new DbEntityTable(WfComment.class, "sf_workflow_comment"),
-				new DbEntityTable(WfUserComment.class, "sf_workflow_user_comment"),
+				new DbEntityTable(WfUserComment.class, "sf_workflow_comment_user"),
 				new DbEntityTable(WfCommentLog.class, "sf_workflow_comment_log") };
 	}
 

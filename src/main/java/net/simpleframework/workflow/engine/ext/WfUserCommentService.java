@@ -23,6 +23,7 @@ public class WfUserCommentService extends AbstractDbBeanService<WfUserComment> i
 			ucomment.setCreateDate(new Date());
 			ucomment.setUserId(userId);
 			ucomment.setContentId(contentId);
+			insert(ucomment);
 		}
 		return ucomment;
 	}

@@ -204,12 +204,13 @@
   </tran-sql>
   <tran-sql>
     <![CDATA[
-      create table sf_workflow_user_comment (
+      create table sf_workflow_comment_user (
         id char(32) not null,
         contentid char(32) not null,
         createdate datetime not null,
         userid char(32) not null,
         ncomments int4 not null,
+        unique (contentid, userid),
         primary key(id)
       );
     ]]>
