@@ -31,10 +31,12 @@ import net.simpleframework.workflow.engine.WorkitemBean;
 import net.simpleframework.workflow.engine.WorkviewBean;
 import net.simpleframework.workflow.engine.ext.IWfCommentLogService;
 import net.simpleframework.workflow.engine.ext.IWfCommentService;
+import net.simpleframework.workflow.engine.ext.IWfUserCommentService;
 import net.simpleframework.workflow.engine.ext.WfComment;
 import net.simpleframework.workflow.engine.ext.WfCommentLog;
 import net.simpleframework.workflow.engine.ext.WfCommentLogService;
 import net.simpleframework.workflow.engine.ext.WfCommentService;
+import net.simpleframework.workflow.engine.ext.WfUserCommentService;
 import net.simpleframework.workflow.engine.participant.IWorkflowPermissionHandler;
 import net.simpleframework.workflow.engine.remote.DefaultProcessRemote;
 import net.simpleframework.workflow.engine.remote.IProcessRemote;
@@ -134,6 +136,11 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 	@Override
 	public IWfCommentService getCommentService() {
 		return singleton(WfCommentService.class);
+	}
+
+	@Override
+	public IWfUserCommentService getWfUserCommentService() {
+		return singleton(WfUserCommentService.class);
 	}
 
 	@Override

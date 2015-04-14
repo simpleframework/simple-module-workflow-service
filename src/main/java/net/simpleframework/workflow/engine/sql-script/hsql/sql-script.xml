@@ -132,7 +132,7 @@
         readdate timestamp,
         topmark bit not null,
         retakeref char(32),
-        ncommentflag bit not null,
+        ncomments int not null,
         ext1 varchar(64),
         ext2 int not null,
         primary key(id)

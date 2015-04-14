@@ -304,10 +304,6 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	@Override
 	public void doReadMark(final WorkitemBean workitem) {
 		_doReadMark(workitem, false);
-
-		// 设置新到意见标记
-		workitem.setNcommentFlag(false);
-		update(new String[] { "ncommentFlag" }, workitem);
 	}
 
 	private void _doReadMark(final WorkitemBean workitem, final boolean unread) {
@@ -334,6 +330,15 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	private void _doTopMark(final WorkitemBean workitem, final boolean untop) {
 		workitem.setTopMark(!untop);
 		update(new String[] { "topMark" }, workitem);
+	}
+
+	@Override
+	public void doUnNcomments(WorkitemBean workitem) {
+		// 设置新到意见标记
+		if (workitem.getNcomments() > 0) {
+			workitem.setNcomments(0);
+			update(new String[] { "ncomments" }, workitem);
+		}
 	}
 
 	@Override
@@ -392,7 +397,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	protected String getDefaultOrderby() {
-		return " order by topmark desc, ncommentflag desc, createdate desc";
+		return " order by topmark desc, ncomments desc, createdate desc";
 	}
 
 	private IDataQuery<WorkitemBean> _getWorklist(final ProcessBean process, final ID userId,

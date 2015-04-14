@@ -27,16 +27,18 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 	}
 
 	protected void updateWorkitemCommentFlag(final WfComment c, final boolean insert) {
-		// 更新工作项ncommentFlag标识
+		// 更新工作项ncomments数量
 		final ProcessBean process = pService.getBean(c.getContentId());
 		if (process != null) {
 			final List<WorkitemBean> list = wService.getWorkitems(process, null,
 					EWorkitemStatus.running, EWorkitemStatus.delegate);
 			for (final WorkitemBean w : list) {
-				w.setNcommentFlag(insert);
+				if (insert)
+					w.setNcomments(w.getNcomments() + 1);
+				else
+					w.setNcomments(w.getNcomments() - 1);
 			}
-			wService.update(new String[] { "ncommentFlag" },
-					list.toArray(new WorkitemBean[list.size()]));
+			wService.update(new String[] { "ncomments" }, list.toArray(new WorkitemBean[list.size()]));
 		}
 	}
 

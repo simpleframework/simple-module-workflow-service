@@ -37,8 +37,8 @@ public class WorkitemBean extends AbstractWorkitemBean {
 	/* 实际完成时间 */
 	private Date completeDate;
 
-	/* 新来意见标记 */
-	private boolean ncommentFlag;
+	/* 新来意见数 */
+	private int ncomments;
 
 	/* 取回工作项的引用 */
 	private ID retakeRef;
@@ -107,12 +107,12 @@ public class WorkitemBean extends AbstractWorkitemBean {
 		this.retakeRef = retakeRef;
 	}
 
-	public boolean isNcommentFlag() {
-		return ncommentFlag;
+	public int getNcomments() {
+		return ncomments;
 	}
 
-	public void setNcommentFlag(final boolean ncommentFlag) {
-		this.ncommentFlag = ncommentFlag;
+	public void setNcomments(int ncomments) {
+		this.ncomments = Math.max(ncomments, 0);
 	}
 
 	@Override
