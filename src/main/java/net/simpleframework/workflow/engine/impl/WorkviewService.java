@@ -46,6 +46,7 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 				workview.setDomainId(domainId);
 			}
 			insert(workview);
+			list.add(workview);
 		}
 		return list;
 	}
