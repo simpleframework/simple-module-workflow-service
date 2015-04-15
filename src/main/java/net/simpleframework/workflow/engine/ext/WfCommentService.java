@@ -35,8 +35,8 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 			final List<WorkitemBean> list = wService.getWorkitems(process, null,
 					EWorkitemStatus.running, EWorkitemStatus.delegate);
 			for (final WorkitemBean w : list) {
-				ID userId = w.getUserId();
-				ID processId = w.getProcessId();
+				final ID userId = w.getUserId();
+				final ID processId = w.getProcessId();
 				WfCommentUser commentUser = uService.getCommentUser(userId, processId);
 				if (commentUser == null) {
 					commentUser = uService.createBean();
