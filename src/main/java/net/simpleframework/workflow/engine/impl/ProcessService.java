@@ -324,8 +324,18 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public void doUpdateTitle(final ProcessBean process, final String title) {
-		process.setTitle(title);
-		update(new String[] { "title" }, process);
+		if (process != null) {
+			process.setTitle(title);
+			update(new String[] { "title" }, process);
+		}
+	}
+
+	@Override
+	public synchronized void doUpdateViews(final ProcessBean process) {
+		if (process != null) {
+			process.setViews(process.getViews() + 1);
+			update(new String[] { "views" }, process);
+		}
 	}
 
 	ProcessBean _create(final ProcessModelBean processModel, final ID userId, final ID roleId,
