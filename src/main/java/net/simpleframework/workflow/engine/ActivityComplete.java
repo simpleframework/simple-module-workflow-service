@@ -119,7 +119,7 @@ public class ActivityComplete extends ObjectEx implements IWorkflowServiceAware 
 		}
 
 		final KVMap variables = new KVMap().add("transition", transition).add(
-				PermissionConst.VAL_USERID, pService.getBean(getActivity().getProcessId()).getUserId());
+				PermissionConst.VAR_USERID, pService.getBean(getActivity().getProcessId()).getUserId());
 		final AbstractParticipantType pt = ((UserNode) toTask).getParticipantType();
 		final ArrayList<Participant> participants = new ArrayList<Participant>();
 		if (pt instanceof RuleRole) {

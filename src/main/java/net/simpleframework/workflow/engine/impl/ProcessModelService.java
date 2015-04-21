@@ -170,7 +170,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 					.getProcessNode().getStartupType();
 			if (startupType instanceof Manual) {
 				final KVMap variables = new KVMap().add("model", processModel).add(
-						PermissionConst.VAL_USERID, userId);
+						PermissionConst.VAR_USERID, userId);
 				final AbstractParticipantType pt = ((Manual) startupType).getParticipantType();
 				final String participant = pt.getParticipant();
 				if (pt instanceof User) {
