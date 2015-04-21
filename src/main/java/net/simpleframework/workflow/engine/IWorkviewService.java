@@ -23,6 +23,8 @@ public interface IWorkviewService extends IDbBeanService<WorkviewBean>, IWorkflo
 	 */
 	List<WorkviewBean> createWorkviews(WorkitemBean workitem, ID... userIds);
 
+	List<WorkviewBean> createForwardWorkviews(WorkviewBean workview, ID... userIds);
+
 	/**
 	 * 获取待阅bean对象
 	 * 

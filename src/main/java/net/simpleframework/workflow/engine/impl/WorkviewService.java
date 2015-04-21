@@ -7,6 +7,7 @@ import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
+import net.simpleframework.workflow.engine.AbstractWorkitemBean;
 import net.simpleframework.workflow.engine.IWorkviewService;
 import net.simpleframework.workflow.engine.WorkitemBean;
 import net.simpleframework.workflow.engine.WorkviewBean;
@@ -27,6 +28,25 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 
 	@Override
 	public List<WorkviewBean> createWorkviews(final WorkitemBean workitem, final ID... userIds) {
+		return _createWorkviews(workitem, userIds);
+	}
+
+	@Override
+	public List<WorkviewBean> createForwardWorkviews(final WorkviewBean workview,
+			final ID... userIds) {
+		return _createWorkviews(workview, userIds);
+	}
+
+	protected List<WorkviewBean> _createWorkviews(final AbstractWorkitemBean _workitem,
+			final ID... userIds) {
+		WorkviewBean workview2 = null;
+		WorkitemBean workitem;
+		if (_workitem instanceof WorkitemBean) {
+			workitem = (WorkitemBean) _workitem;
+		} else {
+			workview2 = (WorkviewBean) _workitem;
+			workitem = wService.getBean(workview2.getWorkitemId());
+		}
 		final List<WorkviewBean> list = new ArrayList<WorkviewBean>();
 		for (final ID id : userIds) {
 			final ID processId = workitem.getProcessId();
@@ -35,7 +55,11 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 			}
 			final WorkviewBean workview = createBean();
 			workview.setWorkitemId(workitem.getId());
+
 			workview.setProcessId(processId);
+			if (workview2 != null) {
+				workview.setParentId(workview2.getId());
+			}
 
 			final PermissionUser user = permission.getUser(id);
 			workview.setUserId(user.getId());
