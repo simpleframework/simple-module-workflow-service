@@ -1,5 +1,6 @@
 package net.simpleframework.workflow.engine;
 
+import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.IDbBeanService;
 import net.simpleframework.workflow.engine.bean.UserStatBean;
 
@@ -10,4 +11,12 @@ import net.simpleframework.workflow.engine.bean.UserStatBean;
  *         http://www.simpleframework.net
  */
 public interface IUserStatService extends IDbBeanService<UserStatBean>, IWorkflowServiceAware {
+
+	/**
+	 * 获取用户统计信息
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	UserStatBean getUserStat(ID userId);
 }

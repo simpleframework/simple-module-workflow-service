@@ -63,6 +63,8 @@ public interface IWorkflowContext extends IModuleContext {
 
 	IWorkviewService getWorkviewService();
 
+	IUserStatService getUserStatService();
+
 	/**
 	 * 获取评论服务
 	 * 

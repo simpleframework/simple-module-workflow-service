@@ -1,5 +1,6 @@
 package net.simpleframework.workflow.engine.impl;
 
+import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
 import net.simpleframework.workflow.engine.IUserStatService;
 import net.simpleframework.workflow.engine.bean.UserStatBean;
@@ -12,4 +13,13 @@ import net.simpleframework.workflow.engine.bean.UserStatBean;
  */
 public class UserStatService extends AbstractDbBeanService<UserStatBean> implements
 		IUserStatService {
+
+	@Override
+	public UserStatBean getUserStat(ID userId) {
+		UserStatBean stat = getBean("userId=?", userId);
+		if (stat == null) {
+
+		}
+		return null;
+	}
 }

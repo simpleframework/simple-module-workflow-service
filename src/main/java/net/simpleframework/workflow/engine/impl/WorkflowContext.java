@@ -14,6 +14,7 @@ import net.simpleframework.workflow.engine.IDelegationService;
 import net.simpleframework.workflow.engine.IProcessModelDomainRService;
 import net.simpleframework.workflow.engine.IProcessModelService;
 import net.simpleframework.workflow.engine.IProcessService;
+import net.simpleframework.workflow.engine.IUserStatService;
 import net.simpleframework.workflow.engine.IWorkflowContext;
 import net.simpleframework.workflow.engine.IWorkitemService;
 import net.simpleframework.workflow.engine.IWorkviewService;
@@ -133,6 +134,11 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 	@Override
 	public IWorkviewService getWorkviewService() {
 		return singleton(WorkviewService.class);
+	}
+
+	@Override
+	public IUserStatService getUserStatService() {
+		return singleton(UserStatService.class);
 	}
 
 	@Override
