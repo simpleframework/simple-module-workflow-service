@@ -1,9 +1,9 @@
 package net.simpleframework.workflow.engine;
 
 import net.simpleframework.ctx.IModuleContext;
-import net.simpleframework.workflow.engine.ext.IWfCommentLogService;
-import net.simpleframework.workflow.engine.ext.IWfCommentService;
-import net.simpleframework.workflow.engine.ext.IWfCommentUserService;
+import net.simpleframework.workflow.engine.comment.IWfCommentLogService;
+import net.simpleframework.workflow.engine.comment.IWfCommentService;
+import net.simpleframework.workflow.engine.comment.IWfCommentUserService;
 import net.simpleframework.workflow.engine.participant.IWorkflowPermissionHandler;
 import net.simpleframework.workflow.engine.remote.IProcessRemote;
 

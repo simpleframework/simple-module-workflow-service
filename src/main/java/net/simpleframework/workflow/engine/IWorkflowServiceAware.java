@@ -1,7 +1,7 @@
 package net.simpleframework.workflow.engine;
 
-import net.simpleframework.workflow.engine.ext.IWfCommentService;
-import net.simpleframework.workflow.engine.ext.IWfCommentUserService;
+import net.simpleframework.workflow.engine.comment.IWfCommentService;
+import net.simpleframework.workflow.engine.comment.IWfCommentUserService;
 import net.simpleframework.workflow.engine.impl.WorkflowSettings;
 import net.simpleframework.workflow.engine.participant.IWorkflowPermissionHandler;
 

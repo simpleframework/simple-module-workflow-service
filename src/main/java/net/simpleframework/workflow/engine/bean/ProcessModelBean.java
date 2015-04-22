@@ -1,9 +1,10 @@
-package net.simpleframework.workflow.engine;
+package net.simpleframework.workflow.engine.bean;
 
 import net.simpleframework.ado.ColumnMeta;
 import net.simpleframework.ado.db.common.EntityInterceptor;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
+import net.simpleframework.workflow.engine.EProcessModelStatus;
 
 /**
  * Licensed under the Apache License, Version 2.0

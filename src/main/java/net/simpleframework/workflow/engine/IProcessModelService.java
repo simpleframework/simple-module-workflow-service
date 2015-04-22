@@ -2,6 +2,7 @@ package net.simpleframework.workflow.engine;
 
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
+import net.simpleframework.workflow.engine.bean.ProcessModelBean;
 import net.simpleframework.workflow.schema.ProcessDocument;
 
 /**

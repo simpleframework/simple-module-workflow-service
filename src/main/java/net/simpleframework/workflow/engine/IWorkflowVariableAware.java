@@ -2,6 +2,8 @@ package net.simpleframework.workflow.engine;
 
 import java.util.Collection;
 
+import net.simpleframework.workflow.engine.bean.AbstractWorkflowBean;
+
 /**
  * Licensed under the Apache License, Version 2.0
  * 

@@ -2,6 +2,7 @@ package net.simpleframework.workflow.engine;
 
 import java.util.Collection;
 
+import net.simpleframework.workflow.engine.bean.AbstractWorkflowBean;
 import net.simpleframework.workflow.engine.event.IWorkflowListener;
 
 /**

@@ -7,10 +7,10 @@ import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
-import net.simpleframework.workflow.engine.AbstractWorkitemBean;
 import net.simpleframework.workflow.engine.IWorkviewService;
-import net.simpleframework.workflow.engine.WorkitemBean;
-import net.simpleframework.workflow.engine.WorkviewBean;
+import net.simpleframework.workflow.engine.bean.AbstractWorkitemBean;
+import net.simpleframework.workflow.engine.bean.WorkitemBean;
+import net.simpleframework.workflow.engine.bean.WorkviewBean;
 
 /**
  * Licensed under the Apache License, Version 2.0

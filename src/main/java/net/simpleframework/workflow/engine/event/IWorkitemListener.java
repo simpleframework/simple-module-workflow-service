@@ -1,7 +1,7 @@
 package net.simpleframework.workflow.engine.event;
 
 import net.simpleframework.workflow.engine.EWorkitemStatus;
-import net.simpleframework.workflow.engine.WorkitemBean;
+import net.simpleframework.workflow.engine.bean.WorkitemBean;
 
 /**
  * Licensed under the Apache License, Version 2.0

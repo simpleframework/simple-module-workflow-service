@@ -1,6 +1,7 @@
 package net.simpleframework.workflow.engine;
 
 import net.simpleframework.workflow.IWorkflowHandler;
+import net.simpleframework.workflow.engine.bean.DelegationBean;
 
 /**
  * Licensed under the Apache License, Version 2.0

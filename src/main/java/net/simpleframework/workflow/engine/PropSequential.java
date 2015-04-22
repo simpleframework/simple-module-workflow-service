@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Properties;
 
 import net.simpleframework.common.StringUtils;
+import net.simpleframework.workflow.engine.bean.ActivityBean;
+import net.simpleframework.workflow.engine.bean.WorkitemBean;
 import net.simpleframework.workflow.engine.participant.Participant;
 
 /**

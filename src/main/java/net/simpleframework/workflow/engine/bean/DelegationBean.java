@@ -1,4 +1,4 @@
-package net.simpleframework.workflow.engine;
+package net.simpleframework.workflow.engine.bean;
 
 import java.util.Date;
 
@@ -6,6 +6,8 @@ import net.simpleframework.ado.ColumnMeta;
 import net.simpleframework.ado.bean.IDescriptionBeanAware;
 import net.simpleframework.ado.db.common.EntityInterceptor;
 import net.simpleframework.common.ID;
+import net.simpleframework.workflow.engine.EDelegationSource;
+import net.simpleframework.workflow.engine.EDelegationStatus;
 
 /**
  * Licensed under the Apache License, Version 2.0

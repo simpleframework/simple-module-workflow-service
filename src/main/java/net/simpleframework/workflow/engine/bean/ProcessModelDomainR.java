@@ -1,4 +1,4 @@
-package net.simpleframework.workflow.engine;
+package net.simpleframework.workflow.engine.bean;
 
 import net.simpleframework.ado.bean.AbstractIdBean;
 import net.simpleframework.common.ID;

@@ -1,6 +1,6 @@
 package net.simpleframework.workflow.engine.event;
 
-import net.simpleframework.workflow.engine.ProcessModelBean;
+import net.simpleframework.workflow.engine.bean.ProcessModelBean;
 
 /**
  * Licensed under the Apache License, Version 2.0

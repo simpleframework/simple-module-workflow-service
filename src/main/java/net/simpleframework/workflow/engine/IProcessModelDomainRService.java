@@ -2,6 +2,8 @@ package net.simpleframework.workflow.engine;
 
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.IDbBeanService;
+import net.simpleframework.workflow.engine.bean.ProcessModelBean;
+import net.simpleframework.workflow.engine.bean.ProcessModelDomainR;
 
 /**
  * Licensed under the Apache License, Version 2.0

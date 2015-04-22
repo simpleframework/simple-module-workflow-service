@@ -11,12 +11,12 @@ import net.simpleframework.common.ID;
 import net.simpleframework.common.JsonUtils;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
-import net.simpleframework.workflow.engine.AbstractWorkflowBean;
-import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.EVariableSource;
 import net.simpleframework.workflow.engine.IWorkflowServiceAware;
-import net.simpleframework.workflow.engine.ProcessBean;
-import net.simpleframework.workflow.engine.VariableBean;
+import net.simpleframework.workflow.engine.bean.AbstractWorkflowBean;
+import net.simpleframework.workflow.engine.bean.ActivityBean;
+import net.simpleframework.workflow.engine.bean.ProcessBean;
+import net.simpleframework.workflow.engine.bean.VariableBean;
 import net.simpleframework.workflow.schema.EVariableType;
 import net.simpleframework.workflow.schema.VariableNode;
 

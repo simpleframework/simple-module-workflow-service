@@ -3,6 +3,8 @@ package net.simpleframework.workflow.engine;
 import java.util.Date;
 import java.util.List;
 
+import net.simpleframework.workflow.engine.bean.ActivityBean;
+import net.simpleframework.workflow.engine.bean.ProcessBean;
 import net.simpleframework.workflow.engine.participant.Participant;
 import net.simpleframework.workflow.schema.AbstractTaskNode;
 

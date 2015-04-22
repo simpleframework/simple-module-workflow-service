@@ -6,9 +6,9 @@ import java.util.Map;
 
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.permission.IPermissionHandler;
-import net.simpleframework.workflow.engine.AbstractWorkflowBean;
 import net.simpleframework.workflow.engine.EDelegationSource;
-import net.simpleframework.workflow.engine.ProcessModelBean;
+import net.simpleframework.workflow.engine.bean.AbstractWorkflowBean;
+import net.simpleframework.workflow.engine.bean.ProcessModelBean;
 import net.simpleframework.workflow.schema.UserNode;
 
 /**

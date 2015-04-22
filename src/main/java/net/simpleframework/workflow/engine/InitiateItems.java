@@ -3,6 +3,7 @@ package net.simpleframework.workflow.engine;
 import java.util.ArrayList;
 
 import net.simpleframework.common.ID;
+import net.simpleframework.workflow.engine.bean.ProcessModelBean;
 
 /**
  * Licensed under the Apache License, Version 2.0

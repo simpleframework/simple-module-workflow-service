@@ -4,8 +4,8 @@ import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
 import net.simpleframework.workflow.engine.IProcessModelDomainRService;
 import net.simpleframework.workflow.engine.IWorkflowServiceAware;
-import net.simpleframework.workflow.engine.ProcessModelBean;
-import net.simpleframework.workflow.engine.ProcessModelDomainR;
+import net.simpleframework.workflow.engine.bean.ProcessModelBean;
+import net.simpleframework.workflow.engine.bean.ProcessModelDomainR;
 
 /**
  * Licensed under the Apache License, Version 2.0

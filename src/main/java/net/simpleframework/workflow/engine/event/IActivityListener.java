@@ -1,8 +1,8 @@
 package net.simpleframework.workflow.engine.event;
 
-import net.simpleframework.workflow.engine.ActivityBean;
 import net.simpleframework.workflow.engine.ActivityComplete;
 import net.simpleframework.workflow.engine.EActivityStatus;
+import net.simpleframework.workflow.engine.bean.ActivityBean;
 
 /**
  * Licensed under the Apache License, Version 2.0

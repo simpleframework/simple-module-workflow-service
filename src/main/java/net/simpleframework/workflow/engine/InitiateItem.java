@@ -11,6 +11,7 @@ import net.simpleframework.common.coll.CollectionUtils;
 import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.common.object.ObjectEx;
 import net.simpleframework.ctx.script.IScriptEval;
+import net.simpleframework.workflow.engine.bean.ProcessModelBean;
 import net.simpleframework.workflow.schema.StartNode;
 import net.simpleframework.workflow.schema.TransitionNode;
 

@@ -2,7 +2,7 @@ package net.simpleframework.workflow.engine.event;
 
 import net.simpleframework.workflow.engine.EProcessStatus;
 import net.simpleframework.workflow.engine.InitiateItem;
-import net.simpleframework.workflow.engine.ProcessBean;
+import net.simpleframework.workflow.engine.bean.ProcessBean;
 
 /**
  * Licensed under the Apache License, Version 2.0
