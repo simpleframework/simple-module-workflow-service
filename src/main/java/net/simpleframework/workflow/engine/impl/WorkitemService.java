@@ -10,8 +10,10 @@ import java.util.Map;
 import net.simpleframework.ado.FilterItems;
 import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.db.common.ExpressionValue;
+import net.simpleframework.ado.db.common.SQLValue;
 import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
+import net.simpleframework.common.BeanUtils;
 import net.simpleframework.common.Convert;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.ArrayUtils;
@@ -32,6 +34,7 @@ import net.simpleframework.workflow.engine.WorkitemComplete;
 import net.simpleframework.workflow.engine.bean.ActivityBean;
 import net.simpleframework.workflow.engine.bean.DelegationBean;
 import net.simpleframework.workflow.engine.bean.ProcessBean;
+import net.simpleframework.workflow.engine.bean.UserStatBean;
 import net.simpleframework.workflow.engine.bean.WorkitemBean;
 import net.simpleframework.workflow.engine.event.IWorkflowListener;
 import net.simpleframework.workflow.engine.event.IWorkitemListener;
@@ -475,6 +478,22 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		return workitem;
 	}
 
+	void doUserStat_status(final ID userId) {
+		final UserStatBean stat = usService.getUserStat(userId);
+		final IDataQuery<Map<String, Object>> dq = getEntityManager().queryMapSet(
+				new SQLValue("select status, count(status) as cc from "
+						+ getTablename(WorkitemBean.class) + " where userid=? group by status", userId));
+		Map<String, Object> map;
+		usService.reset(stat);
+		while ((map = dq.next()) != null) {
+			final EWorkitemStatus status = Convert.toEnum(EWorkitemStatus.class, map.get("status"));
+			if (status != null) {
+				BeanUtils.setProperty(stat, "workitem_" + status.name(), Convert.toInt(map.get("cc")));
+			}
+		}
+		usService.update(stat);
+	}
+
 	@Override
 	public void onInit() throws Exception {
 		super.onInit();
@@ -485,9 +504,10 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 					final Object[] beans) {
 				super.onAfterUpdate(manager, columns, beans);
 
-				if (ArrayUtils.contains(columns, "status", true)) {
-					for (final Object bean : beans) {
-						final WorkitemBean workitem = (WorkitemBean) bean;
+				for (final Object bean : beans) {
+					final WorkitemBean workitem = (WorkitemBean) bean;
+					// 状态转换事件
+					if (ArrayUtils.contains(columns, "status", true)) {
 						for (final IWorkflowListener listener : getEventListeners(workitem)) {
 							((IWorkitemListener) listener).onStatusChange(
 									workitem,
@@ -499,19 +519,41 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			}
 
 			@Override
+			public void onAfterUpdate(final IDbEntityManager<?> manager, final String[] columns,
+					final Object[] beans) {
+				super.onAfterUpdate(manager, columns, beans);
+
+				for (final Object bean : beans) {
+					final WorkitemBean workitem = (WorkitemBean) bean;
+					if (ArrayUtils.contains(columns, "readMark", true)) {
+						doUserStat_readMark(workitem.getUserId());
+					}
+				}
+			}
+
+			@Override
 			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans) {
 				super.onAfterInsert(manager, beans);
 
-				// 如果存在用户委托，则创建
 				for (final Object o : beans) {
 					final WorkitemBean workitem = (WorkitemBean) o;
+					// 如果存在用户委托，则创建
 					final DelegationBean delegation = dService.queryRunningDelegation(workitem
 							.getUserId());
 					if (delegation != null) {
 						doWorkitemDelegation(workitem, delegation.getUserId(), null, null,
 								$m("WorkitemService.5", workitem.getUserText()));
 					}
+
+					// 设置用户统计
+					doUserStat_readMark(workitem.getUserId());
 				}
+			}
+
+			private void doUserStat_readMark(final ID userId) {
+				final UserStatBean stat = usService.getUserStat(userId);
+				stat.setWorkitem_unread(getUnreadWorklist(userId).getCount());
+				usService.update(new String[] { "workitem_unread" }, stat);
 			}
 		});
 	}

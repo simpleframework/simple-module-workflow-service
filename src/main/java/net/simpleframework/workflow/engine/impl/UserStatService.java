@@ -1,5 +1,7 @@
 package net.simpleframework.workflow.engine.impl;
 
+import net.simpleframework.common.BeanUtils;
+import net.simpleframework.common.BeanUtils.PropertyWrapper;
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
 import net.simpleframework.workflow.engine.IUserStatService;
@@ -15,11 +17,21 @@ public class UserStatService extends AbstractDbBeanService<UserStatBean> impleme
 		IUserStatService {
 
 	@Override
-	public UserStatBean getUserStat(ID userId) {
+	public UserStatBean getUserStat(final ID userId) {
 		UserStatBean stat = getBean("userId=?", userId);
 		if (stat == null) {
-
+			stat = createBean();
+			stat.setUserId(userId);
+			insert(stat);
 		}
-		return null;
+		return stat;
+	}
+
+	void reset(final UserStatBean stat) {
+		for (final PropertyWrapper p : BeanUtils.getProperties(UserStatBean.class).values()) {
+			if ("int".equals(p.type.getName())) {
+				BeanUtils.setProperty(stat, p.name, 0);
+			}
+		}
 	}
 }

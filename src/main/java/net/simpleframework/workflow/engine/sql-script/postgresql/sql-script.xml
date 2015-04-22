@@ -138,6 +138,23 @@
       );
     ]]>
 	</tran-sql>
+  <tran-sql>
+    <![CDATA[
+      create table sf_workflow_userstat (
+        id char(32) not null,
+        userid char(32) not null,
+        workitem_running int4 not null,
+        workitem_suspended int4 not null,
+        workitem_delegate int4 not null,
+        workitem_complete int4 not null,
+        workitem_abort int4 not null,
+        workitem_retake int4 not null,
+        workitem_unread int4 not null,
+        workview_unread int4 not null,
+        primary key(id)
+      );
+    ]]>
+  </tran-sql>
 	<tran-sql>
     <![CDATA[
       create table sf_workflow_variable (
