@@ -36,7 +36,7 @@ public interface IWorkviewService extends IDbBeanService<WorkviewBean>, IWorkflo
 	 */
 	WorkviewBean getWorkviewBean(Object processId, Object userId);
 
-	void doUnReadMark(WorkviewBean workview);
+	void doReadMark(WorkviewBean workview);
 
 	IDataQuery<WorkviewBean> getUnreadWorkviewsList(ID userId);
 

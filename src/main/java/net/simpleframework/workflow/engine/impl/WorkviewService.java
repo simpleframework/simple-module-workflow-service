@@ -1,6 +1,7 @@
 package net.simpleframework.workflow.engine.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import net.simpleframework.ado.db.IDbEntityManager;
@@ -79,7 +80,12 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 	}
 
 	@Override
-	public void doUnReadMark(final WorkviewBean workview) {
+	public void doReadMark(final WorkviewBean workview) {
+		if (!workview.isReadMark()) {
+			workview.setReadMark(true);
+			workview.setReadDate(new Date());
+			update(new String[] { "readMark", "readDate" }, workview);
+		}
 	}
 
 	@Override
