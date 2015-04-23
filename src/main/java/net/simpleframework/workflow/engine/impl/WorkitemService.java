@@ -522,7 +522,6 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			public void onAfterUpdate(final IDbEntityManager<?> manager, final String[] columns,
 					final Object[] beans) {
 				super.onAfterUpdate(manager, columns, beans);
-
 				for (final Object bean : beans) {
 					final WorkitemBean workitem = (WorkitemBean) bean;
 					if (ArrayUtils.contains(columns, "readMark", true)) {
@@ -544,7 +543,6 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 						doWorkitemDelegation(workitem, delegation.getUserId(), null, null,
 								$m("WorkitemService.5", workitem.getUserText()));
 					}
-
 					// 设置用户统计
 					doUserStat_readMark(workitem.getUserId());
 				}
