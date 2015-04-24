@@ -224,7 +224,7 @@
       create table sf_workflow_comment_user (
         id char(32) not null,
         contentid char(32) not null,
-        createdate datetime not null,
+        createdate timestamp not null,
         userid char(32) not null,
         ncomments number(11) not null,
         unique (contentid, userid),
