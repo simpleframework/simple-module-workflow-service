@@ -88,14 +88,18 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 		}
 	}
 
+	protected String getDefaultOrderby() {
+		return " order by createdate desc";
+	}
+
 	@Override
 	public IDataQuery<WorkviewBean> getWorkviewsList(final ID userId) {
-		return query("userId=?", userId);
+		return query("userId=?" + getDefaultOrderby(), userId);
 	}
 
 	@Override
 	public IDataQuery<WorkviewBean> getUnreadWorkviewsList(final ID userId) {
-		return query("userId=? and readMark=?", userId, Boolean.FALSE);
+		return query("userId=? and readMark=?" + getDefaultOrderby(), userId, Boolean.FALSE);
 	}
 
 	@Override
@@ -105,7 +109,8 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 		addListener(new DbEntityAdapterEx() {
 
 			@Override
-			public void onAfterUpdate(IDbEntityManager<?> manager, String[] columns, Object[] beans) {
+			public void onAfterUpdate(final IDbEntityManager<?> manager, final String[] columns,
+					final Object[] beans) {
 				super.onAfterUpdate(manager, columns, beans);
 				for (final Object o : beans) {
 					final WorkviewBean workview = (WorkviewBean) o;
