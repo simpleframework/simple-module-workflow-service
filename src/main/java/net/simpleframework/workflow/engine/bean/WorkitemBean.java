@@ -66,7 +66,7 @@ public class WorkitemBean extends AbstractWorkitemBean {
 	}
 
 	public ID getUserId2() {
-		return userId2;
+		return userId2 != null ? userId2 : getUserId();
 	}
 
 	public void setUserId2(final ID userId2) {
@@ -82,7 +82,7 @@ public class WorkitemBean extends AbstractWorkitemBean {
 	}
 
 	public ID getDeptId2() {
-		return deptId2;
+		return deptId2 != null ? deptId2 : getDeptId();
 	}
 
 	public void setDeptId2(final ID deptId2) {
