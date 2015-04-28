@@ -67,7 +67,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 			return null;
 		}
 		final ProcessDocument doc = process.getAttrCache(ATTR_PROCESS_DOCUMENT,
-				new IVal<ProcessDocument>() {
+				new CacheV<ProcessDocument>() {
 					@Override
 					public ProcessDocument get() {
 						final ProcessLobBean lob = getEntityManager(ProcessLobBean.class).getBean(

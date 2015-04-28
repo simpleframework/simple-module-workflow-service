@@ -55,7 +55,7 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 	 * @return
 	 */
 	public IScriptEval getScriptEval(final T bean) {
-		return bean.getAttrCache("_ScriptEval", new IVal<IScriptEval>() {
+		return bean.getAttrCache("_ScriptEval", new CacheV<IScriptEval>() {
 			@Override
 			public IScriptEval get() {
 				final IScriptEval script = ScriptEvalFactory
