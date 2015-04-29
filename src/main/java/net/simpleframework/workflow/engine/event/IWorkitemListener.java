@@ -28,7 +28,7 @@ public interface IWorkitemListener extends IWorkflowListener {
 
 	public static abstract class WorkitemAdapter implements IWorkitemListener {
 		@Override
-		public void onCreated(WorkitemBean workitem) {
+		public void onCreated(final WorkitemBean workitem) {
 		}
 
 		@Override

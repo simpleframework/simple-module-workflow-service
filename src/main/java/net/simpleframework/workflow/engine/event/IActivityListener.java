@@ -49,7 +49,7 @@ public interface IActivityListener extends IWorkflowListener {
 
 	public static abstract class ActivityAdapter implements IActivityListener {
 		@Override
-		public void onCreated(ActivityBean activity) {
+		public void onCreated(final ActivityBean activity) {
 		}
 
 		@Override

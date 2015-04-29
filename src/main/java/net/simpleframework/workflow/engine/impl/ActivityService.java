@@ -949,10 +949,10 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			}
 
 			@Override
-			public void onAfterInsert(IDbEntityManager<?> manager, Object[] beans) {
+			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans) {
 				super.onAfterInsert(manager, beans);
 
-				for (Object o : beans) {
+				for (final Object o : beans) {
 					final ActivityBean activity = (ActivityBean) o;
 					// 触发创建事件
 					for (final IWorkflowListener listener : getEventListeners(activity)) {
