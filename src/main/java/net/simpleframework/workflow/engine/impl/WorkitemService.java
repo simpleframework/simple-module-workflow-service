@@ -545,6 +545,11 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 					}
 					// 设置用户统计
 					doUserStat_readMark(workitem.getUserId());
+
+					// 触发创建事件
+					for (final IWorkflowListener listener : getEventListeners(workitem)) {
+						((IWorkitemListener) listener).onCreated(workitem);
+					}
 				}
 			}
 

@@ -11,9 +11,26 @@ import net.simpleframework.workflow.engine.bean.WorkitemBean;
  */
 public interface IWorkitemListener extends IWorkflowListener {
 
+	/**
+	 * 创建时触发
+	 * 
+	 * @param workitem
+	 */
+	void onCreated(WorkitemBean workitem);
+
+	/**
+	 * 状态变化时触发
+	 * 
+	 * @param workitem
+	 * @param oStatus
+	 */
 	void onStatusChange(WorkitemBean workitem, EWorkitemStatus oStatus);
 
 	public static abstract class WorkitemAdapter implements IWorkitemListener {
+		@Override
+		public void onCreated(WorkitemBean workitem) {
+		}
+
 		@Override
 		public void onStatusChange(final WorkitemBean workitem, final EWorkitemStatus oStatus) {
 		}

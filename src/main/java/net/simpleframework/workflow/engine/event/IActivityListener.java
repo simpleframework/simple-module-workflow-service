@@ -13,6 +13,13 @@ import net.simpleframework.workflow.engine.bean.ActivityBean;
 public interface IActivityListener extends IWorkflowListener {
 
 	/**
+	 * 任务创建时触发
+	 * 
+	 * @param activity
+	 */
+	void onCreated(ActivityBean activity);
+
+	/**
 	 * 环节创建前触发
 	 * 
 	 * @param activityComplete
@@ -41,6 +48,9 @@ public interface IActivityListener extends IWorkflowListener {
 	void onStatusChange(ActivityBean activity, EActivityStatus oStatus);
 
 	public static abstract class ActivityAdapter implements IActivityListener {
+		@Override
+		public void onCreated(ActivityBean activity) {
+		}
 
 		@Override
 		public void onBeforeComplete(final ActivityComplete activityComplete) {
