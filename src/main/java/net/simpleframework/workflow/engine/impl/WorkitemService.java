@@ -424,9 +424,11 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 	@Override
 	public IDataQuery<WorkitemBean> getUnreadWorklist(final ID userId) {
-		final StringBuilder sql = new StringBuilder("userId2=? and readMark=?")
+		final StringBuilder sql = new StringBuilder(
+				"userId2=? and readMark=? and (status=? or status=? or status=?)")
 				.append(getDefaultOrderby());
-		return query(sql.toString(), userId, Boolean.FALSE);
+		return query(sql.toString(), userId, Boolean.FALSE, EWorkitemStatus.running,
+				EWorkitemStatus.suspended, EWorkitemStatus.delegate);
 	}
 
 	@Override
