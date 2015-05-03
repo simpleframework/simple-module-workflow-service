@@ -2,6 +2,7 @@ package net.simpleframework.workflow.engine;
 
 import java.util.Properties;
 
+import net.simpleframework.ado.lucene.ILuceneManager;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.KVMap;
@@ -138,4 +139,11 @@ public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 	 * @return
 	 */
 	IWorkflowView getWorkflowView(ProcessBean process);
+
+	/**
+	 * 获取全文检索服务
+	 * 
+	 * @return
+	 */
+	ILuceneManager getLuceneService();
 }

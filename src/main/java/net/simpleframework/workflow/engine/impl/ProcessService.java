@@ -2,6 +2,8 @@ package net.simpleframework.workflow.engine.impl;
 
 import static net.simpleframework.common.I18n.$m;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -13,6 +15,9 @@ import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.db.common.SQLValue;
+import net.simpleframework.ado.lucene.AbstractLuceneManager;
+import net.simpleframework.ado.lucene.ILuceneManager;
+import net.simpleframework.ado.lucene.LuceneDocument;
 import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.Convert;
@@ -370,8 +375,19 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
+	public ILuceneManager getLuceneService() {
+		return luceneService;
+	}
+
+	WfLuceneManager luceneService;
+
+	@Override
 	public void onInit() throws Exception {
 		super.onInit();
+
+		luceneService = new WfLuceneManager(new File(workflowContext.getTmpdir() + "index"));
+		if (!luceneService.indexExists()) {
+		}
 
 		addListener(new DbEntityAdapterEx() {
 			@Override
@@ -450,5 +466,17 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 				}
 			}
 		});
+	}
+
+	static class WfLuceneManager extends AbstractLuceneManager {
+
+		public WfLuceneManager(final File indexPath) {
+			super(indexPath);
+		}
+
+		@Override
+		protected void objectToDocument(final Object object, final LuceneDocument doc)
+				throws IOException {
+		}
 	}
 }
