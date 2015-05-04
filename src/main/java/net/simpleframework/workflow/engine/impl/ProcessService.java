@@ -379,14 +379,26 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		return luceneService;
 	}
 
-	WfLuceneManager luceneService;
+	private WfLuceneManager luceneService;
+
+	protected WfLuceneManager createLuceneManager() {
+		return new WfLuceneManager();
+	}
 
 	@Override
 	public void onInit() throws Exception {
 		super.onInit();
 
-		luceneService = new WfLuceneManager(new File(workflowContext.getTmpdir() + "index"));
+		luceneService = createLuceneManager();
 		if (!luceneService.indexExists()) {
+			getModuleContext().getTaskExecutor().execute(new ExecutorRunnable() {
+				@Override
+				protected void task() throws Exception {
+					getLog().info($m("ProcessService.4"));
+					luceneService.rebuildIndex();
+					getLog().info($m("ProcessService.5"));
+				}
+			});
 		}
 
 		addListener(new DbEntityAdapterEx() {
@@ -468,15 +480,39 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		});
 	}
 
-	static class WfLuceneManager extends AbstractLuceneManager {
+	protected class WfLuceneManager extends AbstractLuceneManager {
 
-		public WfLuceneManager(final File indexPath) {
-			super(indexPath);
+		public WfLuceneManager() {
+			super(new File(workflowContext.getTmpdir() + "index"));
+		}
+
+		@Override
+		protected String[] getQueryFields() {
+			return new String[] { "id", "topic" };
+		}
+
+		@Override
+		protected IDataQuery<?> queryAll() {
+			return workflowContext.getProcessService().queryAll();
+		}
+
+		@Override
+		protected Object documentToObject(final LuceneDocument doc, final Class<?> beanClass) {
+			Object obj;
+			if (beanClass == null) {
+				obj = super.documentToObject(doc, beanClass);
+			} else {
+				obj = getBean(doc.get("id"));
+			}
+			return obj;
 		}
 
 		@Override
 		protected void objectToDocument(final Object object, final LuceneDocument doc)
 				throws IOException {
+			super.objectToDocument(object, doc);
+			final ProcessBean process = (ProcessBean) object;
+			doc.addTextField("topic", process.getTitle(), false);
 		}
 	}
 }
