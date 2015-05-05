@@ -59,7 +59,7 @@
         completedate timestamp,
         comments number(11) not null,
         views number(11) not null,
-        properties clob,
+        properties varchar2(4000 char),
         primary key(id)
       );
     ]]>
@@ -106,7 +106,7 @@
         createdate timestamp not null,
         completedate timestamp,
         timeoutdate timestamp,
-        properties clob,
+        properties varchar2(4000 char),
         primary key(id)
       );
     ]]>
@@ -163,7 +163,7 @@
         sourceid char(32) not null,
         variablename varchar2(32 char) not null, 
         stringvalue varchar2(128 char),
-        clobvalue clob,
+        clobvalue varchar2(4000 char),
         unique(variablesource, sourceid, variablename),
         primary key(id)
       );
@@ -177,7 +177,7 @@
         createdate timestamp not null,
         userid char(32) not null,
         stringvalue varchar2(128 char),
-        clobvalue clob,
+        clobvalue varchar2(4000 char),
         primary key(id)
       );
     ]]>

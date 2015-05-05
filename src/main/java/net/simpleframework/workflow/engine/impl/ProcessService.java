@@ -227,14 +227,14 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 			return DataQueryUtils.nullQuery();
 		}
 		final StringBuilder sql = new StringBuilder();
-		final ArrayList<Object> params = new ArrayList<Object>();
-		sql.append("select p.*, count(*) as c, w.id as workitemid from ")
-				.append(getTablename(ProcessBean.class)).append(" p left join ")
-				.append(getTablename(WorkitemBean.class))
-				.append(" w on p.id=w.processid where w.userid=?");
-		params.add(userId);
+		final List<Object> params = ArrayUtils.toParams(userId);
+		sql.append("select p.*, w.c from (");
+		sql.append("select processid, count(*) as c from ").append(getTablename(WorkitemBean.class));
+		sql.append(" where userid=? group by processid");
+		sql.append(") w left join ").append(getTablename(ProcessBean.class));
+		sql.append(" p on p.id=w.processid where 1=1");
 		buildStatusSQL(sql, params, "p", status);
-		sql.append(" group by w.processid order by p.createdate desc");
+		sql.append(" order by p.createdate desc");
 		return query(new SQLValue(sql.toString(), params.toArray()));
 	}
 
@@ -245,14 +245,14 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 			return DataQueryUtils.nullQuery();
 		}
 		final StringBuilder sql = new StringBuilder();
-		final ArrayList<Object> params = new ArrayList<Object>();
-		sql.append("select p.*, count(*) as c, w.id as workitemid from ")
-				.append(getTablename(ProcessBean.class)).append(" p left join ")
-				.append(getTablename(WorkitemBean.class))
-				.append(" w on p.id=w.processid where w.deptid=?");
-		params.add(deptId);
+		final List<Object> params = ArrayUtils.toParams(deptId);
+		sql.append("select p.*, w.c from (");
+		sql.append("select processid, count(*) as c from ").append(getTablename(WorkitemBean.class));
+		sql.append(" where deptid=? group by processid");
+		sql.append(") w left join ").append(getTablename(ProcessBean.class));
+		sql.append(" p on p.id=w.processid where 1=1");
 		buildStatusSQL(sql, params, "p", status);
-		sql.append(" group by w.processid order by p.createdate desc");
+		sql.append(" order by p.createdate desc");
 		return query(new SQLValue(sql.toString(), params.toArray()));
 	}
 

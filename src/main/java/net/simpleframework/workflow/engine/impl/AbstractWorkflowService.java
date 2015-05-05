@@ -3,6 +3,7 @@ package net.simpleframework.workflow.engine.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -205,7 +206,7 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 		update(new String[] { "status" }, t);
 	}
 
-	protected void buildStatusSQL(final StringBuilder sql, final ArrayList<Object> params,
+	protected void buildStatusSQL(final StringBuilder sql, final List<Object> params,
 			final String alias, final Enum<?>... status) {
 		if (status != null && status.length > 0) {
 			sql.append(" and (");
