@@ -230,7 +230,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		final List<Object> params = ArrayUtils.toParams(userId);
 		sql.append("select p.*, w.c from (");
 		sql.append("select processid, count(*) as c from ").append(getTablename(WorkitemBean.class));
-		sql.append(" where userid=? group by processid");
+		sql.append(" where userid2=? group by processid");
 		sql.append(") w left join ").append(getTablename(ProcessBean.class));
 		sql.append(" p on p.id=w.processid where 1=1");
 		buildStatusSQL(sql, params, "p", status);
