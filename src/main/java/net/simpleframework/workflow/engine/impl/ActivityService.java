@@ -888,7 +888,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		activity.setTasknodeId(tasknode.getId());
 		activity.setTasknodeText(tasknode.toString());
 		activity.setTasknodeType(tasknode.getTasknodeType());
-		activity.setCreateDate(new Date());
+		activity.setCreateDate(createDate);
 		return activity;
 	}
 
