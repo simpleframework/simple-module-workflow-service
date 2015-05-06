@@ -15,8 +15,8 @@
         usertext varchar2(32) not null,
         createdate timestamp not null,
         processcount number(11) not null,
-        unique(modelname),
-        primary key(id)
+        primary key(id),
+        unique(modelname)
       );
     ]]>
 	</tran-sql>
@@ -36,8 +36,8 @@
         modelid char(32) not null,
         domainid char(32) not null,       
         processcount number(11) not null,
-        unique(modelid, domainid),
-        primary key(id)
+        primary key(id),
+        unique(modelid, domainid)
       );
     ]]>
   </tran-sql>
@@ -164,8 +164,8 @@
         variablename varchar2(32 char) not null, 
         stringvalue varchar2(128 char),
         clobvalue varchar2(4000 char),
-        unique(variablesource, sourceid, variablename),
-        primary key(id)
+        primary key(id),
+        unique(variablesource, sourceid, variablename)
       );
     ]]>
 	</tran-sql>
@@ -199,8 +199,8 @@
         topmark number(1) not null,
         ext1 varchar2(64 char),
         ext2 number(11) not null,
-        unique (processid, userid),
-        primary key(id)
+        primary key(id),
+        unique(processid, userid)
       );
     ]]>
   </tran-sql>
@@ -227,8 +227,8 @@
         createdate timestamp not null,
         userid char(32) not null,
         ncomments number(11) not null,
-        unique (contentid, userid),
-        primary key(id)
+        primary key(id),
+        unique(contentid, userid)
       );
     ]]>
   </tran-sql>
