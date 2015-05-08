@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
@@ -15,6 +16,7 @@ import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.db.common.SQLValue;
 import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
+import net.simpleframework.common.BeanUtils;
 import net.simpleframework.common.Convert;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
@@ -323,19 +325,15 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
-	public void doUpdateTitle(final ProcessBean process, final String title) {
-		if (process != null) {
-			process.setTitle(title);
-			update(new String[] { "title" }, process);
+	public void doUpdateKV(final ProcessBean process, final Map<String, Object> kv) {
+		if (process == null || kv.size() == 0) {
+			return;
 		}
-	}
-
-	@Override
-	public void doUpdatePno(final ProcessBean process, final String pno) {
-		if (process != null) {
-			process.setPno(pno);
-			update(new String[] { "pno" }, process);
+		final Set<String> keys = kv.keySet();
+		for (final String key : keys) {
+			BeanUtils.setProperty(process, key, kv.get(key));
 		}
+		update(keys.toArray(new String[keys.size()]), process);
 	}
 
 	@Override

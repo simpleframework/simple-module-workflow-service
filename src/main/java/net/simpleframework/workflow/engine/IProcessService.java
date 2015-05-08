@@ -1,5 +1,6 @@
 package net.simpleframework.workflow.engine;
 
+import java.util.Map;
 import java.util.Properties;
 
 import net.simpleframework.ado.query.IDataQuery;
@@ -127,9 +128,7 @@ public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 	 * @param process
 	 * @param title
 	 */
-	void doUpdateTitle(ProcessBean process, String title);
-
-	void doUpdatePno(ProcessBean process, String pno);
+	void doUpdateKV(ProcessBean process, Map<String, Object> kv);
 
 	void doUpdateViews(ProcessBean process);
 
