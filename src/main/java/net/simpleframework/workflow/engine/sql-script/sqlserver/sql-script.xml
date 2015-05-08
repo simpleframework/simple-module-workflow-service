@@ -49,6 +49,7 @@
         modelname varchar(64) not null,
         version varchar(16) not null,
         title varchar(128),
+        pno varchar(64),
         status tinyint not null,
         userid char(32),
         deptid char(32),

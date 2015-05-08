@@ -2,8 +2,6 @@ package net.simpleframework.workflow.engine.impl;
 
 import static net.simpleframework.common.I18n.$m;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -15,9 +13,6 @@ import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.db.common.SQLValue;
-import net.simpleframework.ado.lucene.AbstractLuceneManager;
-import net.simpleframework.ado.lucene.ILuceneManager;
-import net.simpleframework.ado.lucene.LuceneDocument;
 import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.Convert;
@@ -336,6 +331,14 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
+	public void doUpdatePno(final ProcessBean process, final String pno) {
+		if (process != null) {
+			process.setPno(pno);
+			update(new String[] { "pno" }, process);
+		}
+	}
+
+	@Override
 	public synchronized void doUpdateViews(final ProcessBean process) {
 		if (process != null) {
 			process.setViews(process.getViews() + 1);
@@ -375,31 +378,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
-	public ILuceneManager getLuceneService() {
-		return luceneService;
-	}
-
-	private WfLuceneManager luceneService;
-
-	protected WfLuceneManager createLuceneManager() {
-		return new WfLuceneManager();
-	}
-
-	@Override
 	public void onInit() throws Exception {
 		super.onInit();
-
-		luceneService = createLuceneManager();
-		if (!luceneService.indexExists()) {
-			getModuleContext().getTaskExecutor().execute(new ExecutorRunnable() {
-				@Override
-				protected void task() throws Exception {
-					getLog().info($m("ProcessService.4"));
-					luceneService.rebuildIndex();
-					getLog().info($m("ProcessService.5"));
-				}
-			});
-		}
 
 		addListener(new DbEntityAdapterEx() {
 			@Override
@@ -478,41 +458,5 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 				}
 			}
 		});
-	}
-
-	protected class WfLuceneManager extends AbstractLuceneManager {
-
-		public WfLuceneManager() {
-			super(new File(workflowContext.getTmpdir() + "index"));
-		}
-
-		@Override
-		protected String[] getQueryFields() {
-			return new String[] { "id", "topic" };
-		}
-
-		@Override
-		protected IDataQuery<?> queryAll() {
-			return workflowContext.getProcessService().queryAll();
-		}
-
-		@Override
-		protected Object documentToObject(final LuceneDocument doc, final Class<?> beanClass) {
-			Object obj;
-			if (beanClass == null) {
-				obj = super.documentToObject(doc, beanClass);
-			} else {
-				obj = getBean(doc.get("id"));
-			}
-			return obj;
-		}
-
-		@Override
-		protected void objectToDocument(final Object object, final LuceneDocument doc)
-				throws IOException {
-			super.objectToDocument(object, doc);
-			final ProcessBean process = (ProcessBean) object;
-			doc.addTextField("topic", process.getTitle(), false);
-		}
 	}
 }

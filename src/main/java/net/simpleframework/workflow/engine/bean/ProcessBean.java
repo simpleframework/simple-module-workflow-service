@@ -32,6 +32,9 @@ public class ProcessBean extends AbstractWorkflowBean {
 	@ColumnMeta(columnText = "#(AbstractWorkflowBean.0)")
 	private EProcessStatus status;
 
+	/* 流程编号 */
+	private String pno;
+
 	/* 流程启动者及启动角色 */
 	private ID userId, roleId;
 	/* 流程启动者所在的部门id */
@@ -95,6 +98,14 @@ public class ProcessBean extends AbstractWorkflowBean {
 
 	public void setTitle(final String title) {
 		this.title = title;
+	}
+
+	public String getPno() {
+		return pno;
+	}
+
+	public void setPno(final String pno) {
+		this.pno = pno;
 	}
 
 	public ID getUserId() {
