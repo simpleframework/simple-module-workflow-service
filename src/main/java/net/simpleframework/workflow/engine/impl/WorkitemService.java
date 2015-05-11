@@ -310,7 +310,6 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	private void _doReadMark(final WorkitemBean workitem, final boolean unread) {
-		_assert(workitem, EWorkitemStatus.running, EWorkitemStatus.delegate);
 		workitem.setReadMark(!unread);
 		if (workitem.getReadDate() == null) {
 			workitem.setReadDate(new Date());
