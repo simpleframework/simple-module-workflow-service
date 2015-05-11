@@ -56,10 +56,11 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 					.append(" d left join ")
 					.append(getTablename(WorkitemBean.class))
 					.append(
-							" w on d.sourceid = w.id where w.userId=? and d.delegationsource=? order by createDate desc");
+							" w on d.sourceid = w.id where w.userId=? and d.delegationsource=? order by d.createdate desc");
 			return query(new SQLValue(sb.toString(), userId, source));
 		} else {
-			return query("delegationsource=? and sourceid=? order by createDate desc", source, userId);
+			return query("delegationsource=? and sourceid=? order by d.createdate desc", source,
+					userId);
 		}
 	}
 
@@ -190,5 +191,4 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 			}
 		});
 	}
-
 }
