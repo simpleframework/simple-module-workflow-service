@@ -19,4 +19,6 @@ public interface IUserStatService extends IDbBeanService<UserStatBean>, IWorkflo
 	 * @return
 	 */
 	UserStatBean getUserStat(ID userId);
+
+	int getAllWorkitems(UserStatBean userStat);
 }

@@ -4,6 +4,7 @@ import net.simpleframework.common.BeanUtils;
 import net.simpleframework.common.BeanUtils.PropertyWrapper;
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
+import net.simpleframework.workflow.engine.EWorkitemStatus;
 import net.simpleframework.workflow.engine.IUserStatService;
 import net.simpleframework.workflow.engine.bean.UserStatBean;
 
@@ -25,6 +26,15 @@ public class UserStatService extends AbstractDbBeanService<UserStatBean> impleme
 			insert(stat);
 		}
 		return stat;
+	}
+
+	@Override
+	public int getAllWorkitems(final UserStatBean userStat) {
+		int c = 0;
+		for (final EWorkitemStatus s : EWorkitemStatus.values()) {
+			c += (Integer) BeanUtils.getProperty(userStat, "workitem_" + s.name());
+		}
+		return c;
 	}
 
 	void reset(final UserStatBean stat) {

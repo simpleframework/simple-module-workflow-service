@@ -525,8 +525,12 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 				super.onAfterUpdate(manager, columns, beans);
 				for (final Object bean : beans) {
 					final WorkitemBean workitem = (WorkitemBean) bean;
+					final ID userId = workitem.getUserId();
 					if (ArrayUtils.contains(columns, "readMark", true)) {
-						doUserStat_readMark(workitem.getUserId());
+						doUserStat_readMark(userId);
+					}
+					if (ArrayUtils.contains(columns, "status", true)) {
+						doUserStat_status(userId);
 					}
 				}
 			}
@@ -545,7 +549,9 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 								$m("WorkitemService.5", workitem.getUserText()));
 					}
 					// 设置用户统计
-					doUserStat_readMark(workitem.getUserId());
+					final ID userId = workitem.getUserId();
+					doUserStat_readMark(userId);
+					doUserStat_status(userId);
 
 					// 触发创建事件
 					for (final IWorkflowListener listener : getEventListeners(workitem)) {
