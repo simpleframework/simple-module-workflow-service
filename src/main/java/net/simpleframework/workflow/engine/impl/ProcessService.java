@@ -241,16 +241,30 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		if (deptId == null) {
 			return DataQueryUtils.nullQuery();
 		}
+		return query(toProcessListSQLValue("deptid", deptId, status));
+	}
+
+	@Override
+	public IDataQuery<ProcessBean> getProcessListInDomain(final ID domainId,
+			final EProcessStatus... status) {
+		if (domainId == null) {
+			return DataQueryUtils.nullQuery();
+		}
+		return query(toProcessListSQLValue("domainid", domainId, status));
+	}
+
+	private SQLValue toProcessListSQLValue(final String idKey, final ID id,
+			final EProcessStatus... status) {
 		final StringBuilder sql = new StringBuilder();
-		final List<Object> params = ArrayUtils.toParams(deptId);
+		final List<Object> params = ArrayUtils.toParams(id);
 		sql.append("select p.*, w.c from (");
 		sql.append("select processid, count(*) as c from ").append(getTablename(WorkitemBean.class));
-		sql.append(" where deptid=? group by processid");
+		sql.append(" where ").append(idKey).append("=? group by processid");
 		sql.append(") w left join ").append(getTablename(ProcessBean.class));
 		sql.append(" p on p.id=w.processid where 1=1");
 		buildStatusSQL(sql, params, "p", status);
 		sql.append(" order by p.createdate desc");
-		return query(new SQLValue(sql.toString(), params.toArray()));
+		return new SQLValue(sql.toString(), params.toArray());
 	}
 
 	@Override
