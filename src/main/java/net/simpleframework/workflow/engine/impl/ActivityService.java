@@ -92,7 +92,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 		mService._assert(pService.getProcessModel(process), EProcessModelStatus.deploy);
 
-		boolean bcomplete = activityComplete.isBcomplete();
+		final boolean bcomplete = activityComplete.isBcomplete();
 		if (bcomplete && isFinalStatus(activity)) {
 			throw WorkflowStatusException.of($m("ActivityService.2"));
 		}
