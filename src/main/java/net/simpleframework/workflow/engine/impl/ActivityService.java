@@ -85,16 +85,17 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	private void _doComplete(final ActivityComplete activityComplete) {
 		final ActivityBean activity = activityComplete.getActivity();
-		if (isFinalStatus(activity)) {
-			throw WorkflowStatusException.of($m("ActivityService.2"));
-		}
 
 		final ProcessBean process = getProcessBean(activity);
 		if (process.getStatus() == EProcessStatus.suspended) {
 			throw WorkflowStatusException.of($m("WorkitemService.2"));
 		}
-
 		mService._assert(pService.getProcessModel(process), EProcessModelStatus.deploy);
+
+		boolean bcomplete = activityComplete.isBcomplete();
+		if (bcomplete && isFinalStatus(activity)) {
+			throw WorkflowStatusException.of($m("ActivityService.2"));
+		}
 
 		// 创建前事件
 		for (final IWorkflowListener listener : getEventListeners(activity)) {
@@ -129,47 +130,49 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			}
 		}
 
-		if (activityComplete.isBcomplete()) {
-			activity.setStatus(EActivityStatus.complete);
-			activity.setCompleteDate(new Date());
-			update(new String[] { "completeDate", "status" }, activity);
+		if (!bcomplete) {
+			return;
+		}
 
-			final AbstractTaskNode tasknode = getTaskNode(activity);
-			if (tasknode instanceof UserNode) {
-				// 放弃未完成的工作项
-				for (final WorkitemBean workitem : wService.getWorkitems(activity)) {
-					if (!wService.isFinalStatus(workitem)) {
-						wService._abort(workitem);
-					}
-				}
+		activity.setStatus(EActivityStatus.complete);
+		activity.setCompleteDate(new Date());
+		update(new String[] { "completeDate", "status" }, activity);
 
-				if (!TasknodeUtils.isInstanceShared(tasknode) && !TasknodeUtils.isSequential(tasknode)) {
-					// 多实例并行，处理响应数
-					final ArrayList<ActivityBean> al = new ArrayList<ActivityBean>();
-					int completes = 0;
-					for (final ActivityBean activity2 : getNextActivities(getPreActivity(activity))) {
-						if (activity2.getTasknodeId().equals(tasknode.getId())) {
-							al.add(activity2);
-							if (activity2.getStatus() == EActivityStatus.complete) {
-								completes++;
-							}
-						}
-					}
-					if (completes >= TasknodeUtils.getResponseValue(tasknode, al.size())) {
-						for (int i = 0; i < al.size(); i++) {
-							_abort(al.get(i));
-						}
-					}
+		final AbstractTaskNode tasknode = getTaskNode(activity);
+		if (tasknode instanceof UserNode) {
+			// 放弃未完成的工作项
+			for (final WorkitemBean workitem : wService.getWorkitems(activity)) {
+				if (!wService.isFinalStatus(workitem)) {
+					wService._abort(workitem);
 				}
 			}
 
-			if (endActivity != null) {
-				process.setStatus(EProcessStatus.complete);
-				process.setCompleteDate(endActivity.getCompleteDate());
-				pService.update(new String[] { "completeDate", "status" }, process);
-
-				_backToProcess(process);
+			if (!TasknodeUtils.isInstanceShared(tasknode) && !TasknodeUtils.isSequential(tasknode)) {
+				// 多实例并行，处理响应数
+				final ArrayList<ActivityBean> al = new ArrayList<ActivityBean>();
+				int completes = 0;
+				for (final ActivityBean activity2 : getNextActivities(getPreActivity(activity))) {
+					if (activity2.getTasknodeId().equals(tasknode.getId())) {
+						al.add(activity2);
+						if (activity2.getStatus() == EActivityStatus.complete) {
+							completes++;
+						}
+					}
+				}
+				if (completes >= TasknodeUtils.getResponseValue(tasknode, al.size())) {
+					for (int i = 0; i < al.size(); i++) {
+						_abort(al.get(i));
+					}
+				}
 			}
+		}
+
+		if (endActivity != null) {
+			process.setStatus(EProcessStatus.complete);
+			process.setCompleteDate(endActivity.getCompleteDate());
+			pService.update(new String[] { "completeDate", "status" }, process);
+
+			_backToProcess(process);
 		}
 
 		// 创建后事件
