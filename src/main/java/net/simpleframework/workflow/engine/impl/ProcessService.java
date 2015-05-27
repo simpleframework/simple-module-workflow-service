@@ -236,7 +236,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
-	public IDataQuery<ProcessBean> getProcessListInDept(final ID deptId,
+	public IDataQuery<ProcessBean> getProcessListInDept(final ID deptId, boolean child,
 			final EProcessStatus... status) {
 		if (deptId == null) {
 			return DataQueryUtils.nullQuery();

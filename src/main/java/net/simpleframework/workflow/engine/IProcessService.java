@@ -79,10 +79,12 @@ public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 	 * 获取某一部门下经办的流程实例
 	 * 
 	 * @param deptId
+	 * @param child
+	 *        含有下级子部门
 	 * @param status
 	 * @return
 	 */
-	IDataQuery<ProcessBean> getProcessListInDept(ID deptId, EProcessStatus... status);
+	IDataQuery<ProcessBean> getProcessListInDept(ID deptId, boolean child, EProcessStatus... status);
 
 	/**
 	 * 获取某一域下经办的流程实例
