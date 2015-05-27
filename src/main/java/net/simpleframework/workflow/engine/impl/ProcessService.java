@@ -236,12 +236,12 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
-	public IDataQuery<ProcessBean> getProcessListInDept(final ID deptId, boolean child,
+	public IDataQuery<ProcessBean> getProcessListInDept(final ID deptId, final boolean child,
 			final EProcessStatus... status) {
 		if (deptId == null) {
 			return DataQueryUtils.nullQuery();
 		}
-		return query(toProcessListSQLValue("deptid", deptId, status));
+		return query(toProcessListSQLValue("deptid=?", new Object[] { deptId }, status));
 	}
 
 	@Override
@@ -250,21 +250,21 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		if (domainId == null) {
 			return DataQueryUtils.nullQuery();
 		}
-		return query(toProcessListSQLValue("domainid", domainId, status));
+		return query(toProcessListSQLValue("domainid=?", new Object[] { domainId }, status));
 	}
 
-	private SQLValue toProcessListSQLValue(final String idKey, final ID id,
+	private SQLValue toProcessListSQLValue(final String expr, final Object[] params,
 			final EProcessStatus... status) {
 		final StringBuilder sql = new StringBuilder();
-		final List<Object> params = ArrayUtils.toParams(id);
+		final List<Object> _params = ArrayUtils.toParams(params);
 		sql.append("select p.*, w.c from (");
 		sql.append("select processid, count(*) as c from ").append(getTablename(WorkitemBean.class));
-		sql.append(" where ").append(idKey).append("=? group by processid");
+		sql.append(" where ").append(expr).append(" group by processid");
 		sql.append(") w left join ").append(getTablename(ProcessBean.class));
 		sql.append(" p on p.id=w.processid where 1=1");
-		buildStatusSQL(sql, params, "p", status);
+		buildStatusSQL(sql, _params, "p", status);
 		sql.append(" order by p.createdate desc");
-		return new SQLValue(sql.toString(), params.toArray());
+		return new SQLValue(sql.toString(), _params.toArray());
 	}
 
 	@Override
