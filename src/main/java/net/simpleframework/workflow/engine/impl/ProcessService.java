@@ -236,12 +236,21 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
-	public IDataQuery<ProcessBean> getProcessListInDept(final ID deptId, final boolean child,
+	public IDataQuery<ProcessBean> getProcessListInDept(final ID[] deptIds,
 			final EProcessStatus... status) {
-		if (deptId == null) {
+		if (deptIds == null || deptIds.length == 0) {
 			return DataQueryUtils.nullQuery();
 		}
-		return query(toProcessListSQLValue("deptid=?", new Object[] { deptId }, status));
+		final StringBuilder sb = new StringBuilder();
+		sb.append("(");
+		for (int i = 0; i < deptIds.length; i++) {
+			if (i > 0) {
+				sb.append(" or ");
+			}
+			sb.append("deptid=?");
+		}
+		sb.append(")");
+		return query(toProcessListSQLValue(sb.toString(), deptIds, status));
 	}
 
 	@Override
