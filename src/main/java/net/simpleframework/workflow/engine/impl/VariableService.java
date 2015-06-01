@@ -173,7 +173,7 @@ public class VariableService extends AbstractDbBeanService<VariableBean> impleme
 		addListener(new DbEntityAdapterEx() {
 			@Override
 			public void onBeforeDelete(final IDbEntityManager<?> manager,
-					final IParamsValue paramsValue) {
+					final IParamsValue paramsValue) throws Exception {
 				super.onBeforeDelete(manager, paramsValue);
 				// for (final VariableBean var : coll(paramsValue)) {
 				// getEntityManager(VariableLogBean.class);

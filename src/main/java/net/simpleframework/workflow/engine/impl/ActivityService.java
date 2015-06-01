@@ -921,7 +921,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		addListener(new DbEntityAdapterEx() {
 			@Override
 			public void onBeforeDelete(final IDbEntityManager<?> manager,
-					final IParamsValue paramsValue) {
+					final IParamsValue paramsValue) throws Exception {
 				super.onBeforeDelete(manager, paramsValue);
 				for (final ActivityBean activity : coll(paramsValue)) {
 					final Object id = activity.getId();
@@ -934,7 +934,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 			@Override
 			public void onBeforeUpdate(final IDbEntityManager<?> manager, final String[] columns,
-					final Object[] beans) {
+					final Object[] beans) throws Exception {
 				super.onAfterUpdate(manager, columns, beans);
 
 				// 事件
@@ -952,7 +952,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			}
 
 			@Override
-			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans) {
+			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans)
+					throws Exception {
 				super.onAfterInsert(manager, beans);
 
 				for (final Object o : beans) {

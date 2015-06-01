@@ -60,7 +60,8 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 
 		addListener(new DbEntityAdapterEx() {
 			@Override
-			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans) {
+			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans)
+					throws Exception {
 				super.onAfterInsert(manager, beans);
 				for (final Object o : beans) {
 					final WfComment c = (WfComment) o;
@@ -73,7 +74,8 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 			}
 
 			@Override
-			public void onAfterDelete(final IDbEntityManager<?> manager, final IParamsValue paramsValue) {
+			public void onAfterDelete(final IDbEntityManager<?> manager, final IParamsValue paramsValue)
+					throws Exception {
 				super.onAfterDelete(manager, paramsValue);
 				for (final WfComment c : coll(paramsValue)) {
 					// 删除关联的意见
@@ -92,7 +94,7 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 
 			@Override
 			public void onAfterUpdate(final IDbEntityManager<?> manager, final String[] columns,
-					final Object[] beans) {
+					final Object[] beans) throws Exception {
 				super.onAfterUpdate(manager, columns, beans);
 				if (ArrayUtils.isEmpty(columns) || ArrayUtils.contains(columns, "ccomment", true)) {
 					for (final Object o : beans) {

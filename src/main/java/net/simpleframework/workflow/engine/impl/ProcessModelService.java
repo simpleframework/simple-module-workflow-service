@@ -250,7 +250,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 
 			@Override
 			public void onBeforeDelete(final IDbEntityManager<?> manager,
-					final IParamsValue paramsValue) {
+					final IParamsValue paramsValue) throws Exception {
 				super.onBeforeDelete(manager, paramsValue);
 				for (final ProcessModelBean processModel : coll(paramsValue)) {
 					if (processModel.getStatus() == EProcessModelStatus.deploy) {

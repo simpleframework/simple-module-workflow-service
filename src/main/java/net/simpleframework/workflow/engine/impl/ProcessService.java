@@ -404,7 +404,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 		addListener(new DbEntityAdapterEx() {
 			@Override
-			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans) {
+			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans)
+					throws Exception {
 				super.onAfterInsert(manager, beans);
 				for (final Object bean : beans) {
 					// 更新流程实例计数
@@ -413,7 +414,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 			}
 
 			@Override
-			public void onAfterDelete(final IDbEntityManager<?> manager, final IParamsValue paramsValue) {
+			public void onAfterDelete(final IDbEntityManager<?> manager, final IParamsValue paramsValue)
+					throws Exception {
 				super.onAfterDelete(manager, paramsValue);
 				for (final ProcessBean process : coll(paramsValue)) {
 					updateProcessCount(process);
@@ -434,7 +436,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 			@Override
 			public void onBeforeDelete(final IDbEntityManager<?> manager,
-					final IParamsValue paramsValue) {
+					final IParamsValue paramsValue) throws Exception {
 				super.onBeforeDelete(manager, paramsValue);
 
 				for (final ProcessBean process : coll(paramsValue)) {
@@ -463,7 +465,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 			@Override
 			public void onBeforeUpdate(final IDbEntityManager<?> manager, final String[] columns,
-					final Object[] beans) {
+					final Object[] beans) throws Exception {
 				super.onAfterUpdate(manager, columns, beans);
 
 				if (ArrayUtils.contains(columns, "status", true)) {

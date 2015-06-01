@@ -502,7 +502,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		addListener(new DbEntityAdapterEx() {
 			@Override
 			public void onBeforeUpdate(final IDbEntityManager<?> manager, final String[] columns,
-					final Object[] beans) {
+					final Object[] beans) throws Exception {
 				super.onAfterUpdate(manager, columns, beans);
 
 				for (final Object bean : beans) {
@@ -521,7 +521,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 			@Override
 			public void onAfterUpdate(final IDbEntityManager<?> manager, final String[] columns,
-					final Object[] beans) {
+					final Object[] beans) throws Exception {
 				super.onAfterUpdate(manager, columns, beans);
 				for (final Object bean : beans) {
 					final WorkitemBean workitem = (WorkitemBean) bean;
@@ -536,7 +536,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			}
 
 			@Override
-			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans) {
+			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans)
+					throws Exception {
 				super.onAfterInsert(manager, beans);
 
 				for (final Object o : beans) {

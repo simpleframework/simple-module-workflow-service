@@ -181,7 +181,7 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 		addListener(new DbEntityAdapterEx() {
 			@Override
 			public void onBeforeDelete(final IDbEntityManager<?> manager,
-					final IParamsValue paramsValue) {
+					final IParamsValue paramsValue) throws Exception {
 				super.onBeforeDelete(manager, paramsValue);
 				for (final DelegationBean delegation : coll(paramsValue)) {
 					if (delegation.getStatus().ordinal() < EDelegationStatus.complete.ordinal()) {

@@ -110,7 +110,7 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 
 			@Override
 			public void onAfterUpdate(final IDbEntityManager<?> manager, final String[] columns,
-					final Object[] beans) {
+					final Object[] beans) throws Exception {
 				super.onAfterUpdate(manager, columns, beans);
 				for (final Object o : beans) {
 					final WorkviewBean workview = (WorkviewBean) o;
@@ -122,7 +122,8 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 			}
 
 			@Override
-			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans) {
+			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans)
+					throws Exception {
 				super.onAfterInsert(manager, beans);
 
 				for (final Object o : beans) {
