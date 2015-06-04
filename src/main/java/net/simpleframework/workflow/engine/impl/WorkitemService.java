@@ -439,7 +439,11 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 	@Override
 	public boolean isFinalStatus(final WorkitemBean t) {
-		return t.getStatus().ordinal() >= EWorkitemStatus.complete.ordinal();
+		return _isFinalStatus(t.getStatus());
+	}
+
+	private boolean _isFinalStatus(final EWorkitemStatus status) {
+		return status.ordinal() >= EWorkitemStatus.complete.ordinal();
 	}
 
 	@Override
@@ -508,12 +512,17 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 				for (final Object bean : beans) {
 					final WorkitemBean workitem = (WorkitemBean) bean;
 					// 状态转换事件
-					if (ArrayUtils.contains(columns, "status", true)) {
-						for (final IWorkflowListener listener : getEventListeners(workitem)) {
-							((IWorkitemListener) listener).onStatusChange(
-									workitem,
-									Convert.toEnum(EWorkitemStatus.class,
-											queryFor("status", "id=?", workitem.getId())));
+					if (ArrayUtils.isEmpty(columns) || ArrayUtils.contains(columns, "status", true)) {
+						final EWorkitemStatus _status = Convert.toEnum(EWorkitemStatus.class,
+								queryFor("status", "id=?", workitem.getId()));
+						if (_isFinalStatus(_status)) {
+							throw WorkflowException.of($m("WorkitemService.7"));
+						}
+
+						if (_status != workitem.getStatus()) {
+							for (final IWorkflowListener listener : getEventListeners(workitem)) {
+								((IWorkitemListener) listener).onStatusChange(workitem, _status);
+							}
 						}
 					}
 				}

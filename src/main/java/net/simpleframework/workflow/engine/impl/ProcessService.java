@@ -344,7 +344,11 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public boolean isFinalStatus(final ProcessBean t) {
-		return t.getStatus().ordinal() >= EProcessStatus.complete.ordinal();
+		return _isFinalStatus(t.getStatus());
+	}
+
+	private boolean _isFinalStatus(final EProcessStatus status) {
+		return status.ordinal() >= EProcessStatus.complete.ordinal();
 	}
 
 	@Override
@@ -468,14 +472,20 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 					final Object[] beans) throws Exception {
 				super.onAfterUpdate(manager, columns, beans);
 
-				if (ArrayUtils.contains(columns, "status", true)) {
+				if (ArrayUtils.isEmpty(columns) || ArrayUtils.contains(columns, "status", true)) {
 					for (final Object bean : beans) {
 						final ProcessBean process = (ProcessBean) bean;
-						for (final IWorkflowListener listener : getEventListeners(process)) {
-							((IProcessListener) listener).onStatusChange(
-									process,
-									Convert.toEnum(EProcessStatus.class,
-											queryFor("status", "id=?", process.getId())));
+						// 状态转换事件
+						final EProcessStatus _status = Convert.toEnum(EProcessStatus.class,
+								queryFor("status", "id=?", process.getId()));
+						if (_isFinalStatus(_status)) {
+							throw WorkflowException.of($m("ProcessService.4"));
+						}
+
+						if (_status != process.getStatus()) {
+							for (final IWorkflowListener listener : getEventListeners(process)) {
+								((IProcessListener) listener).onStatusChange(process, _status);
+							}
 						}
 					}
 				}

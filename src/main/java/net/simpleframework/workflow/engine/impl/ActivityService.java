@@ -814,7 +814,11 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public boolean isFinalStatus(final ActivityBean t) {
-		return t.getStatus().ordinal() >= EActivityStatus.complete.ordinal();
+		return _isFinalStatus(t.getStatus());
+	}
+
+	private boolean _isFinalStatus(final EActivityStatus status) {
+		return status.ordinal() >= EActivityStatus.complete.ordinal();
 	}
 
 	@Override
@@ -938,14 +942,20 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				super.onAfterUpdate(manager, columns, beans);
 
 				// 事件
-				if (ArrayUtils.contains(columns, "status", true)) {
+				if (ArrayUtils.isEmpty(columns) || ArrayUtils.contains(columns, "status", true)) {
 					for (final Object bean : beans) {
 						final ActivityBean activity = (ActivityBean) bean;
-						for (final IWorkflowListener listener : getEventListeners(activity)) {
-							((IActivityListener) listener).onStatusChange(
-									activity,
-									Convert.toEnum(EActivityStatus.class,
-											queryFor("status", "id=?", activity.getId())));
+						// 状态转换事件
+						final EActivityStatus _status = Convert.toEnum(EActivityStatus.class,
+								queryFor("status", "id=?", activity.getId()));
+						if (_isFinalStatus(_status)) {
+							throw WorkflowException.of($m("ActivityService.6"));
+						}
+
+						if (_status != activity.getStatus()) {
+							for (final IWorkflowListener listener : getEventListeners(activity)) {
+								((IActivityListener) listener).onStatusChange(activity, _status);
+							}
 						}
 					}
 				}
