@@ -1,8 +1,5 @@
 package net.simpleframework.workflow.engine.impl;
 
-import java.io.File;
-
-import net.simpleframework.ctx.settings.ContextSettings;
 import net.simpleframework.ctx.settings.PropertiesContextSettings;
 import net.simpleframework.workflow.engine.IWorkflowContextAware;
 
@@ -14,12 +11,8 @@ import net.simpleframework.workflow.engine.IWorkflowContextAware;
  */
 public class WorkflowSettings extends PropertiesContextSettings implements IWorkflowContextAware {
 
-	protected ContextSettings _settings = workflowContext.getApplicationContext()
-			.getContextSettings();
-
-	@Override
-	public File getTmpFiledir() {
-		return _settings.getTmpFiledir();
+	public WorkflowSettings() {
+		setApplicationSettings(workflowContext.getApplicationContext().getContextSettings());
 	}
 
 	/**
