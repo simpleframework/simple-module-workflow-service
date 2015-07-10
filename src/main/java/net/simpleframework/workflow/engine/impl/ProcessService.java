@@ -177,7 +177,13 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	@Override
 	public void doBackToRemote(final ProcessBean process) {
 		final ITaskExecutor taskExecutor = workflowContext.getTaskExecutor();
-		taskExecutor.addScheduledTask(wfSettings.getSubActivityPeriod(), new ExecutorRunnable() {
+		taskExecutor.addScheduledTask(new ExecutorRunnable() {
+
+			@Override
+			public long getPeriod() {
+				return wfSettings.getSubActivityPeriod();
+			}
+
 			@Override
 			protected void task(final Map<String, Object> cache) throws Exception {
 				final Properties properties = process.getProperties();

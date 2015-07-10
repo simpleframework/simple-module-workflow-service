@@ -442,7 +442,12 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	void _doRemoteSubActivity(final ActivityBean activity) {
 		final ID activityId = activity.getId();
 		final ITaskExecutor taskExecutor = workflowContext.getTaskExecutor();
-		taskExecutor.addScheduledTask(wfSettings.getSubActivityPeriod(), new ExecutorRunnable() {
+		taskExecutor.addScheduledTask(new ExecutorRunnable() {
+			@Override
+			public long getPeriod() {
+				return wfSettings.getSubActivityPeriod();
+			}
+
 			@Override
 			protected void task(final Map<String, Object> cache) throws Exception {
 				final ActivityBean nActivity = getBean(activityId);
