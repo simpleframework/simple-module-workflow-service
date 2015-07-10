@@ -3,6 +3,7 @@ package net.simpleframework.workflow.engine.impl;
 import static net.simpleframework.common.I18n.$m;
 
 import java.util.Date;
+import java.util.Map;
 
 import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
@@ -173,7 +174,7 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 		final ITaskExecutor taskExecutor = workflowContext.getTaskExecutor();
 		taskExecutor.addScheduledTask(wfSettings.getDelegatePeriod(), new ExecutorRunnable() {
 			@Override
-			protected void task() throws Exception {
+			protected void task(final Map<String, Object> cache) throws Exception {
 				_doTimeoutTask();
 			}
 		});

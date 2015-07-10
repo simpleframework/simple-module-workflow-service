@@ -179,7 +179,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		final ITaskExecutor taskExecutor = workflowContext.getTaskExecutor();
 		taskExecutor.addScheduledTask(wfSettings.getSubActivityPeriod(), new ExecutorRunnable() {
 			@Override
-			protected void task() throws Exception {
+			protected void task(final Map<String, Object> cache) throws Exception {
 				final Properties properties = process.getProperties();
 				final KVMap data = new KVMap(); // 提交的参数
 				data.add(IProcessRemote.SUB_ACTIVITYID,

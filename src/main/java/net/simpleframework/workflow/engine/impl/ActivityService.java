@@ -444,7 +444,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		final ITaskExecutor taskExecutor = workflowContext.getTaskExecutor();
 		taskExecutor.addScheduledTask(wfSettings.getSubActivityPeriod(), new ExecutorRunnable() {
 			@Override
-			protected void task() throws Exception {
+			protected void task(final Map<String, Object> cache) throws Exception {
 				final ActivityBean nActivity = getBean(activityId);
 				if (nActivity == null) {
 					taskExecutor.removeScheduledTask(this);
@@ -916,7 +916,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		final ITaskExecutor taskExecutor = workflowContext.getTaskExecutor();
 		taskExecutor.addScheduledTask(0, wfSettings.getTimeoutCheckPeriod(), new ExecutorRunnable() {
 			@Override
-			protected void task() throws Exception {
+			protected void task(final Map<String, Object> cache) throws Exception {
 				_doActivityTimeout();
 			}
 		});
