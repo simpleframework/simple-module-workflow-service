@@ -919,7 +919,12 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 		// 启动过期监控
 		final ITaskExecutor taskExecutor = workflowContext.getTaskExecutor();
-		taskExecutor.addScheduledTask(0, wfSettings.getTimeoutCheckPeriod(), new ExecutorRunnable() {
+		taskExecutor.addScheduledTask(new ExecutorRunnable() {
+			@Override
+			public long getPeriod() {
+				return wfSettings.getTimeoutCheckPeriod();
+			}
+
 			@Override
 			protected void task(final Map<String, Object> cache) throws Exception {
 				_doActivityTimeout();
