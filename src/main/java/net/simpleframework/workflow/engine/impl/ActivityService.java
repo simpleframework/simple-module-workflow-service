@@ -583,7 +583,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		params.add(processBean.getId());
 		buildStatusSQL(sql, params, null, status);
 		sql.append(" order by createDate asc");
-		return DataQueryUtils.toList(query(sql.toString(), params.toArray()));
+		return DataQueryUtils.toList(query(sql, params.toArray()));
 	}
 
 	@Override

@@ -124,7 +124,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 		final ArrayList<Object> params = new ArrayList<Object>();
 		params.add(domainId);
 		buildStatusSQL(sql, params, "m", status);
-		return getEntityManager().queryBeans(new SQLValue(sql.toString(), params.toArray()));
+		return getEntityManager().queryBeans(new SQLValue(sql, params.toArray()));
 	}
 
 	@Override

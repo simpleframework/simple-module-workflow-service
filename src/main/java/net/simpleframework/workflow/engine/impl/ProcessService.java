@@ -221,7 +221,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		}
 		buildStatusSQL(sql, params, null, status);
 		sql.append(" order by createdate desc");
-		return query(sql.toString(), params.toArray());
+		return query(sql, params.toArray());
 	}
 
 	@Override
@@ -238,7 +238,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		sql.append(" p on p.id=w.processid where 1=1");
 		buildStatusSQL(sql, params, "p", status);
 		sql.append(" order by p.createdate desc");
-		return query(new SQLValue(sql.toString(), params.toArray()));
+		return query(new SQLValue(sql, params.toArray()));
 	}
 
 	@Override
@@ -279,7 +279,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		sql.append(" p on p.id=w.processid where 1=1");
 		buildStatusSQL(sql, _params, "p", status);
 		sql.append(" order by p.createdate desc");
-		return new SQLValue(sql.toString(), _params.toArray());
+		return new SQLValue(sql, _params.toArray());
 	}
 
 	@Override

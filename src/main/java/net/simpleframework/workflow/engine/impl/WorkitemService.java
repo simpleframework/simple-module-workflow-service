@@ -412,7 +412,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			params.addAll(ArrayUtils.asList(eVal.getValues()));
 		}
 		sql.append(getDefaultOrderby());
-		return query(sql.toString(), params.toArray());
+		return query(sql, params.toArray());
 	}
 
 	@Override
@@ -426,8 +426,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		final StringBuilder sql = new StringBuilder(
 				"userId2=? and readMark=? and (status=? or status=? or status=?)")
 				.append(getDefaultOrderby());
-		return query(sql.toString(), userId, Boolean.FALSE, EWorkitemStatus.running,
-				EWorkitemStatus.suspended, EWorkitemStatus.delegate);
+		return query(sql, userId, Boolean.FALSE, EWorkitemStatus.running, EWorkitemStatus.suspended,
+				EWorkitemStatus.delegate);
 	}
 
 	@Override
