@@ -14,6 +14,7 @@ import net.simpleframework.common.Convert;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.common.coll.KVMap;
+import net.simpleframework.ctx.IModuleContext;
 import net.simpleframework.ctx.script.IScriptEval;
 import net.simpleframework.ctx.script.ScriptEvalFactory;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
@@ -47,6 +48,11 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 	static {
 		defaultExpr = new ArrayList<String>();
 		defaultExpr.add("import " + WorkflowContext.class.getPackage().getName() + ".*;");
+	}
+
+	@Override
+	public IModuleContext getModuleContext() {
+		return workflowContext;
 	}
 
 	/**
