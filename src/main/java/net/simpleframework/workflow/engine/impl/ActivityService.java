@@ -932,12 +932,12 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		});
 
 		// 添加任务过期监控
-		addListener(new DbEntityAdapterEx() {
+		addListener(new DbEntityAdapterEx<ActivityBean>() {
 			@Override
-			public void onBeforeDelete(final IDbEntityManager<?> manager,
+			public void onBeforeDelete(final IDbEntityManager<ActivityBean> manager,
 					final IParamsValue paramsValue) throws Exception {
 				super.onBeforeDelete(manager, paramsValue);
-				for (final ActivityBean activity : coll(paramsValue)) {
+				for (final ActivityBean activity : coll(manager, paramsValue)) {
 					final Object id = activity.getId();
 					// 删除任务环节
 					wService.deleteWith("activityId=?", id);
@@ -947,14 +947,13 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			}
 
 			@Override
-			public void onBeforeUpdate(final IDbEntityManager<?> manager, final String[] columns,
-					final Object[] beans) throws Exception {
+			public void onBeforeUpdate(final IDbEntityManager<ActivityBean> manager,
+					final String[] columns, final ActivityBean[] beans) throws Exception {
 				super.onAfterUpdate(manager, columns, beans);
 
 				// 事件
 				if (ArrayUtils.isEmpty(columns) || ArrayUtils.contains(columns, "status", true)) {
-					for (final Object bean : beans) {
-						final ActivityBean activity = (ActivityBean) bean;
+					for (final ActivityBean activity : beans) {
 						// 状态转换事件
 						final EActivityStatus _status = Convert.toEnum(EActivityStatus.class,
 								queryFor("status", "id=?", activity.getId()));
@@ -972,12 +971,11 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			}
 
 			@Override
-			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans)
-					throws Exception {
+			public void onAfterInsert(final IDbEntityManager<ActivityBean> manager,
+					final ActivityBean[] beans) throws Exception {
 				super.onAfterInsert(manager, beans);
 
-				for (final Object o : beans) {
-					final ActivityBean activity = (ActivityBean) o;
+				for (final ActivityBean activity : beans) {
 					// 触发创建事件
 					for (final IWorkflowListener listener : getEventListeners(activity)) {
 						((IActivityListener) listener).onCreated(activity);

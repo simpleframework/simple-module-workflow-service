@@ -58,13 +58,12 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 		final WfCommentLogService lService = (WfCommentLogService) workflowContext
 				.getCommentLogService();
 
-		addListener(new DbEntityAdapterEx() {
+		addListener(new DbEntityAdapterEx<WfComment>() {
 			@Override
-			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans)
-					throws Exception {
+			public void onAfterInsert(final IDbEntityManager<WfComment> manager,
+					final WfComment[] beans) throws Exception {
 				super.onAfterInsert(manager, beans);
-				for (final Object o : beans) {
-					final WfComment c = (WfComment) o;
+				for (final WfComment c : beans) {
 					lService.insertLog(c, ELogType.history);
 
 					// 更新process
@@ -74,10 +73,10 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 			}
 
 			@Override
-			public void onAfterDelete(final IDbEntityManager<?> manager, final IParamsValue paramsValue)
-					throws Exception {
+			public void onAfterDelete(final IDbEntityManager<WfComment> manager,
+					final IParamsValue paramsValue) throws Exception {
 				super.onAfterDelete(manager, paramsValue);
-				for (final WfComment c : coll(paramsValue)) {
+				for (final WfComment c : coll(manager, paramsValue)) {
 					// 删除关联的意见
 					lService.deleteWith("commentId=?", c.getId());
 
@@ -93,12 +92,11 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 			}
 
 			@Override
-			public void onAfterUpdate(final IDbEntityManager<?> manager, final String[] columns,
-					final Object[] beans) throws Exception {
+			public void onAfterUpdate(final IDbEntityManager<WfComment> manager,
+					final String[] columns, final WfComment[] beans) throws Exception {
 				super.onAfterUpdate(manager, columns, beans);
 				if (ArrayUtils.isEmpty(columns) || ArrayUtils.contains(columns, "ccomment", true)) {
-					for (final Object o : beans) {
-						final WfComment comment = (WfComment) o;
+					for (final WfComment comment : beans) {
 						if (lService.getLog(comment.getUserId(), comment.getCcomment(), ELogType.history) == null) {
 							lService.insertLog(comment, ELogType.history);
 						}

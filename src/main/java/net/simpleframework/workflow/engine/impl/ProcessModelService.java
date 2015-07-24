@@ -226,21 +226,21 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 	public void onInit() throws Exception {
 		super.onInit();
 
-		addListener(new DbEntityAdapterEx() {
+		addListener(new DbEntityAdapterEx<ProcessModelBean>() {
 
 			@Override
-			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans) {
+			public void onAfterInsert(final IDbEntityManager<ProcessModelBean> manager,
+					final ProcessModelBean[] beans) {
 				itemsCache.clear();
 			}
 
 			@Override
-			public void onAfterUpdate(final IDbEntityManager<?> manager, final String[] columns,
-					final Object[] beans) {
+			public void onAfterUpdate(final IDbEntityManager<ProcessModelBean> manager,
+					final String[] columns, final ProcessModelBean[] beans) {
 				itemsCache.clear();
 
 				if (ArrayUtils.contains(columns, "status", true)) {
-					for (final Object bean : beans) {
-						final ProcessModelBean processModel = (ProcessModelBean) bean;
+					for (final ProcessModelBean processModel : beans) {
 						for (final IWorkflowListener listener : getEventListeners(processModel)) {
 							((IProcessModelListener) listener).onStatusChange(processModel);
 						}
@@ -249,10 +249,10 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 			}
 
 			@Override
-			public void onBeforeDelete(final IDbEntityManager<?> manager,
+			public void onBeforeDelete(final IDbEntityManager<ProcessModelBean> manager,
 					final IParamsValue paramsValue) throws Exception {
 				super.onBeforeDelete(manager, paramsValue);
-				for (final ProcessModelBean processModel : coll(paramsValue)) {
+				for (final ProcessModelBean processModel : coll(manager, paramsValue)) {
 					if (processModel.getStatus() == EProcessModelStatus.deploy) {
 						throw WorkflowException.of($m("ProcessModelService.0"));
 					}
@@ -272,7 +272,8 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 			}
 
 			@Override
-			public void onAfterDelete(final IDbEntityManager<?> manager, final IParamsValue paramsValue) {
+			public void onAfterDelete(final IDbEntityManager<ProcessModelBean> manager,
+					final IParamsValue paramsValue) {
 				itemsCache.clear();
 			}
 		});

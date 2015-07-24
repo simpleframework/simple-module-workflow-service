@@ -412,22 +412,22 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	public void onInit() throws Exception {
 		super.onInit();
 
-		addListener(new DbEntityAdapterEx() {
+		addListener(new DbEntityAdapterEx<ProcessBean>() {
 			@Override
-			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans)
-					throws Exception {
+			public void onAfterInsert(final IDbEntityManager<ProcessBean> manager,
+					final ProcessBean[] beans) throws Exception {
 				super.onAfterInsert(manager, beans);
-				for (final Object bean : beans) {
+				for (final ProcessBean bean : beans) {
 					// 更新流程实例计数
-					updateProcessCount((ProcessBean) bean);
+					updateProcessCount(bean);
 				}
 			}
 
 			@Override
-			public void onAfterDelete(final IDbEntityManager<?> manager, final IParamsValue paramsValue)
-					throws Exception {
+			public void onAfterDelete(final IDbEntityManager<ProcessBean> manager,
+					final IParamsValue paramsValue) throws Exception {
 				super.onAfterDelete(manager, paramsValue);
-				for (final ProcessBean process : coll(paramsValue)) {
+				for (final ProcessBean process : coll(manager, paramsValue)) {
 					updateProcessCount(process);
 				}
 			}
@@ -445,11 +445,11 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 			}
 
 			@Override
-			public void onBeforeDelete(final IDbEntityManager<?> manager,
+			public void onBeforeDelete(final IDbEntityManager<ProcessBean> manager,
 					final IParamsValue paramsValue) throws Exception {
 				super.onBeforeDelete(manager, paramsValue);
 
-				for (final ProcessBean process : coll(paramsValue)) {
+				for (final ProcessBean process : coll(manager, paramsValue)) {
 					final Object id = process.getId();
 					// 触发删除事件
 					for (final IWorkflowListener listener : getEventListeners(process)) {
@@ -474,13 +474,12 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 			}
 
 			@Override
-			public void onBeforeUpdate(final IDbEntityManager<?> manager, final String[] columns,
-					final Object[] beans) throws Exception {
+			public void onBeforeUpdate(final IDbEntityManager<ProcessBean> manager,
+					final String[] columns, final ProcessBean[] beans) throws Exception {
 				super.onAfterUpdate(manager, columns, beans);
 
 				if (ArrayUtils.isEmpty(columns) || ArrayUtils.contains(columns, "status", true)) {
-					for (final Object bean : beans) {
-						final ProcessBean process = (ProcessBean) bean;
+					for (final ProcessBean process : beans) {
 						// 状态转换事件
 						final EProcessStatus _status = Convert.toEnum(EProcessStatus.class,
 								queryFor("status", "id=?", process.getId()));

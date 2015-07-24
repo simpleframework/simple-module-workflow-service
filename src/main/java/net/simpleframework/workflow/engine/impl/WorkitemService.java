@@ -503,14 +503,13 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	public void onInit() throws Exception {
 		super.onInit();
 
-		addListener(new DbEntityAdapterEx() {
+		addListener(new DbEntityAdapterEx<WorkitemBean>() {
 			@Override
-			public void onBeforeUpdate(final IDbEntityManager<?> manager, final String[] columns,
-					final Object[] beans) throws Exception {
+			public void onBeforeUpdate(final IDbEntityManager<WorkitemBean> manager,
+					final String[] columns, final WorkitemBean[] beans) throws Exception {
 				super.onAfterUpdate(manager, columns, beans);
 
-				for (final Object bean : beans) {
-					final WorkitemBean workitem = (WorkitemBean) bean;
+				for (final WorkitemBean workitem : beans) {
 					// 状态转换事件
 					if (ArrayUtils.isEmpty(columns) || ArrayUtils.contains(columns, "status", true)) {
 						final EWorkitemStatus _status = Convert.toEnum(EWorkitemStatus.class,
@@ -529,11 +528,10 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			}
 
 			@Override
-			public void onAfterUpdate(final IDbEntityManager<?> manager, final String[] columns,
-					final Object[] beans) throws Exception {
+			public void onAfterUpdate(final IDbEntityManager<WorkitemBean> manager,
+					final String[] columns, final WorkitemBean[] beans) throws Exception {
 				super.onAfterUpdate(manager, columns, beans);
-				for (final Object bean : beans) {
-					final WorkitemBean workitem = (WorkitemBean) bean;
+				for (final WorkitemBean workitem : beans) {
 					final ID userId = workitem.getUserId();
 					if (ArrayUtils.contains(columns, "readMark", true)) {
 						doUserStat_readMark(userId);
@@ -545,12 +543,11 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			}
 
 			@Override
-			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans)
-					throws Exception {
+			public void onAfterInsert(final IDbEntityManager<WorkitemBean> manager,
+					final WorkitemBean[] beans) throws Exception {
 				super.onAfterInsert(manager, beans);
 
-				for (final Object o : beans) {
-					final WorkitemBean workitem = (WorkitemBean) o;
+				for (final WorkitemBean workitem : beans) {
 					// 如果存在用户委托，则创建
 					final DelegationBean delegation = dService.queryRunningDelegation(workitem
 							.getUserId());

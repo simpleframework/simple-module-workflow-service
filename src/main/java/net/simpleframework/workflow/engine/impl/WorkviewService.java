@@ -106,15 +106,13 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 	public void onInit() throws Exception {
 		super.onInit();
 
-		addListener(new DbEntityAdapterEx() {
+		addListener(new DbEntityAdapterEx<WorkviewBean>() {
 
 			@Override
-			public void onAfterUpdate(final IDbEntityManager<?> manager, final String[] columns,
-					final Object[] beans) throws Exception {
+			public void onAfterUpdate(final IDbEntityManager<WorkviewBean> manager,
+					final String[] columns, final WorkviewBean[] beans) throws Exception {
 				super.onAfterUpdate(manager, columns, beans);
-				for (final Object o : beans) {
-					final WorkviewBean workview = (WorkviewBean) o;
-
+				for (final WorkviewBean workview : beans) {
 					if (ArrayUtils.contains(columns, "readMark", true)) {
 						doUserStat_readMark(workview.getUserId());
 					}
@@ -122,12 +120,11 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 			}
 
 			@Override
-			public void onAfterInsert(final IDbEntityManager<?> manager, final Object[] beans)
-					throws Exception {
+			public void onAfterInsert(final IDbEntityManager<WorkviewBean> manager,
+					final WorkviewBean[] beans) throws Exception {
 				super.onAfterInsert(manager, beans);
 
-				for (final Object o : beans) {
-					final WorkviewBean workview = (WorkviewBean) o;
+				for (final WorkviewBean workview : beans) {
 					// 设置用户统计
 					doUserStat_readMark(workview.getUserId());
 				}
