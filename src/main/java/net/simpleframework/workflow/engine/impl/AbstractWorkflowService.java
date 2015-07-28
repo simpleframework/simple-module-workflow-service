@@ -1,5 +1,6 @@
 package net.simpleframework.workflow.engine.impl;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -209,7 +210,9 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 	@SuppressWarnings("unchecked")
 	protected void _status(final T t, final Enum<?> status) {
 		BeanUtils.setProperty(t, "status", status);
-		update(new String[] { "status" }, t);
+		final T[] arr = (T[]) Array.newInstance(t.getClass(), 1);
+		arr[0] = t;
+		update(new String[] { "status" }, arr);
 	}
 
 	protected void buildStatusSQL(final StringBuilder sql, final List<Object> params,
