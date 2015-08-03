@@ -225,7 +225,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
-	public IDataQuery<ProcessBean> getProcessList(final ID userId, final EProcessStatus... status) {
+	public IDataQuery<ProcessBean> getProcessWlist(final ID userId, final EProcessStatus... status) {
 		if (userId == null) {
 			return DataQueryUtils.nullQuery();
 		}
@@ -242,7 +242,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
-	public IDataQuery<ProcessBean> getProcessListInDept(final ID[] deptIds,
+	public IDataQuery<ProcessBean> getProcessWlistInDept(final ID[] deptIds,
 			final EProcessStatus... status) {
 		if (deptIds == null || deptIds.length == 0) {
 			return DataQueryUtils.nullQuery();
@@ -260,7 +260,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
-	public IDataQuery<ProcessBean> getProcessListInDomain(final ID domainId,
+	public IDataQuery<ProcessBean> getProcessWlistInDomain(final ID domainId,
 			final EProcessStatus... status) {
 		if (domainId == null) {
 			return DataQueryUtils.nullQuery();

@@ -73,7 +73,7 @@ public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 	 * @param status
 	 * @return
 	 */
-	IDataQuery<ProcessBean> getProcessList(ID userId, EProcessStatus... status);
+	IDataQuery<ProcessBean> getProcessWlist(ID userId, EProcessStatus... status);
 
 	/**
 	 * 获取指定部门下经办的流程实例
@@ -82,7 +82,7 @@ public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 	 * @param status
 	 * @return
 	 */
-	IDataQuery<ProcessBean> getProcessListInDept(ID[] deptIds, EProcessStatus... status);
+	IDataQuery<ProcessBean> getProcessWlistInDept(ID[] deptIds, EProcessStatus... status);
 
 	/**
 	 * 获取某一域下经办的流程实例
@@ -91,7 +91,7 @@ public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 	 * @param status
 	 * @return
 	 */
-	IDataQuery<ProcessBean> getProcessListInDomain(ID domainId, EProcessStatus... status);
+	IDataQuery<ProcessBean> getProcessWlistInDomain(ID domainId, EProcessStatus... status);
 
 	/**
 	 * 挂起流程

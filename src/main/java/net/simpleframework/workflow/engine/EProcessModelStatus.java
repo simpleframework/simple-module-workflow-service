@@ -11,31 +11,24 @@ import static net.simpleframework.common.I18n.$m;
 public enum EProcessModelStatus {
 
 	edit {
-
 		@Override
 		public String toString() {
 			return $m("EProcessModelStatus.edit");
 		}
 	},
-
 	deploy {
-
 		@Override
 		public String toString() {
 			return $m("EProcessModelStatus.deploy");
 		}
 	},
-
 	suspended {
-
 		@Override
 		public String toString() {
 			return $m("EProcessStatus.suspended");
 		}
 	},
-
 	abort {
-
 		@Override
 		public String toString() {
 			return $m("EProcessModelStatus.abort");
