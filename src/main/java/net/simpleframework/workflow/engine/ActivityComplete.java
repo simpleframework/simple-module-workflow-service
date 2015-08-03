@@ -162,9 +162,12 @@ public class ActivityComplete extends ObjectEx implements IWorkflowServiceAware 
 	}
 
 	public boolean isTransitionManual() {
-		for (final TransitionNode transition : getTransitions()) {
-			if (TransitionUtils.isTransitionManual(transition)) {
-				return true;
+		final List<TransitionNode> transitions = getTransitions();
+		if (transitions.size() > 1) {
+			for (final TransitionNode transition : transitions) {
+				if (TransitionUtils.isTransitionManual(transition)) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -184,7 +187,8 @@ public class ActivityComplete extends ObjectEx implements IWorkflowServiceAware 
 			values = _transitions.values();
 		}
 		for (final TransitionNode transition : values) {
-			if (isParticipantManual(transition.to())) {
+			final List<Participant> l = getParticipants(transition);
+			if (isParticipantManual(transition.to()) && (l != null && l.size() > 1)) {
 				return true;
 			}
 		}
