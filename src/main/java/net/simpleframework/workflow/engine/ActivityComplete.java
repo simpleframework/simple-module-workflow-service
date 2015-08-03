@@ -50,7 +50,7 @@ public class ActivityComplete extends ObjectEx implements IWorkflowServiceAware 
 
 	ActivityComplete(final WorkitemBean workitem) {
 		this.workitem = workitem;
-		doInit(wService.getActivity(workitem));
+		doInit(wfwService.getActivity(workitem));
 	}
 
 	public ActivityComplete(final ActivityBean activity) {
@@ -67,7 +67,7 @@ public class ActivityComplete extends ObjectEx implements IWorkflowServiceAware 
 	public ActivityComplete(final ActivityBean activity, final List<TransitionNode> transitions) {
 		activityId = activity.getId();
 
-		final IScriptEval script = aService.getScriptEval(activity);
+		final IScriptEval script = wfaService.getScriptEval(activity);
 		for (final TransitionNode transition : transitions) {
 			_transitions.put(transition.getId(), transition);
 			putParticipant(transition, script);
@@ -81,21 +81,21 @@ public class ActivityComplete extends ObjectEx implements IWorkflowServiceAware 
 
 	private void reset(ActivityBean activity) {
 		if (activity == null) {
-			activity = aService.getBean(activityId);
+			activity = wfaService.getBean(activityId);
 			_transitions.clear();
 			_participants.clear();
 		}
 
-		final AbstractTaskNode tasknode = aService.getTaskNode(activity);
+		final AbstractTaskNode tasknode = wfaService.getTaskNode(activity);
 		final IScriptEval script;
 		if (workitem != null) {
-			script = wService.getScriptEval(workitem);
+			script = wfwService.getScriptEval(workitem);
 			final Map<String, Object> variables = WorkitemComplete.get(workitem).getVariables();
 			for (final Map.Entry<String, Object> e : variables.entrySet()) {
 				script.putVariable(e.getKey(), e.getValue());
 			}
 		} else {
-			script = aService.getScriptEval(activity);
+			script = wfaService.getScriptEval(activity);
 		}
 
 		// 解析条件正确的transition
@@ -121,7 +121,8 @@ public class ActivityComplete extends ObjectEx implements IWorkflowServiceAware 
 		}
 
 		final KVMap variables = new KVMap().add("transition", transition).add(
-				PermissionConst.VAR_USERID, pService.getBean(getActivity().getProcessId()).getUserId());
+				PermissionConst.VAR_USERID,
+				wfpService.getBean(getActivity().getProcessId()).getUserId());
 		final AbstractParticipantType pt = ((UserNode) toTask).getParticipantType();
 		final ArrayList<Participant> participants = new ArrayList<Participant>();
 		if (pt instanceof RuleRole) {
@@ -145,7 +146,7 @@ public class ActivityComplete extends ObjectEx implements IWorkflowServiceAware 
 	}
 
 	public ActivityBean getActivity() {
-		return aService.getBean(activityId);
+		return wfaService.getBean(activityId);
 	}
 
 	public boolean isBcomplete() {
@@ -158,7 +159,7 @@ public class ActivityComplete extends ObjectEx implements IWorkflowServiceAware 
 	}
 
 	public void complete() {
-		aService.doComplete(this);
+		wfaService.doComplete(this);
 	}
 
 	public boolean isTransitionManual() {

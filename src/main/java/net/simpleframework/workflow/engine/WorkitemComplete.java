@@ -26,15 +26,15 @@ public class WorkitemComplete extends ObjectEx implements IWorkflowServiceAware 
 		workitemId = workitem.getId();
 
 		// 判断是否所有的工作项都已完成
-		final ActivityBean activity = wService.getActivity(workitem);
+		final ActivityBean activity = wfwService.getActivity(workitem);
 
 		if (PropSequential.list(activity).size() > 0) {
 			allCompleted = false;
 		} else {
-			final int allParticipants = aService.getParticipants(activity, false).size();
+			final int allParticipants = wfaService.getParticipants(activity, false).size();
 			// 完成的工作项
-			final int complete = aService.getParticipants2(activity).size();
-			if (complete + 1 < TasknodeUtils.getResponseValue(aService.getTaskNode(activity),
+			final int complete = wfaService.getParticipants2(activity).size();
+			if (complete + 1 < TasknodeUtils.getResponseValue(wfaService.getTaskNode(activity),
 					allParticipants)) {
 				allCompleted = false;
 			}
@@ -58,7 +58,7 @@ public class WorkitemComplete extends ObjectEx implements IWorkflowServiceAware 
 	}
 
 	public WorkitemBean getWorkitem() {
-		return wService.getBean(workitemId);
+		return wfwService.getBean(workitemId);
 	}
 
 	public boolean isAllCompleted() {
@@ -66,11 +66,11 @@ public class WorkitemComplete extends ObjectEx implements IWorkflowServiceAware 
 	}
 
 	public IWorkflowForm getWorkflowForm() {
-		return aService.getWorkflowForm(wService.getActivity(getWorkitem()));
+		return wfaService.getWorkflowForm(wfwService.getActivity(getWorkitem()));
 	}
 
 	public void complete(final Map<String, String> parameters) {
-		wService.doComplete(this);
+		wfwService.doComplete(this);
 	}
 
 	private Map<String, Object> variables;

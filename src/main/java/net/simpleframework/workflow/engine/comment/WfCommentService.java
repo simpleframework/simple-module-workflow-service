@@ -29,10 +29,10 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 	}
 
 	protected void updateUserComments(final WfComment c, final int i) {
-		final ProcessBean process = pService.getBean(c.getContentId());
+		final ProcessBean process = wfpService.getBean(c.getContentId());
 		if (process != null) {
 			final IWfCommentUserService uService = workflowContext.getCommentUserService();
-			final List<WorkitemBean> list = wService.getWorkitems(process, null,
+			final List<WorkitemBean> list = wfwService.getWorkitems(process, null,
 					EWorkitemStatus.running, EWorkitemStatus.delegate);
 			for (final WorkitemBean w : list) {
 				final ID userId = w.getUserId();
@@ -86,9 +86,9 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 			}
 
 			private void updateProcessComments(final WfComment c) {
-				final ProcessBean process = pService.getBean(c.getContentId());
+				final ProcessBean process = wfpService.getBean(c.getContentId());
 				process.setComments(count("contentId=?", process.getId()));
-				pService.update(new String[] { "comments" }, process);
+				wfpService.update(new String[] { "comments" }, process);
 			}
 
 			@Override

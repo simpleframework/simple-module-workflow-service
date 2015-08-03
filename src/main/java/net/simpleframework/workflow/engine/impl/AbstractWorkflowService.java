@@ -231,17 +231,17 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 		}
 	}
 
-	protected static ProcessModelService mService = (ProcessModelService) IWorkflowServiceAware.mService;
-	protected static ProcessService pService = (ProcessService) IWorkflowServiceAware.pService;
-	protected static ActivityService aService = (ActivityService) IWorkflowServiceAware.aService;
-	protected static WorkitemService wService = (WorkitemService) IWorkflowServiceAware.wService;
-	protected static WorkviewService vService = (WorkviewService) IWorkflowServiceAware.vService;
-	protected static DelegationService dService = (DelegationService) IWorkflowServiceAware.dService;
-	protected static ProcessModelDomainRService drService = (ProcessModelDomainRService) IWorkflowServiceAware.drService;
-	protected static UserStatService usService = (UserStatService) IWorkflowServiceAware.usService;
+	protected static ProcessModelService mService = (ProcessModelService) IWorkflowServiceAware.wfpmService;
+	protected static ProcessService pService = (ProcessService) IWorkflowServiceAware.wfpService;
+	protected static ActivityService aService = (ActivityService) IWorkflowServiceAware.wfaService;
+	protected static WorkitemService wService = (WorkitemService) IWorkflowServiceAware.wfwService;
+	protected static WorkviewService vService = (WorkviewService) IWorkflowServiceAware.wfvService;
+	protected static DelegationService dService = (DelegationService) IWorkflowServiceAware.wfdService;
+	protected static ProcessModelDomainRService drService = (ProcessModelDomainRService) IWorkflowServiceAware.wfpmdService;
+	protected static UserStatService usService = (UserStatService) IWorkflowServiceAware.wfusService;
 
-	protected static WfCommentService commentService = (WfCommentService) IWorkflowServiceAware.commentService;
-	protected static WfCommentUserService commentUserService = (WfCommentUserService) IWorkflowServiceAware.commentUserService;
+	protected static WfCommentService commentService = (WfCommentService) IWorkflowServiceAware.wfcService;
+	protected static WfCommentUserService commentUserService = (WfCommentUserService) IWorkflowServiceAware.wfcuService;
 
 	protected static VariableService varService;
 

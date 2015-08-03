@@ -35,7 +35,7 @@ public class VariableService extends AbstractDbBeanService<VariableBean> impleme
 		if (bean instanceof ProcessBean) {
 			if (variableNode.isStatically()) {
 				variable.setVariableSource(EVariableSource.model);
-				variable.setSourceId(pService.getProcessModel((ProcessBean) bean).getId());
+				variable.setSourceId(wfpService.getProcessModel((ProcessBean) bean).getId());
 			} else {
 				variable.setVariableSource(EVariableSource.process);
 				variable.setSourceId(bean.getId());
@@ -55,7 +55,7 @@ public class VariableService extends AbstractDbBeanService<VariableBean> impleme
 		if (bean instanceof ProcessBean) {
 			if (variableNode.isStatically()) {
 				vs = EVariableSource.model;
-				id = pService.getProcessModel((ProcessBean) bean).getId();
+				id = wfpService.getProcessModel((ProcessBean) bean).getId();
 			} else {
 				vs = EVariableSource.process;
 			}
@@ -142,11 +142,11 @@ public class VariableService extends AbstractDbBeanService<VariableBean> impleme
 		for (int i = 0; i < length; i++) {
 			VariableNode variableNode = null;
 			if (bean instanceof ProcessBean) {
-				variableNode = ((ProcessService) pService)._getProcessNode((ProcessBean) bean)
+				variableNode = ((ProcessService) wfpService)._getProcessNode((ProcessBean) bean)
 						.getVariableNodeByName(names[i]);
 			} else if (bean instanceof ActivityBean) {
-				variableNode = aService.getTaskNode((ActivityBean) bean)
-						.getVariableNodeByName(names[i]);
+				variableNode = wfaService.getTaskNode((ActivityBean) bean).getVariableNodeByName(
+						names[i]);
 			}
 			if (variableNode == null) {
 				continue;

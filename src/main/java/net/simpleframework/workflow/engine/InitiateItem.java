@@ -71,7 +71,7 @@ public class InitiateItem extends ObjectEx implements IWorkflowServiceAware {
 
 	public ProcessModelBean model() {
 		if (processModel == null) {
-			processModel = mService.getBean(getModelId());
+			processModel = wfpmService.getBean(getModelId());
 		}
 		return processModel;
 	}
@@ -113,8 +113,8 @@ public class InitiateItem extends ObjectEx implements IWorkflowServiceAware {
 		_transitions.clear();
 
 		final ProcessModelBean processModel = model();
-		final IScriptEval script = mService.getScriptEval(processModel);
-		final StartNode startNode = mService.getProcessDocument(processModel).getProcessNode()
+		final IScriptEval script = wfpmService.getScriptEval(processModel);
+		final StartNode startNode = wfpmService.getProcessDocument(processModel).getProcessNode()
 				.startNode();
 		for (final Map.Entry<String, Object> e : getVariables().entrySet()) {
 			script.putVariable(e.getKey(), e.getValue());

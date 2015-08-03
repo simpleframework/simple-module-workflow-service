@@ -32,7 +32,7 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 		final UserNode.RelativeRole rRole = (UserNode.RelativeRole) getParticipantType(variables);
 		final ERelativeType rType = rRole.getRelativeType();
 		if (rType == ERelativeType.processInitiator) {
-			final ProcessBean process = aService.getProcessBean(activityComplete.getActivity());
+			final ProcessBean process = wfaService.getProcessBean(activityComplete.getActivity());
 			if (StringUtils.hasText(rRole.getRelative())) {
 				final Collection<Participant> _participants = permission.getRelativeParticipants(
 						process, rRole, variables);
@@ -48,19 +48,19 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 			if (rType == ERelativeType.preActivityParticipant) {
 				preActivity = activityComplete.getActivity();
 			} else if (rType == ERelativeType.preNamedActivityParticipant) {
-				preActivity = aService.getPreActivity(activityComplete.getActivity(),
+				preActivity = wfaService.getPreActivity(activityComplete.getActivity(),
 						rRole.getPreActivity());
 			}
 
 			if (preActivity != null) {
-				final AbstractTaskNode tasknode = aService.getTaskNode(preActivity);
+				final AbstractTaskNode tasknode = wfaService.getTaskNode(preActivity);
 				if (tasknode instanceof UserNode && ((UserNode) tasknode).isEmpty()) {
-					participants.addAll(aService.getEmptyParticipants(preActivity));
+					participants.addAll(wfaService.getEmptyParticipants(preActivity));
 				} else {
 					List<WorkitemBean> completes = null;
 					WorkitemBean workitem = activityComplete.getWorkitem();
 					if (workitem == null || !workitem.getActivityId().equals(preActivity.getId())) {
-						completes = wService.getWorkitems(preActivity, EWorkitemStatus.complete);
+						completes = wfwService.getWorkitems(preActivity, EWorkitemStatus.complete);
 						if (completes.size() > 0) {
 							workitem = completes.get(0);
 						}
@@ -78,7 +78,7 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 									workitem.getDeptId()));
 							// 其它已完成任务项
 							if (completes == null) {
-								completes = wService.getWorkitems(preActivity, EWorkitemStatus.complete);
+								completes = wfwService.getWorkitems(preActivity, EWorkitemStatus.complete);
 							}
 							for (final WorkitemBean workitem2 : completes) {
 								if (!workitem2.getId().equals(workitem.getId())) {

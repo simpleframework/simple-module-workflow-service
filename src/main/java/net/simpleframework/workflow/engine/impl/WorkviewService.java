@@ -44,7 +44,7 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 			workitem = (WorkitemBean) _workitem;
 		} else {
 			workview2 = (WorkviewBean) _workitem;
-			workitem = wService.getBean(workview2.getWorkitemId());
+			workitem = wfwService.getBean(workview2.getWorkitemId());
 		}
 		final List<WorkviewBean> list = new ArrayList<WorkviewBean>();
 		for (final ID id : userIds) {
@@ -131,9 +131,9 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 			}
 
 			private void doUserStat_readMark(final ID userId) {
-				final UserStatBean stat = usService.getUserStat(userId);
+				final UserStatBean stat = wfusService.getUserStat(userId);
 				stat.setWorkview_unread(getUnreadWorkviewsList(userId).getCount());
-				usService.update(new String[] { "workview_unread" }, stat);
+				wfusService.update(new String[] { "workview_unread" }, stat);
 			}
 		});
 	}

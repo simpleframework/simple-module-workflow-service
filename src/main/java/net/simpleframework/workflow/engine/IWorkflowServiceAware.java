@@ -16,18 +16,21 @@ public interface IWorkflowServiceAware extends IWorkflowContextAware {
 	static final WorkflowSettings wfSettings = (WorkflowSettings) workflowContext
 			.getContextSettings();
 
-	static final IProcessModelService mService = workflowContext.getProcessModelService();
-	static final IProcessModelDomainRService drService = workflowContext
+	static final IProcessModelService wfpmService = workflowContext.getProcessModelService();
+	static final IProcessModelDomainRService wfpmdService = workflowContext
 			.getProcessModelDomainRService();
-	static final IProcessService pService = workflowContext.getProcessService();
-	static final IActivityService aService = workflowContext.getActivityService();
-	static final IWorkitemService wService = workflowContext.getWorkitemService();
-	static final IWorkviewService vService = workflowContext.getWorkviewService();
-	static final IDelegationService dService = workflowContext.getDelegationService();
-	static final IUserStatService usService = workflowContext.getUserStatService();
 
-	static final IWfCommentService commentService = workflowContext.getCommentService();
-	static final IWfCommentUserService commentUserService = workflowContext.getCommentUserService();
+	static final IProcessService wfpService = workflowContext.getProcessService();
+	static final IActivityService wfaService = workflowContext.getActivityService();
+	static final IWorkitemService wfwService = workflowContext.getWorkitemService();
+
+	static final IWorkviewService wfvService = workflowContext.getWorkviewService();
+	static final IDelegationService wfdService = workflowContext.getDelegationService();
+
+	static final IUserStatService wfusService = workflowContext.getUserStatService();
+
+	static final IWfCommentService wfcService = workflowContext.getCommentService();
+	static final IWfCommentUserService wfcuService = workflowContext.getCommentUserService();
 
 	static final IWorkflowPermissionHandler permission = workflowContext.getParticipantService();
 }
