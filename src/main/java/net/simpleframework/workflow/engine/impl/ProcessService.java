@@ -225,7 +225,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
-	public IDataQuery<ProcessBean> getProcessWlist(final ID userId, final EProcessStatus... status) {
+	public IDataQuery<ProcessBean> getProcessWlist(final ID userId,
+			final ProcessModelBean processModel, final EProcessStatus... status) {
 		if (userId == null) {
 			return DataQueryUtils.nullQuery();
 		}
@@ -236,6 +237,10 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		sql.append(" where userid2=? group by processid");
 		sql.append(") w left join ").append(getTablename(ProcessBean.class));
 		sql.append(" p on p.id=w.processid where 1=1");
+		if (processModel != null) {
+			sql.append(" and p.modelId=?");
+			params.add(processModel.getId());
+		}
 		buildStatusSQL(sql, params, "p", status);
 		sql.append(" order by p.createdate desc");
 		return query(new SQLValue(sql, params.toArray()));
@@ -243,7 +248,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public IDataQuery<ProcessBean> getProcessWlistInDept(final ID[] deptIds,
-			final EProcessStatus... status) {
+			final ProcessModelBean processModel, final EProcessStatus... status) {
 		if (deptIds == null || deptIds.length == 0) {
 			return DataQueryUtils.nullQuery();
 		}
@@ -256,20 +261,21 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 			sb.append("deptid=?");
 		}
 		sb.append(")");
-		return query(toProcessListSQLValue(sb.toString(), deptIds, status));
+		return query(toProcessListSQLValue(sb.toString(), deptIds, processModel, status));
 	}
 
 	@Override
 	public IDataQuery<ProcessBean> getProcessWlistInDomain(final ID domainId,
-			final EProcessStatus... status) {
+			final ProcessModelBean processModel, final EProcessStatus... status) {
 		if (domainId == null) {
 			return DataQueryUtils.nullQuery();
 		}
-		return query(toProcessListSQLValue("domainid=?", new Object[] { domainId }, status));
+		return query(toProcessListSQLValue("domainid=?", new Object[] { domainId }, processModel,
+				status));
 	}
 
 	private SQLValue toProcessListSQLValue(final String expr, final Object[] params,
-			final EProcessStatus... status) {
+			final ProcessModelBean processModel, final EProcessStatus... status) {
 		final StringBuilder sql = new StringBuilder();
 		final List<Object> _params = ArrayUtils.toParams(params);
 		sql.append("select p.*, w.c from (");
@@ -277,6 +283,10 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		sql.append(" where ").append(expr).append(" group by processid");
 		sql.append(") w left join ").append(getTablename(ProcessBean.class));
 		sql.append(" p on p.id=w.processid where 1=1");
+		if (processModel != null) {
+			sql.append(" and p.modelId=?");
+			_params.add(processModel.getId());
+		}
 		buildStatusSQL(sql, _params, "p", status);
 		sql.append(" order by p.createdate desc");
 		return new SQLValue(sql, _params.toArray());
