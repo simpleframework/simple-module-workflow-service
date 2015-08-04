@@ -13,48 +13,39 @@ public enum EDelegationStatus {
 	 * 开始状态
 	 */
 	ready {
-
 		@Override
 		public String toString() {
 			return $m("EDelegationStatus.ready");
 		}
 	},
-
 	receiving {
-
 		@Override
 		public String toString() {
 			return $m("EDelegationStatus.receiving");
 		}
 	},
-
 	/**
 	 * 运行
 	 */
 	running {
-
 		@Override
 		public String toString() {
 			return $m("EDelegationStatus.running");
 		}
 	},
-
 	/**
 	 * 完成
 	 */
 	complete {
-
 		@Override
 		public String toString() {
 			return $m("EDelegationStatus.complete");
 		}
 	},
-
 	/**
 	 * 放弃
 	 */
 	abort {
-
 		@Override
 		public String toString() {
 			return $m("EDelegationStatus.abort");

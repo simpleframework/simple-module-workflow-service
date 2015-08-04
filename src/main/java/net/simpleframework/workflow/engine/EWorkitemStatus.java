@@ -10,45 +10,35 @@ import static net.simpleframework.common.I18n.$m;
  */
 public enum EWorkitemStatus {
 	running {
-
 		@Override
 		public String toString() {
 			return $m("EWorkitemStatus.running");
 		}
 	},
-
 	suspended {
-
 		@Override
 		public String toString() {
 			return $m("EWorkitemStatus.suspended");
 		}
 	},
-
 	delegate {
-
 		@Override
 		public String toString() {
 			return $m("EWorkitemStatus.delegate");
 		}
 	},
-
 	complete {
-
 		@Override
 		public String toString() {
 			return $m("EWorkitemStatus.complete");
 		}
 	},
-
 	abort {
-
 		@Override
 		public String toString() {
 			return $m("EWorkitemStatus.abort");
 		}
 	},
-
 	retake {
 		@Override
 		public String toString() {
