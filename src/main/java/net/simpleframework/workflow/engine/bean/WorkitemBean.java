@@ -38,6 +38,8 @@ public class WorkitemBean extends AbstractWorkitemBean {
 	/* 实际完成时间 */
 	private Date completeDate;
 
+	/* 生成的取回项 */
+	private ID retake;
 	/* 取回工作项的引用 */
 	private ID retakeRef;
 
@@ -95,6 +97,14 @@ public class WorkitemBean extends AbstractWorkitemBean {
 
 	public void setCompleteDate(final Date completeDate) {
 		this.completeDate = completeDate;
+	}
+
+	public ID getRetake() {
+		return retake;
+	}
+
+	public void setRetake(ID retake) {
+		this.retake = retake;
 	}
 
 	public ID getRetakeRef() {

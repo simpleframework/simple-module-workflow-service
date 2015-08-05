@@ -11,53 +11,41 @@ import static net.simpleframework.common.I18n.$m;
 public enum EActivityStatus {
 
 	running {
-
 		@Override
 		public String toString() {
 			return $m("EActivityStatus.running");
 		}
 	},
-
 	timeout {
-
 		@Override
 		public String toString() {
 			return $m("EActivityStatus.timeout");
 		}
 	},
-
 	waiting {
-
 		@Override
 		public String toString() {
 			return $m("EActivityStatus.waiting");
 		}
 	},
-
 	suspended {
-
 		@Override
 		public String toString() {
 			return $m("EActivityStatus.suspended");
 		}
 	},
-
 	complete {
-
 		@Override
 		public String toString() {
 			return $m("EActivityStatus.complete");
 		}
 	},
-
 	abort {
-
 		@Override
 		public String toString() {
 			return $m("EActivityStatus.abort");
 		}
 	},
-
 	fallback {
 		@Override
 		public String toString() {

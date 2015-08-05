@@ -132,6 +132,7 @@
         readmark number(1) not null,
         readdate timestamp,
         topmark number(1) not null,
+        retake char(32),
         retakeref char(32),
         ext1 varchar2(64 char),
         ext2 number(11) not null,

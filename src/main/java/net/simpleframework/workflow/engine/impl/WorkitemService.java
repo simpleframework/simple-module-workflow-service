@@ -244,12 +244,13 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		}
 
 		if (nActivity != null) {
-			_status(workitem, EWorkitemStatus.retake);
-
 			// 复制新的工作项
 			final WorkitemBean nWorkitem = _clone(nActivity, workitem);
 			nWorkitem.setRetakeRef(workitem.getId());
 			update(new String[] { "retakeRef" }, nWorkitem);
+
+			workitem.setRetake(nWorkitem.getId());
+			update(new String[] { "retake" }, workitem);
 		}
 	}
 
