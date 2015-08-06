@@ -38,8 +38,11 @@ public class WorkitemBean extends AbstractWorkitemBean {
 	/* 实际完成时间 */
 	private Date completeDate;
 
+	/* 退回的任务id */
+	private ID fallbackId;
+
 	/* 生成的取回项 */
-	private ID retake;
+	private ID retakeId;
 	/* 取回工作项的引用 */
 	private ID retakeRef;
 
@@ -99,12 +102,20 @@ public class WorkitemBean extends AbstractWorkitemBean {
 		this.completeDate = completeDate;
 	}
 
-	public ID getRetake() {
-		return retake;
+	public ID getFallbackId() {
+		return fallbackId;
 	}
 
-	public void setRetake(final ID retake) {
-		this.retake = retake;
+	public void setFallbackId(final ID fallbackId) {
+		this.fallbackId = fallbackId;
+	}
+
+	public ID getRetakeId() {
+		return retakeId;
+	}
+
+	public void setRetakeId(final ID retakeId) {
+		this.retakeId = retakeId;
 	}
 
 	public ID getRetakeRef() {
