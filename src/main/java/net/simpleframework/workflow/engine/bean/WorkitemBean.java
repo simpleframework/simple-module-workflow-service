@@ -103,7 +103,7 @@ public class WorkitemBean extends AbstractWorkitemBean {
 		return retake;
 	}
 
-	public void setRetake(ID retake) {
+	public void setRetake(final ID retake) {
 		this.retake = retake;
 	}
 
