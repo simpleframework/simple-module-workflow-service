@@ -689,6 +689,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 						wService._clone(nActivity, workitem);
 					}
 				}
+			} else {
+				throw WorkflowException.of($m("ActivityService.7", to));
 			}
 		}
 		return nActivity;
