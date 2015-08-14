@@ -1,5 +1,6 @@
 package net.simpleframework.workflow.engine;
 
+import net.simpleframework.workflow.engine.comment.IWfCommentLogService;
 import net.simpleframework.workflow.engine.comment.IWfCommentService;
 import net.simpleframework.workflow.engine.comment.IWfCommentUserService;
 import net.simpleframework.workflow.engine.impl.WorkflowSettings;
@@ -30,6 +31,7 @@ public interface IWorkflowServiceAware extends IWorkflowContextAware {
 	static final IUserStatService wfusService = workflowContext.getUserStatService();
 
 	static final IWfCommentService wfcService = workflowContext.getCommentService();
+	static final IWfCommentLogService wfclService = workflowContext.getCommentLogService();
 	static final IWfCommentUserService wfcuService = workflowContext.getCommentUserService();
 
 	static final IWorkflowPermissionHandler permission = workflowContext.getParticipantService();
