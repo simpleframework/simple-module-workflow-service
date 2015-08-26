@@ -180,7 +180,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		taskExecutor.addScheduledTask(new ExecutorRunnable() {
 
 			@Override
-			public long getPeriod() {
+			public int getPeriod() {
 				return wfSettings.getSubActivityPeriod();
 			}
 

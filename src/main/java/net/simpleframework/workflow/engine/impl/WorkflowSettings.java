@@ -29,7 +29,7 @@ public class WorkflowSettings extends PropertiesContextSettings implements IWork
 	 * 
 	 * @return
 	 */
-	public long getSubActivityPeriod() {
+	public int getSubActivityPeriod() {
 		return 60 * 5; // 单位秒
 	}
 
@@ -38,11 +38,11 @@ public class WorkflowSettings extends PropertiesContextSettings implements IWork
 	 * 
 	 * @return
 	 */
-	public long getDelegatePeriod() {
+	public int getDelegatePeriod() {
 		return 60 * 5; // 单位秒
 	}
 
-	public long getTimeoutCheckPeriod() {
+	public int getTimeoutCheckPeriod() {
 		return 60 * 5; // 单位秒
 	}
 

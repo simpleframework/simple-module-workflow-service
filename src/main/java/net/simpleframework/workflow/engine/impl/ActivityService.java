@@ -444,7 +444,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		final ITaskExecutor taskExecutor = workflowContext.getTaskExecutor();
 		taskExecutor.addScheduledTask(new ExecutorRunnable() {
 			@Override
-			public long getPeriod() {
+			public int getPeriod() {
 				return wfSettings.getSubActivityPeriod();
 			}
 
@@ -923,7 +923,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		final ITaskExecutor taskExecutor = workflowContext.getTaskExecutor();
 		taskExecutor.addScheduledTask(new ExecutorRunnable() {
 			@Override
-			public long getPeriod() {
+			public int getPeriod() {
 				return wfSettings.getTimeoutCheckPeriod();
 			}
 

@@ -174,7 +174,7 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 		taskExecutor.addScheduledTask(new ExecutorRunnable() {
 
 			@Override
-			public long getPeriod() {
+			public int getPeriod() {
 				return wfSettings.getDelegatePeriod();
 			}
 
