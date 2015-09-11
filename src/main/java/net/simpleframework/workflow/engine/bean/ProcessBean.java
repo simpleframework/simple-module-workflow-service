@@ -15,7 +15,8 @@ import net.simpleframework.workflow.engine.EProcessStatus;
  *         http://www.simpleframework.net
  */
 @EntityInterceptor(listenerTypes = { "net.simpleframework.module.log.EntityUpdateLogAdapter",
-		"net.simpleframework.module.log.EntityDeleteLogAdapter" }, columns = { "title", "status" })
+		"net.simpleframework.module.log.EntityDeleteLogAdapter",
+		"net.simpleframework.module.log.EntityInsertLogAdapter" }, columns = { "title", "status" })
 public class ProcessBean extends AbstractWorkflowBean {
 	/* 模型id */
 	private ID modelId;

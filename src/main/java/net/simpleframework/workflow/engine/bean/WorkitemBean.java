@@ -14,9 +14,8 @@ import net.simpleframework.workflow.engine.EWorkitemStatus;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-@EntityInterceptor(listenerTypes = { "net.simpleframework.module.log.EntityUpdateLogAdapter",
-		"net.simpleframework.module.log.EntityDeleteLogAdapter" }, columns = { "status", "readMark",
-		"topMark" })
+@EntityInterceptor(listenerTypes = { "net.simpleframework.module.log.EntityUpdateLogAdapter" }, columns = {
+		"status", "readMark", "topMark" })
 public class WorkitemBean extends AbstractWorkitemBean {
 	/* 状态 */
 	@ColumnMeta(columnText = "#(AbstractWorkflowBean.0)")
