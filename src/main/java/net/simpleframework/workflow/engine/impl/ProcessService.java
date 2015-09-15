@@ -25,6 +25,7 @@ import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.ctx.task.ExecutorRunnable;
 import net.simpleframework.ctx.task.ITaskExecutor;
+import net.simpleframework.module.common.LogDesc;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.ActivityComplete;
 import net.simpleframework.workflow.engine.EProcessAbortPolicy;
@@ -428,6 +429,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 					final ProcessBean[] beans) throws Exception {
 				super.onAfterInsert(manager, beans);
 				for (final ProcessBean bean : beans) {
+					LogDesc.set(bean, $m("ProcessService.5", wfpmService.getBean(bean.getModelId())));
+
 					// 更新流程实例计数
 					updateProcessCount(bean);
 				}
