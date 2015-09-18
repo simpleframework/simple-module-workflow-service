@@ -152,6 +152,9 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		if (properties != null) {
 			process.getProperties().putAll(properties);
 		}
+
+		_log(process, "start");
+
 		insert(process);
 
 		if (variables != null && variables.size() > 0) {
@@ -429,8 +432,6 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 					final ProcessBean[] beans) throws Exception {
 				super.onAfterInsert(manager, beans);
 				for (final ProcessBean bean : beans) {
-					LogDesc.set(bean, $m("ProcessService.5", wfpmService.getBean(bean.getModelId())));
-
 					// 更新流程实例计数
 					updateProcessCount(bean);
 				}
@@ -509,5 +510,12 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 				}
 			}
 		});
+	}
+
+	private void _log(final ProcessBean process, final String key) {
+		if ("start".equals(key)) {
+			// 记录日志描述
+			LogDesc.set(process, $m("ProcessService.5", wfpmService.getBean(process.getModelId())));
+		}
 	}
 }
