@@ -26,7 +26,6 @@ import net.simpleframework.common.coll.CollectionUtils;
 import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.ctx.task.ExecutorRunnable;
 import net.simpleframework.ctx.task.ITaskExecutor;
-import net.simpleframework.module.common.LogDesc;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.ActivityComplete;
 import net.simpleframework.workflow.engine.EActivityAbortPolicy;
@@ -134,9 +133,6 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		if (!bcomplete) {
 			return;
 		}
-
-		// 日志
-		_log(activity, "complete");
 
 		activity.setStatus(EActivityStatus.complete);
 		activity.setCompleteDate(new Date());
@@ -989,32 +985,5 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				}
 			}
 		});
-	}
-
-	private void _log(final ActivityBean activity, final String key) {
-		if ("complete".equals(key)) {
-			if (activity.getTasknodeType() == AbstractTaskNode.TT_USER) {
-				final StringBuilder sb = new StringBuilder();
-				sb.append($m("ActivityService.8")).append(" [ ").append(activity).append(" ]")
-						.append("\n");
-				int j = 0;
-				for (final ActivityBean nActivity : wfaService.getNextActivities(activity)) {
-					if (j++ > 0) {
-						sb.append("\n");
-					}
-					sb.append("    ").append("=> ");
-					sb.append(nActivity).append(" ( ");
-					int i = 0;
-					for (final WorkitemBean workitem : wfwService.getWorkitems(nActivity)) {
-						if (i++ > 0) {
-							sb.append(", ");
-						}
-						sb.append(workitem.getUserText());
-					}
-					sb.append(" )");
-				}
-				LogDesc.set(activity, sb.toString());
-			}
-		}
 	}
 }

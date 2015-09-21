@@ -484,6 +484,9 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 					// 删除意见
 					commentService.deleteWith("contentId=?", id);
 					commentUserService.deleteWith("contentId=?", id);
+
+					// 记录日志
+					_log(process, "delete");
 				}
 			}
 
@@ -516,6 +519,12 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		if ("start".equals(key)) {
 			// 记录日志描述
 			LogDesc.set(process, $m("ProcessService.5", wfpmService.getBean(process.getModelId())));
+		} else if ("delete".equals(key)) {
+			String desc = process.getTitle();
+			if (!StringUtils.hasText(desc)) {
+				desc = Convert.toString(wfpmService.getBean(process.getModelId()));
+			}
+			LogDesc.set(process, $m("ProcessService.6", desc));
 		}
 	}
 }
