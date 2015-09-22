@@ -16,6 +16,7 @@ import net.simpleframework.workflow.engine.EDelegationStatus;
  *         http://www.simpleframework.net
  */
 @EntityInterceptor(listenerTypes = { "net.simpleframework.module.log.EntityUpdateLogAdapter",
+		"net.simpleframework.module.log.EntityInsertLogAdapter",
 		"net.simpleframework.module.log.EntityDeleteLogAdapter" }, columns = { "status" })
 public class DelegationBean extends AbstractWorkflowBean implements IDescriptionBeanAware {
 
@@ -42,8 +43,12 @@ public class DelegationBean extends AbstractWorkflowBean implements IDescription
 	/* 定义该委托类，参考IDelegationHandler */
 	private String ruleHandler;
 
+	/* 委托意见 */
 	@ColumnMeta(columnText = "#(Description)")
 	private String description;
+
+	/* 拒绝或同意意见 */
+	private String description2;
 
 	public EDelegationSource getDelegationSource() {
 		return delegationSource;
@@ -133,6 +138,14 @@ public class DelegationBean extends AbstractWorkflowBean implements IDescription
 	@Override
 	public void setDescription(final String description) {
 		this.description = description;
+	}
+
+	public String getDescription2() {
+		return description2;
+	}
+
+	public void setDescription2(final String description2) {
+		this.description2 = description2;
 	}
 
 	@Override

@@ -153,7 +153,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 			process.getProperties().putAll(properties);
 		}
 
-		_log(process, "start");
+		_log(process, "insert");
 
 		insert(process);
 
@@ -515,9 +515,15 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		});
 	}
 
-	private void _log(final ProcessBean process, final String key) {
-		if ("start".equals(key)) {
-			// 记录日志描述
+	/**
+	 * 记录日志描述
+	 * 由于process可能被删除，所以写入日志的描述字段里
+	 * 
+	 * @param process
+	 * @param key
+	 */
+	void _log(final ProcessBean process, final String key) {
+		if ("insert".equals(key)) {
 			LogDesc.set(process, $m("ProcessService.5", wfpmService.getBean(process.getModelId())));
 		} else if ("delete".equals(key)) {
 			String desc = process.getTitle();

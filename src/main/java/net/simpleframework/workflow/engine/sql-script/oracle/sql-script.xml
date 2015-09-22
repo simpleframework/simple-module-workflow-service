@@ -90,6 +90,7 @@
         dcompletedate timestamp,   
         rulehandler varchar2(128 char), 
         description varchar2(256 char),
+        description2 varchar2(256 char),
         primary key(id)
       );
     ]]>

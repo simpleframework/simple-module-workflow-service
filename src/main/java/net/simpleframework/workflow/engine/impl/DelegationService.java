@@ -13,6 +13,7 @@ import net.simpleframework.common.ID;
 import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.ctx.task.ExecutorRunnable;
 import net.simpleframework.ctx.task.ITaskExecutor;
+import net.simpleframework.module.common.LogDesc;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.EDelegationSource;
 import net.simpleframework.workflow.engine.EDelegationStatus;
@@ -65,9 +66,22 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	}
 
 	@Override
-	public void doAccept(final DelegationBean delegation) {
+	public void doAccept(final DelegationBean delegation, final String description2) {
+		_doAccept(delegation, description2, false);
+	}
+
+	@Override
+	public void doRefuse(final DelegationBean delegation, final String description2) {
+		_doAccept(delegation, description2, true);
+	}
+
+	private void _doAccept(final DelegationBean delegation, final String description2,
+			final boolean refuse) {
 		_assert(delegation, EDelegationStatus.receiving);
-		_status(delegation, EDelegationStatus.running);
+		_status(delegation, refuse ? EDelegationStatus.refuse : EDelegationStatus.running);
+
+		delegation.setDescription2(description2);
+		update(new String[] { "description2" }, delegation);
 	}
 
 	@Override
@@ -195,6 +209,38 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 					}
 				}
 			}
+
+			@Override
+			public void onBeforeInsert(final IDbEntityManager<DelegationBean> manager,
+					final DelegationBean[] beans) throws Exception {
+				super.onBeforeInsert(manager, beans);
+				for (final DelegationBean delegation : beans) {
+					_log(delegation, "insert");
+				}
+			}
 		});
+	}
+
+	void _log(final DelegationBean delegation, final String key) {
+		// if ("status".equals(key)) {
+		// final EDelegationStatus status = delegation.getStatus();
+		// if (status == EDelegationStatus.running) {
+		// }
+		// } else
+
+		if ("insert".equals(key)) {
+			final StringBuilder sb = new StringBuilder();
+			final EDelegationSource dsource = delegation.getDelegationSource();
+			if (dsource == EDelegationSource.workitem) {
+				sb.append("委托工作 -> ").append(delegation.getUserText());
+				final WorkitemBean workitem = wService.getBean(delegation.getSourceId());
+				if (workitem != null) {
+					sb.append(" [ ").append(pService.getBean(workitem.getProcessId())).append(" ]");
+				}
+			} else if (dsource == EDelegationSource.user) {
+			}
+			LogDesc.set(delegation, sb.toString());
+		} else if ("delete".equals(key)) {
+		}
 	}
 }

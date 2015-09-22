@@ -9,46 +9,46 @@ import static net.simpleframework.common.I18n.$m;
  *         http://www.simpleframework.net
  */
 public enum EDelegationStatus {
-	/**
-	 * 开始状态
-	 */
+	/* 开始状态 */
 	ready {
 		@Override
 		public String toString() {
 			return $m("EDelegationStatus.ready");
 		}
 	},
+	/* 接收 */
 	receiving {
 		@Override
 		public String toString() {
 			return $m("EDelegationStatus.receiving");
 		}
 	},
-	/**
-	 * 运行
-	 */
+	/* 运行 */
 	running {
 		@Override
 		public String toString() {
 			return $m("EDelegationStatus.running");
 		}
 	},
-	/**
-	 * 完成
-	 */
+	/* 完成 */
 	complete {
 		@Override
 		public String toString() {
 			return $m("EDelegationStatus.complete");
 		}
 	},
-	/**
-	 * 放弃
-	 */
+	/* 放弃 */
 	abort {
 		@Override
 		public String toString() {
 			return $m("EDelegationStatus.abort");
+		}
+	},
+	/* 拒绝 */
+	refuse {
+		@Override
+		public String toString() {
+			return $m("EDelegationStatus.refuse");
 		}
 	}
 }

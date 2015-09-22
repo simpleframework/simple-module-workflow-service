@@ -45,8 +45,17 @@ public interface IDelegationService extends IWorkflowService<DelegationBean> {
 	 * 接受当前委托
 	 * 
 	 * @param delegation
+	 * @param description2
 	 */
-	void doAccept(DelegationBean delegation);
+	void doAccept(DelegationBean delegation, String description2);
+
+	/**
+	 * 拒绝当前委托
+	 * 
+	 * @param delegation
+	 * @param description2
+	 */
+	void doRefuse(DelegationBean delegation, String description2);
 
 	/**
 	 * 设置用户委托
