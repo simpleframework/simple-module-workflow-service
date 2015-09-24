@@ -25,7 +25,6 @@ import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.ctx.task.ExecutorRunnable;
 import net.simpleframework.ctx.task.ITaskExecutor;
-import net.simpleframework.module.common.LogDesc;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.ActivityComplete;
 import net.simpleframework.workflow.engine.EProcessAbortPolicy;
@@ -152,8 +151,6 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		if (properties != null) {
 			process.getProperties().putAll(properties);
 		}
-
-		_log(process, "insert");
 
 		insert(process);
 
@@ -484,9 +481,6 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 					// 删除意见
 					commentService.deleteWith("contentId=?", id);
 					commentUserService.deleteWith("contentId=?", id);
-
-					// 记录日志
-					_log(process, "delete");
 				}
 			}
 
@@ -513,24 +507,5 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 				}
 			}
 		});
-	}
-
-	/**
-	 * 记录日志描述
-	 * 由于process可能被删除，所以写入日志的描述字段里
-	 * 
-	 * @param process
-	 * @param key
-	 */
-	void _log(final ProcessBean process, final String key) {
-		if ("insert".equals(key)) {
-			LogDesc.set(process, $m("ProcessService.5", wfpmService.getBean(process.getModelId())));
-		} else if ("delete".equals(key)) {
-			String desc = process.getTitle();
-			if (!StringUtils.hasText(desc)) {
-				desc = Convert.toString(wfpmService.getBean(process.getModelId()));
-			}
-			LogDesc.set(process, $m("ProcessService.6", desc));
-		}
 	}
 }

@@ -127,7 +127,8 @@ public class WorkitemBean extends AbstractWorkitemBean {
 
 	@Override
 	public String toString() {
-		return "Workitem [" + getUserText() + ", " + status + "]";
+		return new StringBuilder(getUserText()).append(", ")
+				.append(wfaService.getBean(getActivityId())).toString();
 	}
 
 	private static final long serialVersionUID = 1553478269588195799L;

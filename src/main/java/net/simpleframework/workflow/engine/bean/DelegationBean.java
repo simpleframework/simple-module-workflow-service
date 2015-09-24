@@ -150,7 +150,16 @@ public class DelegationBean extends AbstractWorkflowBean implements IDescription
 
 	@Override
 	public String toString() {
-		return "Delegation [" + getUserText() + ", " + status + "]";
+		final StringBuilder sb = new StringBuilder(getUserText());
+		if (delegationSource == EDelegationSource.workitem) {
+			final WorkitemBean workitem = wfwService.getBean(getSourceId());
+			if (workitem != null) {
+				sb.append(" -> ").append(wfpService.getBean(workitem.getProcessId()));
+			}
+		} else if (delegationSource == EDelegationSource.user) {
+			sb.append(" -> ").append(workflowContext.getPermission().getUser(getSourceId()));
+		}
+		return sb.toString();
 	}
 
 	private static final long serialVersionUID = -642924978376103383L;

@@ -5,7 +5,9 @@ import java.util.Properties;
 
 import net.simpleframework.ado.ColumnMeta;
 import net.simpleframework.ado.db.common.EntityInterceptor;
+import net.simpleframework.common.Convert;
 import net.simpleframework.common.ID;
+import net.simpleframework.common.StringUtils;
 import net.simpleframework.workflow.engine.EProcessStatus;
 
 /**
@@ -178,7 +180,11 @@ public class ProcessBean extends AbstractWorkflowBean {
 
 	@Override
 	public String toString() {
-		return getTitle();
+		String str = getTitle();
+		if (!StringUtils.hasText(str)) {
+			str = Convert.toString(wfpmService.getBean(getModelId()));
+		}
+		return str;
 	}
 
 	private static final long serialVersionUID = -4249661933122865392L;
