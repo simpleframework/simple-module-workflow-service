@@ -13,6 +13,7 @@ import net.simpleframework.common.ID;
 import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.ctx.task.ExecutorRunnable;
 import net.simpleframework.ctx.task.ITaskExecutor;
+import net.simpleframework.module.common.log.LogEntity;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.EDelegationSource;
 import net.simpleframework.workflow.engine.EDelegationStatus;
@@ -123,6 +124,8 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 			if (startDate == null || startDate.before(n)) {
 				delegation.setStatus(confirm ? EDelegationStatus.receiving : EDelegationStatus.running);
 				delegation.setStartDate(n);
+
+				LogEntity.disable(delegation);
 				update(new String[] { "status", "startDate" }, delegation);
 
 				_updateWorkitem(delegation, EWorkitemStatus.delegate);
@@ -226,6 +229,6 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	// if (dsource == EDelegationSource.workitem) {
 	//
 	// }
-	// LogDesc.set(delegation, sb.toString());
+	// LdescVal.set(delegation, sb.toString());
 	// }
 }

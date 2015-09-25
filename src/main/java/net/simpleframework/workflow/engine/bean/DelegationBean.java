@@ -154,10 +154,10 @@ public class DelegationBean extends AbstractWorkflowBean implements IDescription
 		if (delegationSource == EDelegationSource.workitem) {
 			final WorkitemBean workitem = wfwService.getBean(getSourceId());
 			if (workitem != null) {
-				sb.append(" -> ").append(wfpService.getBean(workitem.getProcessId()));
+				sb.append(" / ").append(wfpService.getBean(workitem.getProcessId()));
 			}
 		} else if (delegationSource == EDelegationSource.user) {
-			sb.append(" -> ").append(workflowContext.getPermission().getUser(getSourceId()));
+			sb.append(" / ").append(workflowContext.getPermission().getUser(getSourceId()));
 		}
 		return sb.toString();
 	}
