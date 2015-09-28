@@ -6,6 +6,7 @@ import java.util.Properties;
 import net.simpleframework.ado.ColumnMeta;
 import net.simpleframework.ado.db.common.EntityInterceptor;
 import net.simpleframework.common.ID;
+import net.simpleframework.common.StringUtils;
 import net.simpleframework.workflow.engine.EActivityStatus;
 
 /**
@@ -119,7 +120,13 @@ public class ActivityBean extends AbstractWorkflowBean {
 
 	@Override
 	public String toString() {
-		return getTasknodeText();
+		final StringBuilder sb = new StringBuilder(getTasknodeText());
+		final ProcessBean process = wfpService.getBean(getProcessId());
+		final String str = process.getTitle();
+		if (StringUtils.hasText(str)) {
+			sb.append(" / ").append(str);
+		}
+		return sb.toString();
 	}
 
 	private static final long serialVersionUID = 5146309554672912773L;

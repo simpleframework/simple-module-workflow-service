@@ -180,11 +180,11 @@ public class ProcessBean extends AbstractWorkflowBean {
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder();
-		sb.append(wfpmService.getBean(getModelId()));
 		String str = getTitle();
 		if (StringUtils.hasText(str)) {
-			sb.append(" / ").append(str);
+			sb.append(str).append(" / ");
 		}
+		sb.append(wfpmService.getBean(getModelId()));
 		return sb.toString();
 	}
 

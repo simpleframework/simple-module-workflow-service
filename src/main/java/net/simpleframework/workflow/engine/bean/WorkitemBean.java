@@ -127,7 +127,7 @@ public class WorkitemBean extends AbstractWorkitemBean {
 
 	@Override
 	public String toString() {
-		return new StringBuilder(getUserText()).append(", ")
+		return new StringBuilder(getUserText()).append(" / ")
 				.append(wfaService.getBean(getActivityId())).toString();
 	}
 

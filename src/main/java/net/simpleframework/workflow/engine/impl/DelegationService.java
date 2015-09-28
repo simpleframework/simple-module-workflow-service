@@ -78,8 +78,12 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	private void _doAccept(final DelegationBean delegation, final String description2,
 			final boolean refuse) {
 		_assert(delegation, EDelegationStatus.receiving);
-		_status(delegation, refuse ? EDelegationStatus.refuse : EDelegationStatus.running);
-
+		if (refuse) {
+			_status(delegation, EDelegationStatus.refuse);
+			_updateWorkitem(delegation, EWorkitemStatus.running);
+		} else {
+			_status(delegation, EDelegationStatus.running);
+		}
 		delegation.setDescription2(description2);
 		update(new String[] { "description2" }, delegation);
 	}
@@ -213,22 +217,4 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 			}
 		});
 	}
-
-	// void _log(final DelegationBean delegation, final String key) {
-	// final StringBuilder sb = new StringBuilder();
-	//
-	// if ("insert".equals(key)) {
-	// if (dsource == EDelegationSource.workitem) {
-	// sb.append("");
-	// } else if (dsource == EDelegationSource.user) {
-	// sb.append("委托用户");
-	// }
-	// } else if ("delete".equals(key)) {
-	// }
-	// sb.append(" -> ").append(delegation.getUserText());
-	// if (dsource == EDelegationSource.workitem) {
-	//
-	// }
-	// LdescVal.set(delegation, sb.toString());
-	// }
 }
