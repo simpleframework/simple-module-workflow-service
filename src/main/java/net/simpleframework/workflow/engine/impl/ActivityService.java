@@ -69,12 +69,12 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public ProcessBean getProcessBean(final ActivityBean activity) {
-		return activity == null ? null : pService.getBean(activity.getProcessId());
+		return activity == null ? null : wfpService.getBean(activity.getProcessId());
 	}
 
 	@Override
 	public AbstractTaskNode getTaskNode(final ActivityBean activity) {
-		return activity == null ? null : (AbstractTaskNode) pService._getProcessNode(
+		return activity == null ? null : (AbstractTaskNode) wfpService.getProcessNode(
 				getProcessBean(activity)).getNodeById(activity.getTasknodeId());
 	}
 
@@ -90,7 +90,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		if (process.getStatus() == EProcessStatus.suspended) {
 			throw WorkflowStatusException.of($m("WorkitemService.2"));
 		}
-		mService._assert(pService.getProcessModel(process), EProcessModelStatus.deploy);
+		_assert(wfpService.getProcessModel(process), EProcessModelStatus.deploy);
 
 		final boolean bcomplete = activityComplete.isBcomplete();
 		if (bcomplete && isFinalStatus(activity)) {
@@ -105,7 +105,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		final Date createDate = new Date();
 		ActivityBean endActivity = null;
 		// 如果流程处在最终状态，则不创建后续环节
-		if (!pService.isFinalStatus(process)) {
+		if (!wfpService.isFinalStatus(process)) {
 			for (final TransitionNode transition : activityComplete.getTransitions()) {
 				final AbstractTaskNode to = transition.to();
 				if (to instanceof UserNode) {
@@ -140,10 +140,11 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 		final AbstractTaskNode tasknode = getTaskNode(activity);
 		if (tasknode instanceof UserNode) {
+			final WorkitemService wfwServiceImpl = (WorkitemService) wfwService;
 			// 放弃未完成的工作项
-			for (final WorkitemBean workitem : wService.getWorkitems(activity)) {
-				if (!wService.isFinalStatus(workitem)) {
-					wService._abort(workitem);
+			for (final WorkitemBean workitem : wfwServiceImpl.getWorkitems(activity)) {
+				if (!wfwServiceImpl.isFinalStatus(workitem)) {
+					wfwServiceImpl._abort(workitem);
 				}
 			}
 
@@ -170,7 +171,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		if (endActivity != null) {
 			process.setStatus(EProcessStatus.complete);
 			process.setCompleteDate(endActivity.getCompleteDate());
-			pService.update(new String[] { "completeDate", "status" }, process);
+			wfpService.update(new String[] { "completeDate", "status" }, process);
 
 			_backToProcess(process);
 		}
@@ -235,7 +236,9 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				if (timoutHours > 0) {
 					doUpdateTimeoutDate(nActivity, timoutHours);
 				}
-				wService.insert(wService._create(nActivity, participant, createDate));
+
+				final WorkitemService wfwServiceImpl = (WorkitemService) wfwService;
+				wfwServiceImpl.insert(wfwServiceImpl._create(nActivity, participant, createDate));
 			}
 		}
 	}
@@ -371,14 +374,14 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		final Properties properties = sProcess.getProperties();
 		final String serverUrl = properties.getProperty(IProcessRemote.SERVERURL);
 		if (StringUtils.hasText(serverUrl)) {
-			pService.doBackToRemote(sProcess);
+			wfpService.doBackToRemote(sProcess);
 		} else {
 			final ActivityBean nActivity = getBean(properties
 					.getProperty(IProcessRemote.SUB_ACTIVITYID));
 			doSubComplete(nActivity, new IMappingVal() {
 				@Override
 				public Object val(final String mapping) {
-					return pService.getVariable(sProcess, mapping);
+					return wfpService.getVariable(sProcess, mapping);
 				}
 			});
 		}
@@ -393,14 +396,14 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		if (sub.isSync()) {
 			// 设置返回的变量，仅在同步方式
 			final ProcessBean mProcess = getProcessBean(activity);
-			final ProcessNode processNode = pService._getProcessNode(mProcess);
+			final ProcessNode processNode = wfpService.getProcessNode(mProcess);
 			for (final VariableMapping vm : sub.getMappingSet()) {
 				final VariableNode vNode = processNode.getVariableNodeByName(vm.variable);
 				if (vNode == null) {
 					continue;
 				}
 				if (vNode.getMode() == EVariableMode.inout) {
-					pService.setVariable(mProcess, vm.variable, mappingVal.val(vm.mapping));
+					wfpService.setVariable(mProcess, vm.variable, mappingVal.val(vm.mapping));
 				}
 			}
 		}
@@ -417,7 +420,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			final ProcessBean process = getProcessBean(preActivity);
 			final KVMap variables = new KVMap();
 			for (final VariableMapping vMapping : to.getMappingSet()) {
-				final Object value = pService.getVariable(process, vMapping.variable);
+				final Object value = wfpService.getVariable(process, vMapping.variable);
 				variables.add(vMapping.mapping, value);
 			}
 			final boolean sync = to.isSync();
@@ -427,8 +430,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				properties
 						.setProperty(IProcessRemote.SUB_ACTIVITYID, String.valueOf(nActivity.getId()));
 			}
-			pService.doStartProcess(mService.getProcessModel(to.getModel()), variables, properties,
-					null);
+			wfpService.doStartProcess(wfpmService.getProcessModel(to.getModel()), variables,
+					properties, null);
 			if (sync) {
 				_status(nActivity, EActivityStatus.waiting);
 			} else {
@@ -472,7 +475,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 						if (i++ > 0) {
 							mappings.append(";");
 						}
-						data.add(vMapping.mapping, pService.getVariable(mProcess, vMapping.variable));
+						data.add(vMapping.mapping, wfpService.getVariable(mProcess, vMapping.variable));
 						mappings.append(vMapping.mapping);
 					}
 					if (mappings.length() > 0) {
@@ -526,9 +529,10 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	void _abort(final ActivityBean activity, final EActivityAbortPolicy policy,
 			final boolean fallback) {
-		for (final WorkitemBean workitem : wService.getWorkitems(activity)) {
-			if (!wService.isFinalStatus(workitem)) {
-				wService._abort(workitem);
+		final WorkitemService wfwServiceImpl = (WorkitemService) wfwService;
+		for (final WorkitemBean workitem : wfwServiceImpl.getWorkitems(activity)) {
+			if (!wfwServiceImpl.isFinalStatus(workitem)) {
+				wfwServiceImpl._abort(workitem);
 			}
 		}
 
@@ -626,7 +630,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	public void doFallback(final ActivityBean activity, final String taskname) {
 		_assert(activity, EActivityStatus.running);
 		// 验证是否存在已完成的工作
-		if (wService.getWorkitems(activity, EWorkitemStatus.complete).size() > 0) {
+		if (wfwService.getWorkitems(activity, EWorkitemStatus.complete).size() > 0) {
 			throw WorkflowException.of($m("ActivityService.0"));
 		}
 		// 退回前一指定任务
@@ -667,8 +671,9 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		final ActivityBean nActivity = _create(to, preActivity, new Date());
 		insert(nActivity);
 		if (to instanceof UserNode) {
+			final WorkitemService wfwServiceImpl = (WorkitemService) wfwService;
 			// 克隆工作项
-			final List<WorkitemBean> workitems = wService.getWorkitems(oActivity,
+			final List<WorkitemBean> workitems = wfwServiceImpl.getWorkitems(oActivity,
 					EWorkitemStatus.complete);
 			if (workitems.size() > 0) {
 				if (TasknodeUtils.isSequential(to)) {
@@ -680,13 +685,13 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 						}
 					});
 					// 仅创建第一个工作项
-					wService._clone(nActivity, workitems.remove(0));
+					wfwServiceImpl._clone(nActivity, workitems.remove(0));
 					// 设置后续参与者
 					PropSequential.set(nActivity, workitems);
 					update(new String[] { "properties" }, nActivity);
 				} else {
 					for (final WorkitemBean workitem : workitems) {
-						wService._clone(nActivity, workitem);
+						wfwServiceImpl._clone(nActivity, workitem);
 					}
 				}
 			} else {
@@ -777,7 +782,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public Map<String, Object> createVariables(final ActivityBean activity) {
-		final Map<String, Object> variables = pService.createVariables(getProcessBean(activity));
+		final Map<String, Object> variables = wfpService.createVariables(getProcessBean(activity));
 		variables.put("activity", activity);
 		for (final String variable : getVariableNames(activity)) {
 			variables.put(variable, getVariable(activity, variable));
@@ -788,7 +793,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	@Override
 	public Object getVariable(final ActivityBean activity, final String name) {
 		final VariableNode variableNode = getTaskNode(activity).getVariableNodeByName(name);
-		return varService.getVariableValue(activity, variableNode);
+		return vServiceImpl.getVariableValue(activity, variableNode);
 	}
 
 	@Override
@@ -798,7 +803,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public void setVariable(final ActivityBean activity, final String[] names, final Object[] values) {
-		varService.setVariableValue(activity, names, values);
+		vServiceImpl.setVariableValue(activity, names, values);
 	}
 
 	@Override
@@ -831,7 +836,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	@Override
 	public List<Participant> getParticipants(final ActivityBean activity, final boolean all) {
 		final List<Participant> list = new ArrayList<Participant>();
-		for (final WorkitemBean workitem : wService.getWorkitems(activity)) {
+		for (final WorkitemBean workitem : wfwService.getWorkitems(activity)) {
 			if (!all && workitem.getStatus().ordinal() > EWorkitemStatus.complete.ordinal()) {
 				continue;
 			}
@@ -843,7 +848,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	@Override
 	public List<Participant> getParticipants2(final ActivityBean activity) {
 		final List<Participant> list = new ArrayList<Participant>();
-		for (final WorkitemBean workitem : wService.getWorkitems(activity, EWorkitemStatus.complete)) {
+		for (final WorkitemBean workitem : wfwService
+				.getWorkitems(activity, EWorkitemStatus.complete)) {
 			list.add(new Participant(workitem.getUserId2(), workitem.getRoleId(), workitem.getDeptId()));
 		}
 		return list;
@@ -867,7 +873,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		ActivityBean activity;
 		final Date n = new Date();
 		while ((activity = dq.next()) != null) {
-			if (pService.isFinalStatus(getProcessBean(activity))) {
+			if (wfpService.isFinalStatus(getProcessBean(activity))) {
 				continue;
 			}
 			final EActivityStatus status = activity.getStatus();
@@ -942,9 +948,9 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				for (final ActivityBean activity : coll(manager, paramsValue)) {
 					final Object id = activity.getId();
 					// 删除任务环节
-					wService.deleteWith("activityId=?", id);
+					wfwService.deleteWith("activityId=?", id);
 					// 删除环节变量
-					varService.deleteVariables(EVariableSource.activity, id);
+					vServiceImpl.deleteVariables(EVariableSource.activity, id);
 				}
 			}
 

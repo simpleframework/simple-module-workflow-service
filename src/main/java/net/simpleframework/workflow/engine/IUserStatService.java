@@ -12,7 +12,7 @@ import net.simpleframework.workflow.engine.bean.UserStatBean;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public interface IUserStatService extends IDbBeanService<UserStatBean>, IWorkflowServiceAware {
+public interface IUserStatService extends IDbBeanService<UserStatBean>, IWorkflowContextAware {
 
 	/**
 	 * 获取用户统计信息

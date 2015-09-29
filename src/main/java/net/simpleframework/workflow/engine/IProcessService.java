@@ -10,6 +10,7 @@ import net.simpleframework.workflow.engine.bean.ProcessBean;
 import net.simpleframework.workflow.engine.bean.ProcessModelBean;
 import net.simpleframework.workflow.engine.bean.WorkitemBean;
 import net.simpleframework.workflow.schema.ProcessDocument;
+import net.simpleframework.workflow.schema.ProcessNode;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -22,6 +23,8 @@ public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 		IWorkflowService<ProcessBean> {
 
 	ProcessDocument getProcessDocument(ProcessBean process);
+
+	ProcessNode getProcessNode(ProcessBean process);
 
 	/**
 	 * 获取流程模型

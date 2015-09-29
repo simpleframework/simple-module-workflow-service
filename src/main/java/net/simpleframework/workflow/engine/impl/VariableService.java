@@ -12,7 +12,7 @@ import net.simpleframework.common.JsonUtils;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
 import net.simpleframework.workflow.engine.EVariableSource;
-import net.simpleframework.workflow.engine.IWorkflowServiceAware;
+import net.simpleframework.workflow.engine.IWorkflowContextAware;
 import net.simpleframework.workflow.engine.bean.AbstractWorkflowBean;
 import net.simpleframework.workflow.engine.bean.ActivityBean;
 import net.simpleframework.workflow.engine.bean.ProcessBean;
@@ -27,7 +27,7 @@ import net.simpleframework.workflow.schema.VariableNode;
  *         http://www.simpleframework.net
  */
 public class VariableService extends AbstractDbBeanService<VariableBean> implements
-		IWorkflowServiceAware {
+		IWorkflowContextAware {
 
 	VariableBean createVariableBean(final AbstractWorkflowBean bean,
 			final VariableNode variableNode, final Object value) {
@@ -142,8 +142,8 @@ public class VariableService extends AbstractDbBeanService<VariableBean> impleme
 		for (int i = 0; i < length; i++) {
 			VariableNode variableNode = null;
 			if (bean instanceof ProcessBean) {
-				variableNode = ((ProcessService) wfpService)._getProcessNode((ProcessBean) bean)
-						.getVariableNodeByName(names[i]);
+				variableNode = wfpService.getProcessNode((ProcessBean) bean).getVariableNodeByName(
+						names[i]);
 			} else if (bean instanceof ActivityBean) {
 				variableNode = wfaService.getTaskNode((ActivityBean) bean).getVariableNodeByName(
 						names[i]);

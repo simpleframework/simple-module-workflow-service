@@ -9,7 +9,8 @@ import net.simpleframework.ctx.service.ado.db.IDbBeanService;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public interface IWorkflowService<T extends AbstractIdBean> extends IDbBeanService<T> {
+public interface IWorkflowService<T extends AbstractIdBean> extends IDbBeanService<T>,
+		IWorkflowContextAware {
 
 	/**
 	 * 是否最终状态，不能再发生状态转换

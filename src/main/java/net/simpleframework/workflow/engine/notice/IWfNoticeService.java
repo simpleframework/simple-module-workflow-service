@@ -1,6 +1,6 @@
-package net.simpleframework.workflow.engine.bean;
+package net.simpleframework.workflow.engine.notice;
 
-import net.simpleframework.ado.bean.AbstractDateAwareBean;
+import net.simpleframework.ctx.service.ado.db.IDbBeanService;
 import net.simpleframework.workflow.engine.IWorkflowContextAware;
 
 /**
@@ -9,7 +9,5 @@ import net.simpleframework.workflow.engine.IWorkflowContextAware;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-@SuppressWarnings("serial")
-public abstract class AbstractWorkflowBean extends AbstractDateAwareBean implements
-		IWorkflowContextAware {
+public interface IWfNoticeService extends IDbBeanService<WfNoticeBean>, IWorkflowContextAware {
 }

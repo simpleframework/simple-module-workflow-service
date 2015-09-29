@@ -180,7 +180,7 @@ public class ProcessBean extends AbstractWorkflowBean {
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder();
-		String str = getTitle();
+		final String str = getTitle();
 		if (StringUtils.hasText(str)) {
 			sb.append(str).append(" / ");
 		}

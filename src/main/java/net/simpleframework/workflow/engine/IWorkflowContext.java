@@ -4,6 +4,7 @@ import net.simpleframework.ctx.IModuleContext;
 import net.simpleframework.workflow.engine.comment.IWfCommentLogService;
 import net.simpleframework.workflow.engine.comment.IWfCommentService;
 import net.simpleframework.workflow.engine.comment.IWfCommentUserService;
+import net.simpleframework.workflow.engine.notice.IWfNoticeService;
 import net.simpleframework.workflow.engine.participant.IWorkflowPermissionHandler;
 import net.simpleframework.workflow.engine.remote.IProcessRemote;
 
@@ -22,7 +23,7 @@ public interface IWorkflowContext extends IModuleContext {
 	 * 
 	 * @return
 	 */
-	Package[] getImportPackages();
+	Package[] getScriptImportPackages();
 
 	/**
 	 * 模型服务
@@ -75,6 +76,13 @@ public interface IWorkflowContext extends IModuleContext {
 	IWfCommentUserService getCommentUserService();
 
 	IWfCommentLogService getCommentLogService();
+
+	/**
+	 * 获取消息通知服务接口
+	 * 
+	 * @return
+	 */
+	IWfNoticeService getNoticeService();
 
 	/**
 	 * 参与者模型接口

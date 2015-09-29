@@ -258,16 +258,16 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 					}
 
 					final Object id = processModel.getId();
-					if (pService.count("modelId=?", id) > 0) {
+					if (wfpService.count("modelId=?", id) > 0) {
 						throw WorkflowException.of($m("ProcessModelService.2"));
 					}
 
 					// 删除lob
 					getEntityManager(ProcessModelLobBean.class).delete(new ExpressionValue("id=?", id));
 					// 删除流程变量，静态
-					varService.deleteVariables(EVariableSource.model, id);
+					vServiceImpl.deleteVariables(EVariableSource.model, id);
 					// 删除domian
-					drService.deleteWith("modelId=?", id);
+					wfpmdService.deleteWith("modelId=?", id);
 				}
 			}
 

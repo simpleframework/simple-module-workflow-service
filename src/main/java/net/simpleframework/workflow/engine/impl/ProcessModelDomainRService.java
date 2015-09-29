@@ -3,7 +3,7 @@ package net.simpleframework.workflow.engine.impl;
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
 import net.simpleframework.workflow.engine.IProcessModelDomainRService;
-import net.simpleframework.workflow.engine.IWorkflowServiceAware;
+import net.simpleframework.workflow.engine.IWorkflowContextAware;
 import net.simpleframework.workflow.engine.bean.ProcessModelBean;
 import net.simpleframework.workflow.engine.bean.ProcessModelDomainR;
 
@@ -14,7 +14,7 @@ import net.simpleframework.workflow.engine.bean.ProcessModelDomainR;
  *         http://www.simpleframework.net
  */
 public class ProcessModelDomainRService extends AbstractDbBeanService<ProcessModelDomainR>
-		implements IProcessModelDomainRService, IWorkflowServiceAware {
+		implements IProcessModelDomainRService, IWorkflowContextAware {
 
 	@Override
 	public ProcessModelDomainR getProcessModelDomainR(final ID domainId,

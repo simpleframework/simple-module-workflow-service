@@ -43,6 +43,9 @@ import net.simpleframework.workflow.engine.comment.WfCommentLogService;
 import net.simpleframework.workflow.engine.comment.WfCommentService;
 import net.simpleframework.workflow.engine.comment.WfCommentUser;
 import net.simpleframework.workflow.engine.comment.WfCommentUserService;
+import net.simpleframework.workflow.engine.notice.IWfNoticeService;
+import net.simpleframework.workflow.engine.notice.WfNoticeBean;
+import net.simpleframework.workflow.engine.notice.WfNoticeService;
 import net.simpleframework.workflow.engine.participant.IWorkflowPermissionHandler;
 import net.simpleframework.workflow.engine.remote.DefaultProcessRemote;
 import net.simpleframework.workflow.engine.remote.IProcessRemote;
@@ -59,20 +62,7 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 	public static String ROLE_WORKFLOW_MANAGER;
 
 	@Override
-	public void onInit(final IApplicationContext application) throws Exception {
-		super.onInit(application);
-
-		getTaskExecutor().execute(new ExecutorRunnable() {
-			@Override
-			protected void task(final Map<String, Object> cache) throws Exception {
-				// 初始化所有服务
-				AbstractWorkflowService.doStartup();
-			}
-		});
-	}
-
-	@Override
-	public Package[] getImportPackages() {
+	public Package[] getScriptImportPackages() {
 		return null;
 	}
 
@@ -81,16 +71,25 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 		return new DbEntityTable[] { new DbEntityTable(ProcessModelBean.class, "sf_workflow_model"),
 				new DbEntityTable(ProcessModelLobBean.class, "sf_workflow_model_lob").setNoCache(true),
 				new DbEntityTable(ProcessModelDomainR.class, "sf_workflow_model_domain"),
+
 				new DbEntityTable(ProcessBean.class, "sf_workflow_process"),
 				new DbEntityTable(ProcessLobBean.class, "sf_workflow_process_lob").setNoCache(true),
+
 				new DbEntityTable(DelegationBean.class, "sf_workflow_delegation"),
+
 				new DbEntityTable(ActivityBean.class, "sf_workflow_activity"),
 				new DbEntityTable(ActivityLobBean.class, "sf_workflow_activity_lob").setNoCache(true),
+
 				new DbEntityTable(WorkitemBean.class, "sf_workflow_workitem"),
 				new DbEntityTable(WorkviewBean.class, "sf_workflow_workview"),
+
 				new DbEntityTable(UserStatBean.class, "sf_workflow_userstat"),
+
 				new DbEntityTable(VariableBean.class, "sf_workflow_variable"),
 				new DbEntityTable(VariableLogBean.class, "sf_workflow_variable_log"),
+
+				new DbEntityTable(WfNoticeBean.class, "sf_workflow_notice"),
+
 				new DbEntityTable(WfComment.class, "sf_workflow_comment"),
 				new DbEntityTable(WfCommentUser.class, "sf_workflow_comment_user"),
 				new DbEntityTable(WfCommentLog.class, "sf_workflow_comment_log") };
@@ -174,7 +173,28 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 	}
 
 	@Override
+	public IWfNoticeService getNoticeService() {
+		return singleton(WfNoticeService.class);
+	}
+
+	@Override
 	public ContextSettings getContextSettings() {
 		return singleton(WorkflowSettings.class);
+	}
+
+	@Override
+	public void onInit(final IApplicationContext application) throws Exception {
+		super.onInit(application);
+
+		// 预初始化服务
+		// oprintln("[Service onInit] " + IWorkflowServiceAware.wfnService);
+
+		getTaskExecutor().execute(new ExecutorRunnable() {
+			@Override
+			protected void task(final Map<String, Object> cache) throws Exception {
+				// 初始化所有服务
+				// AbstractWorkflowService.doStartup();
+			}
+		});
 	}
 }

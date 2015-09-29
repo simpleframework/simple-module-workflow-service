@@ -76,7 +76,7 @@ public class UserStatService extends AbstractDbBeanService<UserStatBean> impleme
 		return new int[] { complete, count };
 	}
 
-	void reset(final UserStatBean stat) {
+	static void reset(final UserStatBean stat) {
 		for (final PropertyWrapper p : BeanUtils.getProperties(UserStatBean.class).values()) {
 			if ("int".equals(p.type.getName())) {
 				BeanUtils.setProperty(stat, p.name, 0);

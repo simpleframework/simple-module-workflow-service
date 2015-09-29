@@ -19,13 +19,11 @@ import net.simpleframework.ctx.script.IScriptEval;
 import net.simpleframework.ctx.script.ScriptEvalFactory;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
 import net.simpleframework.workflow.engine.IWorkflowService;
-import net.simpleframework.workflow.engine.IWorkflowServiceAware;
+import net.simpleframework.workflow.engine.bean.AbstractWorkflowBean;
 import net.simpleframework.workflow.engine.bean.ActivityBean;
 import net.simpleframework.workflow.engine.bean.ProcessBean;
 import net.simpleframework.workflow.engine.bean.ProcessModelBean;
 import net.simpleframework.workflow.engine.bean.WorkitemBean;
-import net.simpleframework.workflow.engine.comment.WfCommentService;
-import net.simpleframework.workflow.engine.comment.WfCommentUserService;
 import net.simpleframework.workflow.engine.event.IActivityListener;
 import net.simpleframework.workflow.engine.event.IProcessListener;
 import net.simpleframework.workflow.engine.event.IProcessModelListener;
@@ -43,7 +41,7 @@ import net.simpleframework.workflow.schema.ProcessNode;
  *         http://www.simpleframework.net
  */
 public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
-		AbstractDbBeanService<T> implements IWorkflowService<T>, IWorkflowServiceAware {
+		AbstractDbBeanService<T> implements IWorkflowService<T> {
 	static Collection<String> defaultExpr;
 	static {
 		defaultExpr = new ArrayList<String>();
@@ -70,7 +68,7 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 				for (final String expr : defaultExpr) {
 					script.eval(expr);
 				}
-				final Package[] arr = workflowContext.getImportPackages();
+				final Package[] arr = workflowContext.getScriptImportPackages();
 				if (arr != null) {
 					for (final Package p : arr) {
 						script.eval("import " + p.getName() + ".*;");
@@ -154,15 +152,16 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 		final Set<String> set = new LinkedHashSet<String>();
 		Set<String> _set = null;
 		if (bean instanceof ProcessModelBean) {
-			_set = mService.getProcessDocument((ProcessModelBean) bean).getProcessNode().listeners();
+			_set = wfpmService.getProcessDocument((ProcessModelBean) bean).getProcessNode()
+					.listeners();
 		} else if (bean instanceof ProcessBean) {
-			_set = pService._getProcessNode((ProcessBean) bean).listeners();
+			_set = wfpService.getProcessNode((ProcessBean) bean).listeners();
 		} else {
 			AbstractTaskNode taskNode = null;
 			if (bean instanceof ActivityBean) {
-				taskNode = aService.getTaskNode((ActivityBean) bean);
+				taskNode = wfaService.getTaskNode((ActivityBean) bean);
 			} else if (bean instanceof WorkitemBean) {
-				taskNode = aService.getTaskNode(wService.getActivity((WorkitemBean) bean));
+				taskNode = wfaService.getTaskNode(wfwService.getActivity((WorkitemBean) bean));
 			}
 			if (taskNode != null) {
 				_set = ((ProcessNode) taskNode.getParent()).listeners();
@@ -199,7 +198,7 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 		return false;
 	}
 
-	protected void _assert(final T t, final Enum<?>... status) {
+	protected static void _assert(final AbstractWorkflowBean t, final Enum<?>... status) {
 		final Enum<?> status2 = (Enum<?>) BeanUtils.getProperty(t, "status");
 		if (!ArrayUtils.contains(status, status2)) {
 			throw WorkflowStatusException.of(status2, status);
@@ -231,23 +230,7 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 		}
 	}
 
-	protected static ProcessModelService mService = (ProcessModelService) IWorkflowServiceAware.wfpmService;
-	protected static ProcessService pService = (ProcessService) IWorkflowServiceAware.wfpService;
-	protected static ActivityService aService = (ActivityService) IWorkflowServiceAware.wfaService;
-	protected static WorkitemService wService = (WorkitemService) IWorkflowServiceAware.wfwService;
-	protected static WorkviewService vService = (WorkviewService) IWorkflowServiceAware.wfvService;
-	protected static DelegationService dService = (DelegationService) IWorkflowServiceAware.wfdService;
-	protected static ProcessModelDomainRService drService = (ProcessModelDomainRService) IWorkflowServiceAware.wfpmdService;
-	protected static UserStatService usService = (UserStatService) IWorkflowServiceAware.wfusService;
-
-	protected static WfCommentService commentService = (WfCommentService) IWorkflowServiceAware.wfcService;
-	protected static WfCommentUserService commentUserService = (WfCommentUserService) IWorkflowServiceAware.wfcuService;
-
-	protected static VariableService varService;
-
-	static void doStartup() {
-		varService = singleton(VariableService.class);
-	}
+	protected static VariableService vServiceImpl = singleton(VariableService.class);
 
 	static final String ATTR_PROCESS_DOCUMENT = "_processdocument";
 }

@@ -141,7 +141,7 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 		// 更新Workitem
 		WorkitemBean workitem;
 		if (delegation.getDelegationSource() == EDelegationSource.workitem
-				&& (workitem = wService.getBean(delegation.getSourceId())) != null) {
+				&& (workitem = wfwService.getBean(delegation.getSourceId())) != null) {
 			workitem.setStatus(status);
 			final ID userId = workitem.getUserId();
 			workitem.setUserId2(status == EWorkitemStatus.delegate ? delegation.getUserId() : userId);
@@ -154,7 +154,7 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 				workitem.setUserText2(user2.getText());
 				workitem.setDeptId2(user2.getDept().getId());
 			}
-			wService.update(new String[] { "status", "userId2", "userText2", "deptId2" }, workitem);
+			wfwService.update(new String[] { "status", "userId2", "userText2", "deptId2" }, workitem);
 		}
 	}
 

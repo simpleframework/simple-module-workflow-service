@@ -15,7 +15,7 @@ import net.simpleframework.workflow.engine.participant.Participant;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public abstract class PropSequential implements IWorkflowServiceAware {
+public abstract class PropSequential implements IWorkflowContextAware {
 
 	/* 保存顺序执行的参与者或已有的工作项id(前缀#) */
 	static final String SEQUENTIAL = "sequential";

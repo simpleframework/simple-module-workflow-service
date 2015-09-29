@@ -14,7 +14,7 @@ import net.simpleframework.workflow.engine.bean.WorkviewBean;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public interface IWorkviewService extends IDbBeanService<WorkviewBean>, IWorkflowServiceAware {
+public interface IWorkviewService extends IDbBeanService<WorkviewBean>, IWorkflowContextAware {
 
 	/**
 	 * 创建待阅项

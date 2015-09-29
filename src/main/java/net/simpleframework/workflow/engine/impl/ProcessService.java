@@ -60,7 +60,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public ProcessModelBean getProcessModel(final ProcessBean process) {
-		return process == null ? null : mService.getBean(process.getModelId());
+		return process == null ? null : wfpmService.getBean(process.getModelId());
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 						return lob != null ? new ProcessDocument(lob.getProcessSchema()) : null;
 					}
 				});
-		return doc != null ? doc : mService.getProcessDocument(getProcessModel(process));
+		return doc != null ? doc : wfpmService.getProcessDocument(getProcessModel(process));
 	}
 
 	/**
@@ -86,7 +86,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	 * @param process
 	 * @return
 	 */
-	ProcessNode _getProcessNode(final ProcessBean process) {
+	@Override
+	public ProcessNode getProcessNode(final ProcessBean process) {
 		return getProcessDocument(process).getProcessNode();
 	}
 
@@ -130,9 +131,10 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	private void _createStartNode(final ProcessBean process, final List<TransitionNode> transitions) {
 		// 创建开始任务
-		final StartNode startNode = _getProcessNode(process).startNode();
-		final ActivityBean sActivity = aService._create(process, startNode, null, new Date());
-		aService.insert(sActivity);
+		final StartNode startNode = getProcessNode(process).startNode();
+		final ActivityService wfaServiceImpl = (ActivityService) wfaService;
+		final ActivityBean sActivity = wfaServiceImpl._create(process, startNode, null, new Date());
+		wfaServiceImpl.insert(sActivity);
 		if (transitions == null) {
 			new ActivityComplete(sActivity).complete();
 		} else {
@@ -165,7 +167,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 			}
 		}
 
-		final ProcessDocument doc = mService.getProcessDocument(processModel);
+		final ProcessDocument doc = wfpmService.getProcessDocument(processModel);
 		if (!doc.getProcessNode().isInstanceShared()) {
 			final ProcessLobBean lob = new ProcessLobBean();
 			lob.setId(process.getId());
@@ -194,7 +196,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 				for (final String mapping : StringUtils.split(properties
 						.getProperty(IProcessRemote.VAR_MAPPINGS))) {
-					data.add(mapping, pService.getVariable(process, mapping));
+					data.add(mapping, wfpService.getVariable(process, mapping));
 				}
 
 				final Map<String, Object> r = workflowContext.getRemoteService().call(
@@ -308,8 +310,9 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	@Override
 	public void doAbort(final ProcessBean process, final EProcessAbortPolicy policy) {
 		if (policy == EProcessAbortPolicy.allActivities) {
-			for (final ActivityBean activity : aService.getActivities(process)) {
-				aService._abort(activity);
+			final ActivityService wfaServiceImpl = (ActivityService) wfaService;
+			for (final ActivityBean activity : wfaServiceImpl.getActivities(process)) {
+				wfaServiceImpl._abort(activity);
 			}
 		}
 
@@ -318,7 +321,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public Map<String, Object> createVariables(final ProcessBean process) {
-		final Map<String, Object> variables = mService.createVariables(getProcessModel(process));
+		final Map<String, Object> variables = wfpmService.createVariables(getProcessModel(process));
 		variables.put("process", process);
 		for (final String variable : getVariableNames(process)) {
 			variables.put(variable, getVariable(process, variable));
@@ -328,8 +331,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public Object getVariable(final ProcessBean process, final String name) {
-		final VariableNode variableNode = _getProcessNode(process).getVariableNodeByName(name);
-		return varService.getVariableValue(process, variableNode);
+		final VariableNode variableNode = getProcessNode(process).getVariableNodeByName(name);
+		return vServiceImpl.getVariableValue(process, variableNode);
 	}
 
 	@Override
@@ -339,19 +342,19 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public void setVariable(final ProcessBean process, final String[] names, final Object[] values) {
-		varService.setVariableValue(process, names, values);
+		vServiceImpl.setVariableValue(process, names, values);
 	}
 
 	@Override
 	public Collection<String> getVariableNames(final ProcessBean process) {
-		return _getProcessNode(process).variables().keySet();
+		return getProcessNode(process).variables().keySet();
 	}
 
 	@Override
 	public WorkitemBean getFirstWorkitem(final ProcessBean process) {
-		final ActivityBean startActivity = aService.getStartActivity(process);
-		for (final ActivityBean activity : aService.getNextActivities(startActivity)) {
-			final List<WorkitemBean> list = wService.getWorkitems(activity, EWorkitemStatus.running);
+		final ActivityBean startActivity = wfaService.getStartActivity(process);
+		for (final ActivityBean activity : wfaService.getNextActivities(startActivity)) {
+			final List<WorkitemBean> list = wfwService.getWorkitems(activity, EWorkitemStatus.running);
 			if (list.size() > 0) {
 				return list.get(0);
 			}
@@ -395,7 +398,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		process.setModelName(processModel.getModelName());
 		process.setTitle(title);
 		process.setCreateDate(new Date());
-		final ProcessDocument doc = mService.getProcessDocument(processModel);
+		final ProcessDocument doc = wfpmService.getProcessDocument(processModel);
 		process.setVersion(doc.getProcessNode().getVersion().toString());
 
 		final PermissionUser user = permission.getUser(userId);
@@ -447,12 +450,13 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 				// 更新流程实例计数
 				final ProcessModelBean processModel = getProcessModel(process);
 				processModel.setProcessCount(getProcessList(null, processModel).getCount());
-				mService.update(new String[] { "processCount" }, processModel);
+				wfpmService.update(new String[] { "processCount" }, processModel);
 
 				final ID domainId = process.getDomainId();
-				final ProcessModelDomainR r = drService.getProcessModelDomainR(domainId, processModel);
+				final ProcessModelDomainR r = wfpmdService.getProcessModelDomainR(domainId,
+						processModel);
 				r.setProcessCount(getProcessList(domainId, processModel).getCount());
-				drService.update(new String[] { "processCount" }, r);
+				wfpmdService.update(new String[] { "processCount" }, r);
 			}
 
 			@Override
@@ -471,16 +475,16 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 					getEntityManager(ProcessLobBean.class).delete(new ExpressionValue("id=?", id));
 
 					// 删除任务环节
-					aService.deleteWith("processId=?", id);
+					wfaService.deleteWith("processId=?", id);
 					// 删除待阅
-					vService.deleteWith("processId=?", id);
+					wfvService.deleteWith("processId=?", id);
 
 					// 删除流程变量
-					varService.deleteVariables(EVariableSource.process, id);
+					vServiceImpl.deleteVariables(EVariableSource.process, id);
 
 					// 删除意见
-					commentService.deleteWith("contentId=?", id);
-					commentUserService.deleteWith("contentId=?", id);
+					wfcService.deleteWith("contentId=?", id);
+					wfcuService.deleteWith("contentId=?", id);
 				}
 			}
 

@@ -9,7 +9,7 @@ import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.module.common.content.impl.AbstractCommentService;
 import net.simpleframework.workflow.engine.EWorkitemStatus;
-import net.simpleframework.workflow.engine.IWorkflowServiceAware;
+import net.simpleframework.workflow.engine.IWorkflowContextAware;
 import net.simpleframework.workflow.engine.bean.ProcessBean;
 import net.simpleframework.workflow.engine.bean.WorkitemBean;
 import net.simpleframework.workflow.engine.comment.WfCommentLog.ELogType;
@@ -21,7 +21,7 @@ import net.simpleframework.workflow.engine.comment.WfCommentLog.ELogType;
  *         http://www.simpleframework.net
  */
 public class WfCommentService extends AbstractCommentService<WfComment> implements
-		IWfCommentService, IWorkflowServiceAware {
+		IWfCommentService, IWorkflowContextAware {
 
 	@Override
 	public WfComment getCurComment(final WorkitemBean workitem) {
