@@ -5,7 +5,6 @@ import static net.simpleframework.common.I18n.$m;
 import java.util.Map;
 
 import net.simpleframework.ado.db.DbEntityTable;
-import net.simpleframework.ado.db.IDbEntityTableRegistry;
 import net.simpleframework.ctx.AbstractADOModuleContext;
 import net.simpleframework.ctx.IApplicationContext;
 import net.simpleframework.ctx.Module;
@@ -56,8 +55,7 @@ import net.simpleframework.workflow.engine.remote.IProcessRemote;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public abstract class WorkflowContext extends AbstractADOModuleContext implements IWorkflowContext,
-		IDbEntityTableRegistry {
+public abstract class WorkflowContext extends AbstractADOModuleContext implements IWorkflowContext {
 	/* 机构管理员角色 */
 	public static String ROLE_WORKFLOW_MANAGER;
 
@@ -67,7 +65,7 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 	}
 
 	@Override
-	public DbEntityTable[] createEntityTables() {
+	protected DbEntityTable[] createEntityTables() {
 		return new DbEntityTable[] { new DbEntityTable(ProcessModelBean.class, "sf_workflow_model"),
 				new DbEntityTable(ProcessModelLobBean.class, "sf_workflow_model_lob").setNoCache(true),
 				new DbEntityTable(ProcessModelDomainR.class, "sf_workflow_model_domain"),
