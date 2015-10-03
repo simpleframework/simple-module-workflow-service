@@ -1,7 +1,5 @@
 package net.simpleframework.workflow.engine.notice;
 
-import net.simpleframework.common.ClassUtils;
-import net.simpleframework.common.ClassUtils.ScanClassResourcesCallback;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
 
 /**
@@ -17,13 +15,5 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 	public void onInit() throws Exception {
 		super.onInit();
 
-		for (final String packageName : getApplicationContext().getScanPackageNames()) {
-			ClassUtils.scanResources(packageName, new ScanClassResourcesCallback() {
-				@Override
-				public void doResources(final String filepath, final boolean isDirectory)
-						throws Exception {
-				}
-			});
-		}
 	}
 }
