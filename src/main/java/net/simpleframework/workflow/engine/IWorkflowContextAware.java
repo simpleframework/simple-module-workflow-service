@@ -42,5 +42,5 @@ public interface IWorkflowContextAware extends IModuleContextAware {
 
 	static final IWfNoticeService wfnService = workflowContext.getNoticeService();
 
-	static final IWorkflowPermissionHandler permission = workflowContext.getParticipantService();
+	static final IWorkflowPermissionHandler permission = workflowContext.getPermissionHandler();
 }

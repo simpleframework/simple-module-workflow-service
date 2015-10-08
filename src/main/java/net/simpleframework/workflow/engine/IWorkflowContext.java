@@ -6,7 +6,7 @@ import net.simpleframework.workflow.engine.comment.IWfCommentService;
 import net.simpleframework.workflow.engine.comment.IWfCommentUserService;
 import net.simpleframework.workflow.engine.notice.IWfNoticeService;
 import net.simpleframework.workflow.engine.participant.IWorkflowPermissionHandler;
-import net.simpleframework.workflow.engine.remote.IProcessRemote;
+import net.simpleframework.workflow.engine.remote.IProcessRemoteHandler;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -89,12 +89,12 @@ public interface IWorkflowContext extends IModuleContext {
 	 * 
 	 * @return
 	 */
-	IWorkflowPermissionHandler getParticipantService();
+	IWorkflowPermissionHandler getPermissionHandler();
 
 	/**
 	 * 远程服务
 	 * 
 	 * @return
 	 */
-	IProcessRemote getRemoteService();
+	IProcessRemoteHandler getProcessRemoteHandler();
 }

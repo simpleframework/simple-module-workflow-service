@@ -21,16 +21,11 @@ public class WorkflowSettings extends PropertiesContextSettings implements IWork
 	 * @return
 	 */
 	public String getServerUrl() {
-		return "http://127.0.0.1:9090/streets2/hr";
+		return "http://127.0.0.1:8080/";
 	}
 
-	/**
-	 * 获取子流程的监控周期时间
-	 * 
-	 * @return
-	 */
-	public int getSubActivityPeriod() {
-		return 60 * 5; // 单位秒
+	public String getSubtaskUrl() {
+		return "/wf-subtask-remote";
 	}
 
 	/**
@@ -39,10 +34,6 @@ public class WorkflowSettings extends PropertiesContextSettings implements IWork
 	 * @return
 	 */
 	public int getDelegatePeriod() {
-		return 60 * 5; // 单位秒
-	}
-
-	public int getTimeoutCheckPeriod() {
 		return 60 * 5; // 单位秒
 	}
 

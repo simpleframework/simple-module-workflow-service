@@ -11,6 +11,7 @@ import net.simpleframework.ctx.Module;
 import net.simpleframework.ctx.permission.IPermissionHandler;
 import net.simpleframework.ctx.settings.ContextSettings;
 import net.simpleframework.ctx.task.ExecutorRunnable;
+import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.IActivityService;
 import net.simpleframework.workflow.engine.IDelegationService;
 import net.simpleframework.workflow.engine.IProcessModelDomainRService;
@@ -46,8 +47,8 @@ import net.simpleframework.workflow.engine.notice.IWfNoticeService;
 import net.simpleframework.workflow.engine.notice.WfNoticeBean;
 import net.simpleframework.workflow.engine.notice.WfNoticeService;
 import net.simpleframework.workflow.engine.participant.IWorkflowPermissionHandler;
-import net.simpleframework.workflow.engine.remote.DefaultProcessRemote;
-import net.simpleframework.workflow.engine.remote.IProcessRemote;
+import net.simpleframework.workflow.engine.remote.DefaultProcessRemoteHandler;
+import net.simpleframework.workflow.engine.remote.IProcessRemoteHandler;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -91,6 +92,11 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 				new DbEntityTable(WfComment.class, "sf_workflow_comment"),
 				new DbEntityTable(WfCommentUser.class, "sf_workflow_comment_user"),
 				new DbEntityTable(WfCommentLog.class, "sf_workflow_comment_log") };
+	}
+
+	@Override
+	public ContextSettings getContextSettings() {
+		return singleton(WorkflowSettings.class);
 	}
 
 	@Override
@@ -159,25 +165,24 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 	}
 
 	@Override
-	public IProcessRemote getRemoteService() {
-		return singleton(DefaultProcessRemote.class);
-	}
-
-	@Override
-	public IWorkflowPermissionHandler getParticipantService() {
-		IPermissionHandler pHandler;
-		return ((pHandler = getPermission()) instanceof IWorkflowPermissionHandler ? (IWorkflowPermissionHandler) pHandler
-				: null);
-	}
-
-	@Override
 	public IWfNoticeService getNoticeService() {
 		return singleton(WfNoticeService.class);
 	}
 
+	// ------------------------------ hanlder
+
 	@Override
-	public ContextSettings getContextSettings() {
-		return singleton(WorkflowSettings.class);
+	public IProcessRemoteHandler getProcessRemoteHandler() {
+		return singleton(DefaultProcessRemoteHandler.class);
+	}
+
+	@Override
+	public IWorkflowPermissionHandler getPermissionHandler() {
+		final IPermissionHandler pHandler = getPermission();
+		if (!(pHandler instanceof IWorkflowPermissionHandler)) {
+			throw WorkflowException.of("must impl: " + IWorkflowPermissionHandler.class.getName());
+		}
+		return (IWorkflowPermissionHandler) pHandler;
 	}
 
 	@Override

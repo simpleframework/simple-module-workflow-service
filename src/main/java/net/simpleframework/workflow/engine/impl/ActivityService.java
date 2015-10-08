@@ -24,7 +24,7 @@ import net.simpleframework.common.StringUtils;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.common.coll.CollectionUtils;
 import net.simpleframework.common.coll.KVMap;
-import net.simpleframework.ctx.task.ExecutorRunnable;
+import net.simpleframework.ctx.task.ExecutorRunnableEx;
 import net.simpleframework.ctx.task.ITaskExecutor;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.ActivityComplete;
@@ -45,7 +45,7 @@ import net.simpleframework.workflow.engine.bean.WorkitemBean;
 import net.simpleframework.workflow.engine.event.IActivityListener;
 import net.simpleframework.workflow.engine.event.IWorkflowListener;
 import net.simpleframework.workflow.engine.participant.Participant;
-import net.simpleframework.workflow.engine.remote.IProcessRemote;
+import net.simpleframework.workflow.engine.remote.IProcessRemoteHandler;
 import net.simpleframework.workflow.schema.AbstractTaskNode;
 import net.simpleframework.workflow.schema.EVariableMode;
 import net.simpleframework.workflow.schema.EndNode;
@@ -372,12 +372,12 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	void _backToProcess(final ProcessBean sProcess) {
 		final Properties properties = sProcess.getProperties();
-		final String serverUrl = properties.getProperty(IProcessRemote.SERVERURL);
+		final String serverUrl = properties.getProperty(IProcessRemoteHandler.SERVERURL);
 		if (StringUtils.hasText(serverUrl)) {
 			wfpService.doBackToRemote(sProcess);
 		} else {
 			final ActivityBean nActivity = getBean(properties
-					.getProperty(IProcessRemote.SUB_ACTIVITYID));
+					.getProperty(IProcessRemoteHandler.SUB_ACTIVITYID));
 			doSubComplete(nActivity, new IMappingVal() {
 				@Override
 				public Object val(final String mapping) {
@@ -427,8 +427,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			Properties properties = null;
 			if (sync) {
 				properties = new Properties();
-				properties
-						.setProperty(IProcessRemote.SUB_ACTIVITYID, String.valueOf(nActivity.getId()));
+				properties.setProperty(IProcessRemoteHandler.SUB_ACTIVITYID,
+						String.valueOf(nActivity.getId()));
 			}
 			wfpService.doStartProcess(wfpmService.getProcessModel(to.getModel()), variables,
 					properties, null);
@@ -438,85 +438,70 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				new ActivityComplete(nActivity).complete();
 			}
 		} else {
-			_doRemoteSubActivity(nActivity);
+			try {
+				_doRemoteSubActivity(nActivity);
+			} catch (final IOException e) {
+				throw WorkflowException.of(e);
+			}
 		}
 	}
 
-	void _doRemoteSubActivity(final ActivityBean activity) {
-		final ID activityId = activity.getId();
-		final ITaskExecutor taskExecutor = workflowContext.getTaskExecutor();
-		taskExecutor.addScheduledTask(new ExecutorRunnable() {
-			@Override
-			public int getPeriod() {
-				return wfSettings.getSubActivityPeriod();
+	void _doRemoteSubActivity(final ActivityBean nActivity) throws IOException {
+		if (nActivity == null) {
+			return;
+		}
+
+		final ProcessBean mProcess = getProcessBean(nActivity);
+		final SubNode sub = (SubNode) getTaskNode(nActivity);
+		final KVMap data = new KVMap(); // 提交的参数
+
+		final IProcessRemoteHandler rHandler = workflowContext.getProcessRemoteHandler();
+
+		final EActivityStatus status = nActivity.getStatus();
+		if (status == EActivityStatus.running) {
+			// 模型名称、主流程的地址及实例id
+			data.add(IProcessRemoteHandler.SERVERURL, wfSettings.getServerUrl());
+			data.add(IProcessRemoteHandler.SUB_ACTIVITYID, nActivity.getId());
+			data.add(IProcessRemoteHandler.MODEL, sub.getModel());
+			int i = 0;
+			final StringBuilder mappings = new StringBuilder();
+			for (final VariableMapping vMapping : sub.getMappingSet()) {
+				if (i++ > 0) {
+					mappings.append(";");
+				}
+				data.add(vMapping.mapping, wfpService.getVariable(mProcess, vMapping.variable));
+				mappings.append(vMapping.mapping);
+			}
+			if (mappings.length() > 0) {
+				data.add(IProcessRemoteHandler.VAR_MAPPINGS, mappings.toString());
 			}
 
-			@Override
-			protected void task(final Map<String, Object> cache) throws Exception {
-				final ActivityBean nActivity = getBean(activityId);
-				if (nActivity == null) {
-					taskExecutor.removeScheduledTask(this);
-					return;
-				}
-
-				final ProcessBean mProcess = getProcessBean(nActivity);
-				final SubNode sub = (SubNode) getTaskNode(nActivity);
-				final KVMap data = new KVMap(); // 提交的参数
-
-				final EActivityStatus status = nActivity.getStatus();
-				if (status == EActivityStatus.running) {
-					// 模型名称、主流程的地址及实例id
-					data.add(IProcessRemote.SERVERURL, wfSettings.getServerUrl());
-					data.add(IProcessRemote.SUB_ACTIVITYID, nActivity.getId());
-					data.add(IProcessRemote.MODEL, sub.getModel());
-					int i = 0;
-					final StringBuilder mappings = new StringBuilder();
-					for (final VariableMapping vMapping : sub.getMappingSet()) {
-						if (i++ > 0) {
-							mappings.append(";");
-						}
-						data.add(vMapping.mapping, wfpService.getVariable(mProcess, vMapping.variable));
-						mappings.append(vMapping.mapping);
-					}
-					if (mappings.length() > 0) {
-						data.add(IProcessRemote.VAR_MAPPINGS, mappings.toString());
-					}
-
-					// 创建远程子流程实例
-					final Map<String, Object> r = workflowContext.getRemoteService().call(sub.getUrl(),
-							"startProcess", data);
-					final Object processId = r.get(IProcessRemote.SUB_PROCESSID);
-					if (processId != null) {
-						if (sub.isSync()) {
-							nActivity.setStatus(EActivityStatus.waiting);
-							// 保存子流程id
-							nActivity.getProperties().setProperty(IProcessRemote.SUB_PROCESSID,
-									String.valueOf(processId));
-							getEntityManager(ActivityBean.class).update(
-									new String[] { "status", "properties" }, nActivity);
-						} else {
-							new ActivityComplete(nActivity).complete();
-						}
-						taskExecutor.removeScheduledTask(this);
-					}
-				} else if (status == EActivityStatus.waiting) {
-					// 如果发现环节处在等待状态，则发送一个远程检测请求来确认子流程是否完成
-					final Properties properties = nActivity.getProperties();
-					data.add(IProcessRemote.SUB_PROCESSID, properties.get(IProcessRemote.SUB_PROCESSID));
-					try {
-						final Map<String, Object> r = workflowContext.getRemoteService().call(
-								sub.getUrl(), "checkProcess", data);
-						final Boolean success = (Boolean) r.get("success");
-						if (success != null && success.booleanValue()) {
-							taskExecutor.removeScheduledTask(this);
-						}
-					} catch (final IOException e) {
-						// 忽略。启动时调用，不抛出异常
-						getLog().warn(e);
-					}
+			// 创建远程子流程实例
+			final Map<String, Object> r = rHandler.call(sub.getUrl(), "startProcess", data);
+			final Object processId = r.get(IProcessRemoteHandler.SUB_PROCESSID);
+			if (processId != null) {
+				if (sub.isSync()) {
+					nActivity.setStatus(EActivityStatus.waiting);
+					// 保存子流程id
+					nActivity.getProperties().setProperty(IProcessRemoteHandler.SUB_PROCESSID,
+							String.valueOf(processId));
+					update(new String[] { "status", "properties" }, nActivity);
+				} else {
+					new ActivityComplete(nActivity).complete();
 				}
 			}
-		});
+		} else if (status == EActivityStatus.waiting) {
+			// 如果发现环节处在等待状态，则发送一个远程检测请求来确认子流程是否完成
+			final Properties properties = nActivity.getProperties();
+			data.add(IProcessRemoteHandler.SUB_PROCESSID,
+					properties.get(IProcessRemoteHandler.SUB_PROCESSID));
+
+			final Map<String, Object> r = rHandler.call(sub.getUrl(), "checkProcess", data);
+			final Boolean success = (Boolean) r.get("success");
+			if (success != null && success.booleanValue()) {
+				// oprintln("");
+			}
+		}
 	}
 
 	void _abort(final ActivityBean activity) {
@@ -917,29 +902,32 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		super.onInit();
 
 		// 启动子流程监控
-		final IDataQuery<?> qs = query("tasknodeType=? and (status=? or status=?)",
-				AbstractTaskNode.TT_SUB, EActivityStatus.running, EActivityStatus.waiting)
-				.setFetchSize(0);
-		ActivityBean activity;
-		while ((activity = (ActivityBean) qs.next()) != null) {
-			_doRemoteSubActivity(activity);
-		}
+		final ITaskExecutor taskExecutor = workflowContext.getTaskExecutor();
+		taskExecutor.addScheduledTask(new ExecutorRunnableEx("activity_subtask_check") {
+			@Override
+			protected void task(final Map<String, Object> cache) throws Exception {
+				final IDataQuery<?> qs = query("tasknodeType=? and (status=? or status=?)",
+						AbstractTaskNode.TT_SUB, EActivityStatus.running, EActivityStatus.waiting)
+						.setFetchSize(0);
+				ActivityBean activity;
+				while ((activity = (ActivityBean) qs.next()) != null) {
+					try {
+						_doRemoteSubActivity(activity);
+					} catch (final IOException e) {
+						getLog().warn(e);
+					}
+				}
+			}
+		});
 
 		// 启动过期监控
-		final ITaskExecutor taskExecutor = workflowContext.getTaskExecutor();
-		taskExecutor.addScheduledTask(new ExecutorRunnable() {
-			@Override
-			public int getPeriod() {
-				return wfSettings.getTimeoutCheckPeriod();
-			}
-
+		taskExecutor.addScheduledTask(new ExecutorRunnableEx("activity_timeout_check") {
 			@Override
 			protected void task(final Map<String, Object> cache) throws Exception {
 				_doActivityTimeout();
 			}
 		});
 
-		// 添加任务过期监控
 		addListener(new DbEntityAdapterEx<ActivityBean>() {
 			@Override
 			public void onBeforeDelete(final IDbEntityManager<ActivityBean> manager,

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import net.simpleframework.common.web.HttpClient;
-import net.simpleframework.workflow.remote.AbstractWorkflowRemote;
+import net.simpleframework.workflow.remote.AbstractWorkflowRemoteHandler;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -13,14 +13,12 @@ import net.simpleframework.workflow.remote.AbstractWorkflowRemote;
  *         http://www.simpleframework.net
  */
 
-public class DefaultProcessRemote extends AbstractWorkflowRemote implements IProcessRemote {
-
-	// from config
-	private final String remote_page = "/sf/workflow-web-remote-SubProcessRemotePage";
+public class DefaultProcessRemoteHandler extends AbstractWorkflowRemoteHandler implements
+		IProcessRemoteHandler {
 
 	@Override
 	public Map<String, Object> call(final String url, final String method,
 			final Map<String, Object> data) throws IOException {
-		return new HttpClient(url).post(remote_page + "?method=" + method, data);
+		return new HttpClient(url).post(wfSettings.getSubtaskUrl() + "?method=" + method, data);
 	}
 }

@@ -23,7 +23,7 @@ import net.simpleframework.common.StringUtils;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.ctx.permission.PermissionUser;
-import net.simpleframework.ctx.task.ExecutorRunnable;
+import net.simpleframework.ctx.task.ExecutorRunnableEx;
 import net.simpleframework.ctx.task.ITaskExecutor;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.ActivityComplete;
@@ -43,7 +43,7 @@ import net.simpleframework.workflow.engine.bean.ProcessModelDomainR;
 import net.simpleframework.workflow.engine.bean.WorkitemBean;
 import net.simpleframework.workflow.engine.event.IProcessListener;
 import net.simpleframework.workflow.engine.event.IWorkflowListener;
-import net.simpleframework.workflow.engine.remote.IProcessRemote;
+import net.simpleframework.workflow.engine.remote.IProcessRemoteHandler;
 import net.simpleframework.workflow.schema.ProcessDocument;
 import net.simpleframework.workflow.schema.ProcessNode;
 import net.simpleframework.workflow.schema.StartNode;
@@ -180,27 +180,23 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	@Override
 	public void doBackToRemote(final ProcessBean process) {
 		final ITaskExecutor taskExecutor = workflowContext.getTaskExecutor();
-		taskExecutor.addScheduledTask(new ExecutorRunnable() {
-
-			@Override
-			public int getPeriod() {
-				return wfSettings.getSubActivityPeriod();
-			}
-
+		// 如果该流程是一个子流程，将启动该任务，该任务周期运行，以保障主流程的任务环节完成
+		taskExecutor.addScheduledTask(new ExecutorRunnableEx("activity_subprocess_back") {
 			@Override
 			protected void task(final Map<String, Object> cache) throws Exception {
 				final Properties properties = process.getProperties();
 				final KVMap data = new KVMap(); // 提交的参数
-				data.add(IProcessRemote.SUB_ACTIVITYID,
-						properties.getProperty(IProcessRemote.SUB_ACTIVITYID));
+				data.add(IProcessRemoteHandler.SUB_ACTIVITYID,
+						properties.getProperty(IProcessRemoteHandler.SUB_ACTIVITYID));
 
 				for (final String mapping : StringUtils.split(properties
-						.getProperty(IProcessRemote.VAR_MAPPINGS))) {
+						.getProperty(IProcessRemoteHandler.VAR_MAPPINGS))) {
 					data.add(mapping, wfpService.getVariable(process, mapping));
 				}
 
-				final Map<String, Object> r = workflowContext.getRemoteService().call(
-						properties.getProperty(IProcessRemote.SERVERURL), "subComplete", data);
+				final IProcessRemoteHandler rHandler = workflowContext.getProcessRemoteHandler();
+				final Map<String, Object> r = rHandler.call(
+						properties.getProperty(IProcessRemoteHandler.SERVERURL), "subComplete", data);
 				final Boolean success = (Boolean) r.get("success");
 				if (success != null && success.booleanValue()) {
 					taskExecutor.removeScheduledTask(this);
