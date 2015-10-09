@@ -11,7 +11,7 @@ import net.simpleframework.ado.db.common.SQLValue;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.permission.PermissionUser;
-import net.simpleframework.ctx.task.ExecutorRunnable;
+import net.simpleframework.ctx.task.ExecutorRunnableEx;
 import net.simpleframework.ctx.task.ITaskExecutor;
 import net.simpleframework.module.common.log.LogEntity;
 import net.simpleframework.workflow.WorkflowException;
@@ -191,13 +191,7 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 
 		// 检测是否过期
 		final ITaskExecutor taskExecutor = workflowContext.getTaskExecutor();
-		taskExecutor.addScheduledTask(new ExecutorRunnable() {
-
-			@Override
-			public int getPeriod() {
-				return wfSettings.getDelegatePeriod();
-			}
-
+		taskExecutor.addScheduledTask(new ExecutorRunnableEx("delegation_timeout_check") {
 			@Override
 			protected void task(final Map<String, Object> cache) throws Exception {
 				_doTimeoutTask();

@@ -10,4 +10,5 @@ import net.simpleframework.workflow.engine.IWorkflowContextAware;
  *         http://www.simpleframework.net
  */
 public interface IWfNoticeService extends IDbBeanService<WfNoticeBean>, IWorkflowContextAware {
+
 }

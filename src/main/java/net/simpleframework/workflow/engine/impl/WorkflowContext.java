@@ -1,16 +1,12 @@
 package net.simpleframework.workflow.engine.impl;
 
 import static net.simpleframework.common.I18n.$m;
-
-import java.util.Map;
-
 import net.simpleframework.ado.db.DbEntityTable;
 import net.simpleframework.ctx.AbstractADOModuleContext;
 import net.simpleframework.ctx.IApplicationContext;
 import net.simpleframework.ctx.Module;
 import net.simpleframework.ctx.permission.IPermissionHandler;
 import net.simpleframework.ctx.settings.ContextSettings;
-import net.simpleframework.ctx.task.ExecutorRunnable;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.IActivityService;
 import net.simpleframework.workflow.engine.IDelegationService;
@@ -19,6 +15,7 @@ import net.simpleframework.workflow.engine.IProcessModelService;
 import net.simpleframework.workflow.engine.IProcessService;
 import net.simpleframework.workflow.engine.IUserStatService;
 import net.simpleframework.workflow.engine.IWorkflowContext;
+import net.simpleframework.workflow.engine.IWorkflowContextAware;
 import net.simpleframework.workflow.engine.IWorkitemService;
 import net.simpleframework.workflow.engine.IWorkviewService;
 import net.simpleframework.workflow.engine.bean.ActivityBean;
@@ -190,14 +187,6 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 		super.onInit(application);
 
 		// 预初始化服务
-		// oprintln("[Service onInit] " + IWorkflowServiceAware.wfnService);
-
-		getTaskExecutor().execute(new ExecutorRunnable() {
-			@Override
-			protected void task(final Map<String, Object> cache) throws Exception {
-				// 初始化所有服务
-				// AbstractWorkflowService.doStartup();
-			}
-		});
+		oprintln("[Service onInit] " + IWorkflowContextAware.workflowContext);
 	}
 }

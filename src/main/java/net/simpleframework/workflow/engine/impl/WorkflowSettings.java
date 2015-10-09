@@ -29,15 +29,6 @@ public class WorkflowSettings extends PropertiesContextSettings implements IWork
 	}
 
 	/**
-	 * 委托监控周期时间
-	 * 
-	 * @return
-	 */
-	public int getDelegatePeriod() {
-		return 60 * 5; // 单位秒
-	}
-
-	/**
 	 * 获取将要过期的警告时间，单位小时
 	 * 
 	 * @return
