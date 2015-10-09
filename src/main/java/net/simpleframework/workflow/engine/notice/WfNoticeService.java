@@ -1,6 +1,9 @@
 package net.simpleframework.workflow.engine.notice;
 
+import java.util.Map;
+
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
+import net.simpleframework.ctx.task.ExecutorRunnableEx;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -12,8 +15,19 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 		IWfNoticeService {
 
 	@Override
+	public IWfNoticeTypeHandler getWfNoticeTypeHandler(int no) {
+		return AbstractWfNoticeTypeHandler.regists.get(no);
+	}
+
+	@Override
 	public void onInit() throws Exception {
 		super.onInit();
 
+		// 通知消息检测
+		getTaskExecutor().execute(new ExecutorRunnableEx("wfnotice_check") {
+			@Override
+			protected void task(Map<String, Object> cache) throws Exception {
+			}
+		});
 	}
 }

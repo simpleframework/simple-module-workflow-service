@@ -249,4 +249,21 @@
       );
     ]]>
   </tran-sql>
+  <tran-sql>
+    <![CDATA[
+      create table sf_workflow_notice (
+        id char(32) not null,
+        createdate timestamp not null,
+        userid char(32) not null,
+        processid char(32) not null,
+        status int2 not null,
+        typeno int4 not null,
+        workitemid char(32),
+        dsentdate timestamp,
+        sentdate timestamp,
+        smessage text,
+        primary key(id)
+      );
+    ]]>
+  </tran-sql>
 </sql-script>

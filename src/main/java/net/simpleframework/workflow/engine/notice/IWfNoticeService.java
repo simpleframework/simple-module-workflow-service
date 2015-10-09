@@ -11,4 +11,11 @@ import net.simpleframework.workflow.engine.IWorkflowContextAware;
  */
 public interface IWfNoticeService extends IDbBeanService<WfNoticeBean>, IWorkflowContextAware {
 
+	/**
+	 * 根据no号获取
+	 * 
+	 * @param no
+	 * @return
+	 */
+	IWfNoticeTypeHandler getWfNoticeTypeHandler(int no);
 }
