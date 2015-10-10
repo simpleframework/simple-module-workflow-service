@@ -27,4 +27,9 @@ public abstract class AbstractWfNoticeTypeHandler implements IWfNoticeTypeHandle
 		}
 		regists.put(no, this);
 	}
+
+	@Override
+	public String toString() {
+		return $m("AbstractWfNoticeTypeHandler.0") + ": " + getClass().getName();
+	}
 }

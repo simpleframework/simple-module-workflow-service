@@ -15,7 +15,7 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 		IWfNoticeService {
 
 	@Override
-	public IWfNoticeTypeHandler getWfNoticeTypeHandler(int no) {
+	public IWfNoticeTypeHandler getWfNoticeTypeHandler(final int no) {
 		return AbstractWfNoticeTypeHandler.regists.get(no);
 	}
 
@@ -26,7 +26,8 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 		// 通知消息检测
 		getTaskExecutor().execute(new ExecutorRunnableEx("wfnotice_check") {
 			@Override
-			protected void task(Map<String, Object> cache) throws Exception {
+			protected void task(final Map<String, Object> cache) throws Exception {
+
 			}
 		});
 	}
