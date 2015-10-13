@@ -259,7 +259,7 @@
         status tinyint not null,
         typeno int not null,
         workitemid char(32),
-        dsentdate datetime,
+        dsentdate datetime not null,
         sentdate datetime,
         smessage text,
         primary key(id)

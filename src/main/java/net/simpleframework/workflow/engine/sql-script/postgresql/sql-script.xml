@@ -259,7 +259,7 @@
         status int2 not null,
         typeno int4 not null,
         workitemid char(32),
-        dsentdate timestamp,
+        dsentdate timestamp not null,
         sentdate timestamp,
         smessage text,
         primary key(id)

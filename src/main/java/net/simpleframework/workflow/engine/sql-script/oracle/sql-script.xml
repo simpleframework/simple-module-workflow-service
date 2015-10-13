@@ -259,7 +259,7 @@
         status number(4) not null,
         typeno number(11) not null,
         workitemid char(32),
-        dsentdate timestamp,
+        dsentdate timestamp not null,
         sentdate timestamp,
         smessage varchar2(2000 char),
         primary key(id)

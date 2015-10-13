@@ -16,7 +16,7 @@ public interface IWfNoticeTypeHandler extends IWorkflowContextAware, IScanHandle
 	 * 
 	 * @param notice
 	 */
-	void doSent(WfNoticeBean notice);
+	void doSent(WfNoticeBean notice) throws Exception;
 
 	/**
 	 * 获取handler的唯一编号
