@@ -5,6 +5,8 @@ import static net.simpleframework.common.I18n.$m;
 import java.util.Date;
 import java.util.Map;
 
+import net.simpleframework.ado.IParamsValue;
+import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
@@ -39,7 +41,7 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 		if (getWfNoticeTypeHandler(typeno) == null) {
 			throw WorkflowException.of($m("WfNoticeService.0"));
 		}
-		WfNoticeBean notice = createBean();
+		final WfNoticeBean notice = createBean();
 		notice.setProcessId(processId);
 		notice.setTypeNo(typeno);
 		notice.setWorkitemId(workitemId);
@@ -84,6 +86,18 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 			@Override
 			protected void task(final Map<String, Object> cache) throws Exception {
 				_doCheck();
+			}
+		});
+
+		// 流程被删除后执行
+		wfpService.addListener(new DbEntityAdapterEx<ProcessBean>() {
+			@Override
+			public void onAfterDelete(final IDbEntityManager<ProcessBean> manager,
+					final IParamsValue paramsValue) throws Exception {
+				super.onAfterDelete(manager, paramsValue);
+				for (final ProcessBean process : coll(manager, paramsValue)) {
+					deleteWith("processid=?", process.getId());
+				}
 			}
 		});
 	}

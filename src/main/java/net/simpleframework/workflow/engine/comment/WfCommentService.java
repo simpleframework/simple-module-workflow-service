@@ -104,5 +104,20 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 				}
 			}
 		});
+
+		// 流程被删除后执行
+		wfpService.addListener(new DbEntityAdapterEx<ProcessBean>() {
+			@Override
+			public void onAfterDelete(final IDbEntityManager<ProcessBean> manager,
+					final IParamsValue paramsValue) throws Exception {
+				super.onAfterDelete(manager, paramsValue);
+				for (final ProcessBean process : coll(manager, paramsValue)) {
+					// 删除意见
+					final Object id = process.getId();
+					wfcService.deleteWith("contentId=?", id);
+					wfcuService.deleteWith("contentId=?", id);
+				}
+			}
+		});
 	}
 }

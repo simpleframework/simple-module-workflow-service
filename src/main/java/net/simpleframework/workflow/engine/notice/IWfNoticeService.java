@@ -15,8 +15,26 @@ import net.simpleframework.workflow.engine.bean.WorkitemBean;
  */
 public interface IWfNoticeService extends IDbBeanService<WfNoticeBean>, IWorkflowContextAware {
 
+	/**
+	 * 按流程添加通知消息
+	 * 
+	 * @param process
+	 * @param dsentDate
+	 * @param smessage
+	 * @param typeno
+	 * @return
+	 */
 	WfNoticeBean addWfNotice(ProcessBean process, Date dsentDate, String smessage, int typeno);
 
+	/**
+	 * 按任务项添加通知消息
+	 * 
+	 * @param workitem
+	 * @param dsentDate
+	 * @param smessage
+	 * @param typeno
+	 * @return
+	 */
 	WfNoticeBean addWfNotice(WorkitemBean workitem, Date dsentDate, String smessage, int typeno);
 
 	/**
