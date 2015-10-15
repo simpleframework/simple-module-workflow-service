@@ -85,7 +85,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 
 	@Override
 	public void doUpdateModel(final ProcessModelBean processModel, final char[] model) {
-		_assert(processModel, EProcessModelStatus.edit);
+		_assert(processModel, EProcessModelStatus.edit, EProcessModelStatus.deploy);
 		try {
 			final ProcessDocument document = new ProcessDocument(model);
 			final ProcessNode processNode = document.getProcessNode();
