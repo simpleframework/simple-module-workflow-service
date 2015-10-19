@@ -2,6 +2,7 @@ package net.simpleframework.workflow.engine.impl;
 
 import static net.simpleframework.common.I18n.$m;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -51,7 +52,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 			public ProcessDocument get() {
 				final ProcessModelLobBean lob = getEntityManager(ProcessModelLobBean.class).getBean(
 						processModel.getId());
-				return new ProcessDocument(lob.getProcessSchema());
+				return new ProcessDocument(new StringReader(new String(lob.getProcessSchema()).trim()));
 			}
 		});
 	}
