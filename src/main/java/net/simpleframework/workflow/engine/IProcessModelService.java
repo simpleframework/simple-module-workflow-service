@@ -1,5 +1,7 @@
 package net.simpleframework.workflow.engine;
 
+import java.util.List;
+
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.workflow.engine.bean.ProcessModelBean;
@@ -64,6 +66,8 @@ public interface IProcessModelService extends IWorkflowService<ProcessModelBean>
 	 * @return
 	 */
 	IDataQuery<ProcessModelBean> getModelListByDomain(ID domainId, EProcessModelStatus... status);
+
+	void sort(List<ProcessModelBean> models);
 
 	/**
 	 * 

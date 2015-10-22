@@ -4,8 +4,11 @@ import static net.simpleframework.common.I18n.$m;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.simpleframework.ado.IParamsValue;
@@ -126,6 +129,18 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 		params.add(domainId);
 		buildStatusSQL(sql, params, "m", status);
 		return getEntityManager().queryBeans(new SQLValue(sql, params.toArray()));
+	}
+
+	@Override
+	public void sort(final List<ProcessModelBean> models) {
+		Collections.sort(models, new Comparator<ProcessModelBean>() {
+			@Override
+			public int compare(final ProcessModelBean pm1, final ProcessModelBean pm2) {
+				final ProcessNode pn1 = wfpmService.getProcessDocument(pm1).getProcessNode();
+				final ProcessNode pn2 = wfpmService.getProcessDocument(pm2).getProcessNode();
+				return pn1.getOorder() > pn2.getOorder() ? 1 : -1;
+			}
+		});
 	}
 
 	@Override
