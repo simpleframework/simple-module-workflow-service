@@ -1,6 +1,5 @@
 package net.simpleframework.workflow.engine.notice;
 
-import net.simpleframework.ctx.hdl.IScanHandlerAware;
 import net.simpleframework.workflow.engine.IWorkflowContextAware;
 
 /**
@@ -9,7 +8,7 @@ import net.simpleframework.workflow.engine.IWorkflowContextAware;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public interface IWfNoticeTypeHandler extends IWorkflowContextAware, IScanHandlerAware {
+public interface IWfNoticeTypeHandler extends IWorkflowContextAware {
 
 	/**
 	 * 发消息

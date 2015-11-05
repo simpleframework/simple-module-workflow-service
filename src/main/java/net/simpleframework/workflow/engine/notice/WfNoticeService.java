@@ -82,7 +82,7 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 		super.onInit();
 
 		// 通知消息检测
-		getTaskExecutor().execute(new ExecutorRunnableEx("wfnotice_check") {
+		getTaskExecutor().addScheduledTask(new ExecutorRunnableEx("wfnotice_check") {
 			@Override
 			protected void task(final Map<String, Object> cache) throws Exception {
 				_doCheck();

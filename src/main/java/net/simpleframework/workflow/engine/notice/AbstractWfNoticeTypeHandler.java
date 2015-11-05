@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.simpleframework.ctx.IApplicationContext;
-import net.simpleframework.workflow.WorkflowException;
+import net.simpleframework.ctx.hdl.AbstractScanHandler;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -14,7 +14,8 @@ import net.simpleframework.workflow.WorkflowException;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public abstract class AbstractWfNoticeTypeHandler implements IWfNoticeTypeHandler {
+public abstract class AbstractWfNoticeTypeHandler extends AbstractScanHandler implements
+		IWfNoticeTypeHandler {
 
 	static Map<Integer, IWfNoticeTypeHandler> regists = new HashMap<Integer, IWfNoticeTypeHandler>();
 
@@ -22,14 +23,14 @@ public abstract class AbstractWfNoticeTypeHandler implements IWfNoticeTypeHandle
 	public void onScan(final IApplicationContext application) throws Exception {
 		final int no = this.getNo();
 		if (regists.containsKey(no)) {
-			throw WorkflowException.of("[IWfNoticeTypeHandler, no: " + no + "] "
-					+ $m("AbstractWfNoticeTypeHandler.0"));
+			oprintln("[IWfNoticeTypeHandler, no: " + no + "] " + $m("AbstractWfNoticeTypeHandler.0"));
+			return;
 		}
 		regists.put(no, this);
 	}
 
 	@Override
 	public String toString() {
-		return $m("AbstractWfNoticeTypeHandler.0") + ": " + getClass().getName();
+		return $m("AbstractWfNoticeTypeHandler.0") + " - " + getClass().getName();
 	}
 }
