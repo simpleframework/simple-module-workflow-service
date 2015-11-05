@@ -23,7 +23,9 @@ public abstract class AbstractWfNoticeTypeHandler extends AbstractScanHandler im
 	public void onScan(final IApplicationContext application) throws Exception {
 		final int no = this.getNo();
 		if (regists.containsKey(no)) {
-			oprintln("[IWfNoticeTypeHandler, no: " + no + "] " + $m("AbstractWfNoticeTypeHandler.0"));
+			oprintln(new StringBuilder("[IWfNoticeTypeHandler, no: ").append(no).append("] ")
+					.append($m("AbstractWfNoticeTypeHandler.1")).append(" - ")
+					.append(getClass().getName()));
 			return;
 		}
 		regists.put(no, this);
