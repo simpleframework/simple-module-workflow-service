@@ -165,7 +165,7 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 		while ((delegation = dq.next()) != null) {
 			final Date endDate = delegation.getDcompleteDate();
 			final Date n = new Date();
-			if (endDate != null && endDate.after(n)) {
+			if (endDate != null && endDate.before(n)) {
 				_abort(delegation);
 				_updateWorkitem(delegation, EWorkitemStatus.running);
 			}
