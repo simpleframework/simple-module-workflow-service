@@ -40,6 +40,9 @@ public class DelegationBean extends AbstractWorkflowBean implements IDescription
 	/* 委托的设计开始时间和设计结束时间 */
 	private Date dstartDate, dcompleteDate;
 
+	/* 是否过期标记 */
+	private boolean timeoutMark;
+
 	/* 定义该委托类，参考IDelegationHandler */
 	private String ruleHandler;
 
@@ -128,6 +131,14 @@ public class DelegationBean extends AbstractWorkflowBean implements IDescription
 
 	public void setRuleHandler(final String ruleHandler) {
 		this.ruleHandler = ruleHandler;
+	}
+
+	public boolean isTimeoutMark() {
+		return timeoutMark;
+	}
+
+	public void setTimeoutMark(boolean timeoutMark) {
+		this.timeoutMark = timeoutMark;
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.db.common.SQLValue;
 import net.simpleframework.ado.query.IDataQuery;
+import net.simpleframework.ado.trans.TransactionVoidCallback;
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.ctx.task.ExecutorRunnableEx;
@@ -168,6 +169,10 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 			if (endDate != null && endDate.before(n)) {
 				_abort(delegation);
 				_updateWorkitem(delegation, EWorkitemStatus.running);
+
+				// 修改标记
+				delegation.setTimeoutMark(true);
+				update(new String[] { "timeoutMark" }, delegation);
 			}
 		}
 	}
@@ -194,7 +199,12 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 		taskExecutor.addScheduledTask(new ExecutorRunnableEx("delegation_timeout_check") {
 			@Override
 			protected void task(final Map<String, Object> cache) throws Exception {
-				_doTimeoutTask();
+				doExecuteTransaction(new TransactionVoidCallback() {
+					@Override
+					protected void doTransactionVoidCallback() throws Throwable {
+						_doTimeoutTask();
+					}
+				});
 			}
 		});
 

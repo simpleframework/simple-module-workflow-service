@@ -8,6 +8,7 @@ import java.util.Map;
 import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.query.IDataQuery;
+import net.simpleframework.ado.trans.TransactionVoidCallback;
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
 import net.simpleframework.ctx.task.ExecutorRunnableEx;
@@ -64,15 +65,21 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 			final IWfNoticeTypeHandler handler = wfnService.getWfNoticeTypeHandler(wfNotice
 					.getTypeNo());
 			if (handler != null) {
-				try {
-					handler.doSent(wfNotice);
-					// 修改状态
-					wfNotice.setStatus(ENoticeStatus.sent);
-					wfNotice.setSentDate(new Date());
-					wfnService.update(new String[] { "status", "sentDate" }, wfNotice);
-				} catch (final Exception e) {
-					getLog().warn(e);
-				}
+				final WfNoticeBean _wfNotice = wfNotice;
+				doExecuteTransaction(new TransactionVoidCallback() {
+					@Override
+					protected void doTransactionVoidCallback() throws Throwable {
+						try {
+							handler.doSent(_wfNotice);
+							// 修改状态
+							_wfNotice.setStatus(ENoticeStatus.sent);
+							_wfNotice.setSentDate(new Date());
+							wfnService.update(new String[] { "status", "sentDate" }, _wfNotice);
+						} catch (final Exception e) {
+							getLog().warn(e);
+						}
+					}
+				});
 			}
 		}
 	}

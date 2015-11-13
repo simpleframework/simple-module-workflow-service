@@ -18,6 +18,7 @@ import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
+import net.simpleframework.ado.trans.TransactionVoidCallback;
 import net.simpleframework.common.Convert;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
@@ -861,17 +862,23 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			if (wfpService.isFinalStatus(getProcessBean(activity))) {
 				continue;
 			}
-			final EActivityStatus status = activity.getStatus();
-			if (status != EActivityStatus.timeout && n.after(activity.getTimeoutDate())) {
-				// 设置过期状态
-				activity.setStatus(EActivityStatus.timeout);
-				update(new String[] { "status" }, activity);
-			}
+			final ActivityBean nActivity = activity;
+			doExecuteTransaction(new TransactionVoidCallback() {
+				@Override
+				protected void doTransactionVoidCallback() throws Throwable {
+					final EActivityStatus status = nActivity.getStatus();
+					if (status != EActivityStatus.timeout && n.after(nActivity.getTimeoutDate())) {
+						// 设置过期状态
+						nActivity.setStatus(EActivityStatus.timeout);
+						update(new String[] { "status" }, nActivity);
+					}
 
-			// 触发超期检测事件，比如一些通知
-			for (final IWorkflowListener listener : getEventListeners(activity)) {
-				((IActivityListener) listener).onTimeoutCheck(activity);
-			}
+					// 触发超期检测事件，比如一些通知
+					for (final IWorkflowListener listener : getEventListeners(nActivity)) {
+						((IActivityListener) listener).onTimeoutCheck(nActivity);
+					}
+				}
+			});
 		}
 	}
 
@@ -911,11 +918,17 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 						.setFetchSize(0);
 				ActivityBean activity;
 				while ((activity = (ActivityBean) qs.next()) != null) {
-					try {
-						_doRemoteSubActivity(activity);
-					} catch (final IOException e) {
-						getLog().warn(e);
-					}
+					final ActivityBean nActivity = activity;
+					doExecuteTransaction(new TransactionVoidCallback() {
+						@Override
+						protected void doTransactionVoidCallback() throws Throwable {
+							try {
+								_doRemoteSubActivity(nActivity);
+							} catch (final IOException e) {
+								getLog().warn(e);
+							}
+						}
+					});
 				}
 			}
 		});
