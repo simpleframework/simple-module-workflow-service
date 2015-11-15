@@ -3,6 +3,7 @@ package net.simpleframework.workflow.engine.bean;
 import java.util.Date;
 
 import net.simpleframework.ado.ColumnMeta;
+import net.simpleframework.ado.bean.IDomainBeanAware;
 import net.simpleframework.common.ID;
 
 /**
@@ -12,7 +13,7 @@ import net.simpleframework.common.ID;
  *         http://www.simpleframework.net
  */
 @SuppressWarnings("serial")
-public abstract class AbstractWorkitemBean extends AbstractWorkflowBean {
+public abstract class AbstractWorkitemBean extends AbstractWorkflowBean implements IDomainBeanAware {
 	/* 流程实例id */
 	private ID processId;
 

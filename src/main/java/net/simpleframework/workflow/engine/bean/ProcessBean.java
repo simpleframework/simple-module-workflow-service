@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Properties;
 
 import net.simpleframework.ado.ColumnMeta;
+import net.simpleframework.ado.bean.IDomainBeanAware;
 import net.simpleframework.ado.db.common.EntityInterceptor;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
@@ -18,7 +19,7 @@ import net.simpleframework.workflow.engine.EProcessStatus;
 @EntityInterceptor(listenerTypes = { "net.simpleframework.module.log.EntityUpdateLogAdapter",
 		"net.simpleframework.module.log.EntityDeleteLogAdapter",
 		"net.simpleframework.module.log.EntityInsertLogAdapter" }, columns = { "title", "status" })
-public class ProcessBean extends AbstractWorkflowBean {
+public class ProcessBean extends AbstractWorkflowBean implements IDomainBeanAware {
 	/* 模型id */
 	private ID modelId;
 	/* 模型名称 */
