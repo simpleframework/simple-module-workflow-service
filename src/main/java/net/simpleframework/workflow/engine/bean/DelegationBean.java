@@ -137,7 +137,7 @@ public class DelegationBean extends AbstractWorkflowBean implements IDescription
 		return timeoutMark;
 	}
 
-	public void setTimeoutMark(boolean timeoutMark) {
+	public void setTimeoutMark(final boolean timeoutMark) {
 		this.timeoutMark = timeoutMark;
 	}
 

@@ -127,10 +127,12 @@ public class ProcessBean extends AbstractWorkflowBean implements IDomainBeanAwar
 		this.deptId = deptId;
 	}
 
+	@Override
 	public ID getDomainId() {
 		return domainId;
 	}
 
+	@Override
 	public void setDomainId(final ID domainId) {
 		this.domainId = domainId;
 	}

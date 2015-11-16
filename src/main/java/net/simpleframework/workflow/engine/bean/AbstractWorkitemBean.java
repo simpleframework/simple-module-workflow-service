@@ -73,10 +73,12 @@ public abstract class AbstractWorkitemBean extends AbstractWorkflowBean implemen
 		this.deptId = deptId;
 	}
 
+	@Override
 	public ID getDomainId() {
 		return domainId;
 	}
 
+	@Override
 	public void setDomainId(final ID domainId) {
 		this.domainId = domainId;
 	}
