@@ -4,10 +4,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import net.simpleframework.ado.bean.IDomainBeanAware;
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.permission.IPermissionHandler;
 import net.simpleframework.workflow.engine.EDelegationSource;
-import net.simpleframework.workflow.engine.bean.AbstractWorkflowBean;
 import net.simpleframework.workflow.engine.bean.ProcessModelBean;
 import net.simpleframework.workflow.schema.UserNode;
 
@@ -27,7 +27,7 @@ public interface IWorkflowPermissionHandler extends IPermissionHandler {
 	 * @param variables
 	 * @return
 	 */
-	Collection<Participant> getRelativeParticipants(AbstractWorkflowBean workflowBean,
+	Collection<Participant> getRelativeParticipants(IDomainBeanAware domain,
 			UserNode.RelativeRole rRole, Map<String, Object> variables);
 
 	/**
