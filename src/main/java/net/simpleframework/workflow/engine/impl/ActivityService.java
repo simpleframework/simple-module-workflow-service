@@ -115,7 +115,9 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 					// 空节点直接完成
 					if (_to.isEmpty()) {
 						for (final ActivityBean next : getNextActivities(activity)) {
-							new ActivityComplete(next).complete();
+							if (next.getTasknodeId().equals(_to.getId())) {
+								new ActivityComplete(next).complete();
+							}
 						}
 					}
 				} else if (to instanceof MergeNode) {
