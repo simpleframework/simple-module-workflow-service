@@ -95,7 +95,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 		final boolean bcomplete = activityComplete.isBcomplete();
 		if (bcomplete && isFinalStatus(activity)) {
-			throw WorkflowStatusException.of($m("ActivityService.2"));
+			throw WorkflowStatusException.of(activity + " - " + $m("ActivityService.2"));
 		}
 
 		// 创建前事件
