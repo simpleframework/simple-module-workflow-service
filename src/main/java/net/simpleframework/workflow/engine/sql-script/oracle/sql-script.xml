@@ -218,7 +218,7 @@
         userid char(32) not null,
         workitemid char(32) not null,
         deptid char(32) not null,
-        taskname varchar2(64 char) not null,
+        taskname varchar2(64 char),
         ccomment varchar2(2000 char) not null,
         primary key(id)
       );
