@@ -1,7 +1,7 @@
 package net.simpleframework.workflow.engine.comment;
 
 import net.simpleframework.module.common.content.ICommentService;
-import net.simpleframework.workflow.engine.bean.WorkitemBean;
+import net.simpleframework.workflow.engine.bean.AbstractWorkitemBean;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -17,5 +17,5 @@ public interface IWfCommentService extends ICommentService<WfComment> {
 	 * @param workitem
 	 * @return
 	 */
-	WfComment getCurComment(WorkitemBean workitem);
+	WfComment getCurComment(AbstractWorkitemBean workitem);
 }
