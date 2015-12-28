@@ -493,10 +493,10 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		final PermissionUser user = permission.getUser(participant.userId);
 		workitem.setUserId(user.getId());
 		workitem.setUserText(user.getText());
-
+		
 		final PermissionDept dept = user.getDept();
-		final ID deptId = participant.deptId;
-		workitem.setDeptId(deptId != null ? deptId : dept.getId());
+		ID deptId = participant.deptId;
+		workitem.setDeptId(deptId!=null?deptId:dept.getId());
 		workitem.setDomainId(dept.getDomainId());
 
 		workitem.setRoleId(participant.roleId);
