@@ -67,7 +67,8 @@ public class ActivityComplete extends ObjectEx implements IWorkflowContextAware 
 	public ActivityComplete(final ActivityBean activity, final List<TransitionNode> transitions) {
 		activityId = activity.getId();
 
-		final IScriptEval script = wfaService.getScriptEval(activity);
+		final IScriptEval script = wfaService.getScriptEval(activity,
+				new KVMap().add("activityComplete", this));
 		for (final TransitionNode transition : transitions) {
 			_transitions.put(transition.getId(), transition);
 			putParticipant(transition, script);
@@ -89,13 +90,14 @@ public class ActivityComplete extends ObjectEx implements IWorkflowContextAware 
 		final AbstractTaskNode tasknode = wfaService.getTaskNode(activity);
 		final IScriptEval script;
 		if (workitem != null) {
-			script = wfwService.getScriptEval(workitem);
+			script = wfwService.getScriptEval(workitem,
+					new KVMap().add("activityComplete", this).add("activity", activity));
 			final Map<String, Object> variables = WorkitemComplete.get(workitem).getVariables();
 			for (final Map.Entry<String, Object> e : variables.entrySet()) {
 				script.putVariable(e.getKey(), e.getValue());
 			}
 		} else {
-			script = wfaService.getScriptEval(activity);
+			script = wfaService.getScriptEval(activity, new KVMap().add("activityComplete", this));
 		}
 
 		// 解析条件正确的transition

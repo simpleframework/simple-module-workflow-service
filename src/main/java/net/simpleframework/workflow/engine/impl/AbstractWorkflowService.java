@@ -59,12 +59,15 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 	 * @param bean
 	 * @return
 	 */
-	public IScriptEval getScriptEval(final T bean) {
+	public IScriptEval getScriptEval(final T bean, final Map<String, Object> vars) {
 		return bean.getAttrCache("_ScriptEval", new CacheV<IScriptEval>() {
 			@Override
 			public IScriptEval get() {
-				final IScriptEval script = ScriptEvalFactory
-						.createDefaultScriptEval(createVariables(bean));
+				Map<String, Object> _vars = createVariables(bean);
+				if (vars != null && vars.size() > 0) {
+					_vars.putAll(vars);
+				}
+				final IScriptEval script = ScriptEvalFactory.createDefaultScriptEval(_vars);
 				for (final String expr : defaultExpr) {
 					script.eval(expr);
 				}
@@ -80,7 +83,7 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 	}
 
 	protected Object eval(final T bean, final String script) {
-		return getScriptEval(bean).eval(script);
+		return getScriptEval(bean, null).eval(script);
 	}
 
 	public Map<String, Object> createVariables(final T bean) {

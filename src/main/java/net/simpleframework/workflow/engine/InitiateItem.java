@@ -113,7 +113,7 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 		_transitions.clear();
 
 		final ProcessModelBean processModel = model();
-		final IScriptEval script = wfpmService.getScriptEval(processModel);
+		final IScriptEval script = wfpmService.getScriptEval(processModel, null);
 		final StartNode startNode = wfpmService.getProcessDocument(processModel).getProcessNode()
 				.startNode();
 		for (final Map.Entry<String, Object> e : getVariables().entrySet()) {
