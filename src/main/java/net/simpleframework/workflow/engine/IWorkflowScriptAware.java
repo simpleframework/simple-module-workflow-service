@@ -18,12 +18,12 @@ public interface IWorkflowScriptAware<T extends AbstractWorkflowBean> {
 	 * @param bean
 	 * @return
 	 */
-	IScriptEval getScriptEval(final T bean, final Map<String, Object> vars);
+	IScriptEval getScriptEval(T bean, Map<String, Object> vars);
 
 	/**
 	 * 
 	 * @param bean
 	 * @return
 	 */
-	Map<String, Object> createVariables(final T bean);
+	Map<String, Object> createVariables(T bean);
 }
