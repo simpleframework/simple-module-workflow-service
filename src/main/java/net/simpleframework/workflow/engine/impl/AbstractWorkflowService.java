@@ -63,7 +63,7 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 		return bean.getAttrCache("_ScriptEval", new CacheV<IScriptEval>() {
 			@Override
 			public IScriptEval get() {
-				Map<String, Object> _vars = createVariables(bean);
+				final Map<String, Object> _vars = createVariables(bean);
 				if (vars != null && vars.size() > 0) {
 					_vars.putAll(vars);
 				}
