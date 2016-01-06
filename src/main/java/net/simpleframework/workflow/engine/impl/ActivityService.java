@@ -108,7 +108,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		// 如果流程处在最终状态，则不创建后续环节
 		if (!wfpService.isFinalStatus(process)) {
 			// 如果存在定义的后续环节，则按此创建
-			ActivityBean nextActivity = getBean(activity.getProperties().getProperty(NEXT_ACTIVITY));
+			ActivityBean nextActivity = getFallbackNextActivity(activity);
 			if (nextActivity != null) {
 				_clone(nextActivity, activity);
 			} else {
@@ -624,6 +624,10 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	/* 如果存在NEXT_ACTIVITY，则根据NEXT_ACTIVITY克隆后续环节，而不是路由规则 */
 	private static final String NEXT_ACTIVITY = "next_activity";
 
+	public ActivityBean getFallbackNextActivity(ActivityBean activity) {
+		return getBean(activity.getProperties().getProperty(NEXT_ACTIVITY));
+	}
+
 	@Override
 	public void doFallback(final ActivityBean activity, final String taskname,
 			final boolean isNextActivity) {
@@ -637,7 +641,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		// 验证是否存在已完成的后续任务
 		for (final ActivityBean next : getNextActivities(preActivity)) {
 			if (next.getStatus() == EActivityStatus.complete) {
-				throw WorkflowException.of($m("ActivityService.0"));
+				// throw WorkflowException.of($m("ActivityService.0"));
 			}
 		}
 

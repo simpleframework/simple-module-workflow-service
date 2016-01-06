@@ -87,6 +87,10 @@ public class ActivityComplete extends ObjectEx implements IWorkflowContextAware 
 			_participants.clear();
 		}
 
+		if (wfaService.getFallbackNextActivity(activity) != null) {
+			return;
+		}
+
 		final AbstractTaskNode tasknode = wfaService.getTaskNode(activity);
 		final IScriptEval script;
 		if (workitem != null) {

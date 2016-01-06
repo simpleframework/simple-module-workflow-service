@@ -157,6 +157,8 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 
 	void doFallback(ActivityBean activity);
 
+	ActivityBean getFallbackNextActivity(ActivityBean activity);
+
 	/**
 	 * 完成子流程环节
 	 * 
