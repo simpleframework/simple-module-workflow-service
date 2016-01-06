@@ -150,8 +150,10 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * @param activity
 	 * @param taskname
 	 *        环节id或名称
+	 * @param isNextActivity
+	 *        是否完成后直接回到直退环节
 	 */
-	void doFallback(ActivityBean activity, String taskname);
+	void doFallback(ActivityBean activity, String taskname, boolean isNextActivity);
 
 	void doFallback(ActivityBean activity);
 

@@ -107,28 +107,35 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		ActivityBean endActivity = null;
 		// 如果流程处在最终状态，则不创建后续环节
 		if (!wfpService.isFinalStatus(process)) {
-			for (final TransitionNode transition : activityComplete.getTransitions()) {
-				final AbstractTaskNode to = transition.to();
-				if (to instanceof UserNode) {
-					final UserNode _to = (UserNode) to;
-					_doUserNode(activity, _to, activityComplete.getParticipants(transition), createDate);
-					// 空节点直接完成
-					if (_to.isEmpty()) {
-						for (final ActivityBean next : getNextActivities(activity)) {
-							if (next.getTasknodeId().equals(_to.getId())) {
-								new ActivityComplete(next).complete();
+			// 如果存在定义的后续环节，则按此创建
+			ActivityBean nextActivity = getBean(activity.getProperties().getProperty(NEXT_ACTIVITY));
+			if (nextActivity != null) {
+				_clone(nextActivity, activity);
+			} else {
+				for (final TransitionNode transition : activityComplete.getTransitions()) {
+					final AbstractTaskNode to = transition.to();
+					if (to instanceof UserNode) {
+						final UserNode _to = (UserNode) to;
+						_doUserNode(activity, _to, activityComplete.getParticipants(transition),
+								createDate);
+						// 空节点直接完成
+						if (_to.isEmpty()) {
+							for (final ActivityBean next : getNextActivities(activity)) {
+								if (next.getTasknodeId().equals(_to.getId())) {
+									new ActivityComplete(next).complete();
+								}
 							}
 						}
+					} else if (to instanceof MergeNode) {
+						_doMergeNode(activity, (MergeNode) to, createDate);
+					} else if (to instanceof SubNode) {
+						_doSubNode(activity, (SubNode) to, createDate);
+					} else if (to instanceof EndNode) {
+						endActivity = _create(process, to, activity, createDate);
+						endActivity.setStatus(EActivityStatus.complete);
+						endActivity.setCompleteDate(new Date());
+						insert(endActivity);
 					}
-				} else if (to instanceof MergeNode) {
-					_doMergeNode(activity, (MergeNode) to, createDate);
-				} else if (to instanceof SubNode) {
-					_doSubNode(activity, (SubNode) to, createDate);
-				} else if (to instanceof EndNode) {
-					endActivity = _create(process, to, activity, createDate);
-					endActivity.setStatus(EActivityStatus.complete);
-					endActivity.setCompleteDate(new Date());
-					insert(endActivity);
 				}
 			}
 		}
@@ -614,8 +621,12 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 	}
 
+	/* 如果存在NEXT_ACTIVITY，则根据NEXT_ACTIVITY克隆后续环节，而不是路由规则 */
+	private static final String NEXT_ACTIVITY = "next_activity";
+
 	@Override
-	public void doFallback(final ActivityBean activity, final String taskname) {
+	public void doFallback(final ActivityBean activity, final String taskname,
+			final boolean isNextActivity) {
 		_assert(activity, EActivityStatus.running);
 		// 验证是否存在已完成的工作
 		if (wfwService.getWorkitems(activity, EWorkitemStatus.complete).size() > 0) {
@@ -638,7 +649,12 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 		final AbstractTaskNode to = getTaskNode(preActivity);
 		if (to instanceof UserNode) {
-			_clone(preActivity, activity);
+			final ActivityBean nActivity = _clone(preActivity, activity);
+			if (isNextActivity) {
+				// 保存后续环节
+				nActivity.getProperties().setProperty(NEXT_ACTIVITY, String.valueOf(activity.getId()));
+				update(new String[] { "properties" }, nActivity);
+			}
 		} else if (to instanceof MergeNode) {
 			_clone(getBean(preActivity.getPreviousId()), activity);
 			for (final String id : _getMergePreActivities(preActivity)) {
@@ -691,7 +707,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public void doFallback(final ActivityBean activity) {
-		doFallback(activity, null);
+		doFallback(activity, null, false);
 	}
 
 	@Override
