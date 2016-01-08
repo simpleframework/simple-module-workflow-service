@@ -37,10 +37,8 @@ public class WorkitemBean extends AbstractWorkitemBean {
 	/* 实际完成时间 */
 	private Date completeDate;
 
-	/* 退回的任务id */
+	/* 退回的任务activityid */
 	private ID fallbackId;
-	/* 是否直退 */
-	// private boolean dfallback;
 
 	/* 生成的取回项 */
 	private ID retakeId;

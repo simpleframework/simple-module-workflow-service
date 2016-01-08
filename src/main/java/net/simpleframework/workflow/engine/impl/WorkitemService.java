@@ -283,8 +283,11 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 		// 设置退回节点的引用
 		final ActivityBean preActivity = wfaService.getPreActivity(nActivity);
-		if (preActivity != null && preActivity.getStatus() == EActivityStatus.fallback) {
-			nWorkitem.setFallbackId(preActivity.getId());
+		if (preActivity != null) {
+			EActivityStatus pStatus = preActivity.getStatus();
+			if (pStatus == EActivityStatus.fallback || pStatus == EActivityStatus.fallback2) {
+				nWorkitem.setFallbackId(preActivity.getId());
+			}
 		}
 
 		insert(nWorkitem);

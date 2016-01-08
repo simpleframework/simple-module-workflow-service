@@ -46,10 +46,17 @@ public enum EActivityStatus {
 			return $m("EActivityStatus.abort");
 		}
 	},
+	/** 退回和直退也是一种abort **/
 	fallback {
 		@Override
 		public String toString() {
 			return $m("EActivityStatus.fallback");
+		}
+	},
+	fallback2 {
+		@Override
+		public String toString() {
+			return $m("EActivityStatus.fallback2");
 		}
 	}
 }

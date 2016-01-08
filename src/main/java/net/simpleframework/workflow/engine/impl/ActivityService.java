@@ -520,11 +520,11 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	void _abort(final ActivityBean activity, final EActivityAbortPolicy policy) {
-		_abort(activity, policy, false);
+		_abort(activity, policy, EActivityStatus.abort);
 	}
 
 	void _abort(final ActivityBean activity, final EActivityAbortPolicy policy,
-			final boolean fallback) {
+			final EActivityStatus status) {
 		final WorkitemService wfwServiceImpl = (WorkitemService) wfwService;
 		for (final WorkitemBean workitem : wfwServiceImpl.getWorkitems(activity)) {
 			if (!wfwServiceImpl.isFinalStatus(workitem)) {
@@ -539,8 +539,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 
 		if (!isFinalStatus(activity)) {
-			// fallback可以理解为abort
-			activity.setStatus(fallback ? EActivityStatus.fallback : EActivityStatus.abort);
+			activity.setStatus(status);
 			activity.setCompleteDate(new Date());
 			update(new String[] { "status", "completeDate" }, activity);
 		}
@@ -657,8 +656,13 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 		// 放弃所有后续
 		for (final ActivityBean _activity : getNextActivities(preActivity)) {
-			_abort(_activity, EActivityAbortPolicy.nextActivities,
-					_activity.getId().equals(activity.getId()));
+			if (_activity.getId().equals(activity.getId())) {
+				_abort(_activity, EActivityAbortPolicy.nextActivities,
+						StringUtils.hasText(taskname) ? EActivityStatus.fallback2
+								: EActivityStatus.fallback);
+			} else {
+				_abort(_activity, EActivityAbortPolicy.nextActivities);
+			}
 		}
 
 		final AbstractTaskNode to = getTaskNode(preActivity);
