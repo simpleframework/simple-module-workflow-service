@@ -16,6 +16,7 @@ import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.BeanUtils;
 import net.simpleframework.common.Convert;
 import net.simpleframework.common.ID;
+import net.simpleframework.common.StringUtils;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.ctx.permission.PermissionDept;
 import net.simpleframework.ctx.permission.PermissionUser;
@@ -411,8 +412,9 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		return _getWorklist(null, userId, items, status);
 	}
 
-	protected String getDefaultOrderby() {
-		return " order by topmark desc, createdate desc";
+	protected String getDefaultOrderby(String dateColumn) {
+		return " order by topmark desc, "
+				+ (StringUtils.hasText(dateColumn) ? dateColumn : "createdate") + " desc";
 	}
 
 	private IDataQuery<WorkitemBean> _getWorklist(final ProcessBean process, final ID userId,
@@ -433,7 +435,11 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			sql.append(" and (").append(eVal.getExpression()).append(")");
 			params.addAll(ArrayUtils.asList(eVal.getValues()));
 		}
-		sql.append(getDefaultOrderby());
+		if (ArrayUtils.contains(status, EWorkitemStatus.complete)) {
+			sql.append(getDefaultOrderby("completedate"));
+		} else {
+			sql.append(getDefaultOrderby(null));
+		}
 		return query(sql, params.toArray());
 	}
 
@@ -447,7 +453,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	public IDataQuery<WorkitemBean> getUnreadWorklist(final ID userId) {
 		final StringBuilder sql = new StringBuilder(
 				"userId2=? and readMark=? and (status=? or status=? or status=?)")
-				.append(getDefaultOrderby());
+				.append(getDefaultOrderby(null));
 		return query(sql, userId, Boolean.FALSE, EWorkitemStatus.running, EWorkitemStatus.suspended,
 				EWorkitemStatus.delegate);
 	}
