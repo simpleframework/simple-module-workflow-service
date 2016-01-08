@@ -645,7 +645,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 
 		// 有环节的是直退，没有环节的是退回，退回要求不能有后续完成实例
-		if (StringUtils.hasText(taskname)) {
+		if (!StringUtils.hasText(taskname)) {
 			// 验证是否存在已完成的后续任务
 			for (final ActivityBean next : getNextActivities(preActivity)) {
 				if (next.getStatus() == EActivityStatus.complete) {
@@ -654,15 +654,12 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			}
 		}
 
+		// 放弃当前操作环节
+		_abort(activity, EActivityAbortPolicy.nextActivities,
+				StringUtils.hasText(taskname) ? EActivityStatus.fallback2 : EActivityStatus.fallback);
 		// 放弃所有后续
 		for (final ActivityBean _activity : getNextActivities(preActivity)) {
-			if (_activity.getId().equals(activity.getId())) {
-				_abort(_activity, EActivityAbortPolicy.nextActivities,
-						StringUtils.hasText(taskname) ? EActivityStatus.fallback2
-								: EActivityStatus.fallback);
-			} else {
-				_abort(_activity, EActivityAbortPolicy.nextActivities);
-			}
+			_abort(_activity, EActivityAbortPolicy.nextActivities);
 		}
 
 		final AbstractTaskNode to = getTaskNode(preActivity);
