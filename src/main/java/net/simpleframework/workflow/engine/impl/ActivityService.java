@@ -110,7 +110,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			// 如果存在定义的后续环节，则按此创建
 			ActivityBean nextActivity = getFallbackNextActivity(activity);
 			if (nextActivity != null) {
-				_clone(nextActivity, activity);
+				// 克隆所有
+				_clone(nextActivity, activity, true);
 			} else {
 				for (final TransitionNode transition : activityComplete.getTransitions()) {
 					final AbstractTaskNode to = transition.to();
@@ -621,11 +622,12 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 	}
 
-	/* 如果存在NEXT_ACTIVITY，则根据NEXT_ACTIVITY克隆后续环节，而不是路由规则 */
-	private static final String NEXT_ACTIVITY = "next_activity";
+	/* 如果存在FALLBACK_NEXTACTIVITY，则根据FALLBACK_NEXTACTIVITY克隆后续环节，而不是路由规则 */
+	private static final String FALLBACK_NEXTACTIVITY = "fallback_nextactivity";
 
+	@Override
 	public ActivityBean getFallbackNextActivity(ActivityBean activity) {
-		return getBean(activity.getProperties().getProperty(NEXT_ACTIVITY));
+		return getBean(activity.getProperties().getProperty(FALLBACK_NEXTACTIVITY));
 	}
 
 	@Override
@@ -636,12 +638,20 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		if (wfwService.getWorkitems(activity, EWorkitemStatus.complete).size() > 0) {
 			throw WorkflowException.of($m("ActivityService.0"));
 		}
+
 		// 退回前一指定任务
 		final ActivityBean preActivity = getPreActivity(activity, taskname);
-		// 验证是否存在已完成的后续任务
-		for (final ActivityBean next : getNextActivities(preActivity)) {
-			if (next.getStatus() == EActivityStatus.complete) {
-				// throw WorkflowException.of($m("ActivityService.0"));
+		if (preActivity == null) {
+			throw WorkflowException.of($m("ActivityService.8"));
+		}
+
+		// 有环节的是直退，没有环节的是退回，退回要求不能有后续完成实例
+		if (StringUtils.hasText(taskname)) {
+			// 验证是否存在已完成的后续任务
+			for (final ActivityBean next : getNextActivities(preActivity)) {
+				if (next.getStatus() == EActivityStatus.complete) {
+					throw WorkflowException.of($m("ActivityService.0"));
+				}
 			}
 		}
 
@@ -656,7 +666,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			final ActivityBean nActivity = _clone(preActivity, activity);
 			if (isNextActivity) {
 				// 保存后续环节
-				nActivity.getProperties().setProperty(NEXT_ACTIVITY, String.valueOf(activity.getId()));
+				nActivity.getProperties().setProperty(FALLBACK_NEXTACTIVITY,
+						String.valueOf(activity.getId()));
 				update(new String[] { "properties" }, nActivity);
 			}
 		} else if (to instanceof MergeNode) {
@@ -670,6 +681,11 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	private ActivityBean _clone(final ActivityBean oActivity, ActivityBean preActivity) {
+		return _clone(oActivity, preActivity, false);
+	}
+
+	private ActivityBean _clone(final ActivityBean oActivity, ActivityBean preActivity,
+			boolean allWorkitems) {
 		// 复制某一个环节实例
 		final AbstractTaskNode to = getTaskNode(oActivity);
 		if (preActivity == null) {
@@ -681,8 +697,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		if (to instanceof UserNode) {
 			final WorkitemService wfwServiceImpl = (WorkitemService) wfwService;
 			// 克隆工作项
-			final List<WorkitemBean> workitems = wfwServiceImpl.getWorkitems(oActivity,
-					EWorkitemStatus.complete);
+			final List<WorkitemBean> workitems = allWorkitems ? wfwServiceImpl.getWorkitems(oActivity)
+					: wfwServiceImpl.getWorkitems(oActivity, EWorkitemStatus.complete);
 			if (workitems.size() > 0) {
 				if (TasknodeUtils.isSequential(to)) {
 					// 先按日期排序，之后创建第一个工作项
