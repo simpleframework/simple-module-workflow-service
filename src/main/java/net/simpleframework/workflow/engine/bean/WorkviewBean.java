@@ -14,8 +14,12 @@ import net.simpleframework.common.ID;
 public class WorkviewBean extends AbstractWorkitemBean {
 	/* 父id，转发 */
 	private ID parentId;
+
 	/* 待办id */
 	private ID workitemId;
+
+	/* 发送人，来自待办 */
+	private ID sentId;
 
 	public ID getParentId() {
 		return parentId;
@@ -31,6 +35,14 @@ public class WorkviewBean extends AbstractWorkitemBean {
 
 	public void setWorkitemId(final ID workitemId) {
 		this.workitemId = workitemId;
+	}
+
+	public ID getSentId() {
+		return sentId;
+	}
+
+	public void setSentId(ID sentId) {
+		this.sentId = sentId;
 	}
 
 	private static final long serialVersionUID = 7218560930454033577L;

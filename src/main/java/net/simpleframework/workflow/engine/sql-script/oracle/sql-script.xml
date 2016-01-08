@@ -194,6 +194,7 @@
         parentid char(32),
         processid char(32) not null,
         workitemid char(32) not null,
+        sentid char(32) not null,
         userid char(32) not null,
         usertext varchar2(32 char) not null,
         deptid char(32),
