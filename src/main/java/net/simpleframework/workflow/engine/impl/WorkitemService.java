@@ -285,7 +285,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		// 设置退回节点的引用
 		final ActivityBean preActivity = wfaService.getPreActivity(nActivity);
 		if (preActivity != null) {
-			EActivityStatus pStatus = preActivity.getStatus();
+			final EActivityStatus pStatus = preActivity.getStatus();
 			if (pStatus == EActivityStatus.fallback || pStatus == EActivityStatus.fallback2) {
 				nWorkitem.setFallbackId(preActivity.getId());
 			}
@@ -412,7 +412,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		return _getWorklist(null, userId, items, status);
 	}
 
-	protected String getDefaultOrderby(String dateColumn) {
+	protected String getDefaultOrderby(final String dateColumn) {
 		return " order by topmark desc, "
 				+ (StringUtils.hasText(dateColumn) ? dateColumn : "createdate") + " desc";
 	}
