@@ -51,8 +51,8 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 		final ID processId = workitem.getProcessId();
 
 		// 创建发送记录
-		Date date = new Date();
-		WorkviewSentBean sent = wfvsService.createBean();
+		final Date date = new Date();
+		final WorkviewSentBean sent = wfvsService.createBean();
 		sent.setProcessId(processId);
 		sent.setWorkitemId(workitem.getId());
 		sent.setCreateDate(date);

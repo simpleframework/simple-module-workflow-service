@@ -27,7 +27,7 @@ public class WorkviewSentBean extends AbstractUserAwareBean {
 		return workitemId;
 	}
 
-	public void setWorkitemId(ID workitemId) {
+	public void setWorkitemId(final ID workitemId) {
 		this.workitemId = workitemId;
 	}
 
@@ -35,7 +35,7 @@ public class WorkviewSentBean extends AbstractUserAwareBean {
 		return processId;
 	}
 
-	public void setProcessId(ID processId) {
+	public void setProcessId(final ID processId) {
 		this.processId = processId;
 	}
 
@@ -43,7 +43,7 @@ public class WorkviewSentBean extends AbstractUserAwareBean {
 		return workviewId;
 	}
 
-	public void setWorkviewId(ID workviewId) {
+	public void setWorkviewId(final ID workviewId) {
 		this.workviewId = workviewId;
 	}
 
@@ -51,7 +51,7 @@ public class WorkviewSentBean extends AbstractUserAwareBean {
 		return userText;
 	}
 
-	public void setUserText(String userText) {
+	public void setUserText(final String userText) {
 		this.userText = userText;
 	}
 
@@ -59,7 +59,7 @@ public class WorkviewSentBean extends AbstractUserAwareBean {
 		return domainId;
 	}
 
-	public void setDomainId(ID domainId) {
+	public void setDomainId(final ID domainId) {
 		this.domainId = domainId;
 	}
 

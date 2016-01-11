@@ -16,7 +16,7 @@ public class WorkviewSentService extends AbstractDbBeanService<WorkviewSentBean>
 		IWorkviewSentService {
 
 	@Override
-	public IDataQuery<WorkviewSentBean> getWorkviewsSentList(ID userId) {
+	public IDataQuery<WorkviewSentBean> getWorkviewsSentList(final ID userId) {
 		return query("userId=? order by createdate desc", userId);
 	}
 }

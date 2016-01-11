@@ -41,7 +41,7 @@ public class WorkviewBean extends AbstractWorkitemBean {
 		return sentId;
 	}
 
-	public void setSentId(ID sentId) {
+	public void setSentId(final ID sentId) {
 		this.sentId = sentId;
 	}
 
