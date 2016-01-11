@@ -18,7 +18,7 @@ public class WorkviewBean extends AbstractWorkitemBean {
 	/* 待办id */
 	private ID workitemId;
 
-	/* 发送人，来自待办 */
+	/* 发送id */
 	private ID sentId;
 
 	public ID getParentId() {

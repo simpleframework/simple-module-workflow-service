@@ -191,10 +191,10 @@
     <![CDATA[
       create table sf_workflow_workview (
         id char(32) not null,
+        sentid char(32) not null,
         parentid char(32),
         processid char(32) not null,
         workitemid char(32) not null,
-        sentid char(32) not null,
         userid char(32) not null,
         usertext varchar(32) not null,
         deptid char(32),
@@ -207,6 +207,21 @@
         ext2 int not null,
         primary key(id),
         unique(processid, userid)
+      );
+    ]]>
+  </tran-sql>
+  <tran-sql>
+    <![CDATA[
+      create table sf_workflow_workview_sent (
+        id char(32) not null,
+        workviewid char(32),
+        processid char(32) not null,
+        workitemid char(32) not null,
+        userid char(32) not null,
+        usertext varchar(32) not null,
+        domainid char(32),
+        createdate timestamp not null,
+        primary key(id)
       );
     ]]>
   </tran-sql>

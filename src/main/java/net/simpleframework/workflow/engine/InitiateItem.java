@@ -64,7 +64,7 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 
 	/* 其它可启动的角色 */
 	public Collection<ID> roles() {
-		return CollectionUtils.toList(permission.roles(getUserId(), getVariables()));
+		return CollectionUtils.toList(permission.getUser(getUserId()).roles(getVariables()));
 	}
 
 	private transient ProcessModelBean processModel;

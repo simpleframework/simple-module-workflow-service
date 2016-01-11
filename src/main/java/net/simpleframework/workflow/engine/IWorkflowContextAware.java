@@ -32,6 +32,7 @@ public interface IWorkflowContextAware extends IModuleContextAware {
 	static final IWorkitemService wfwService = workflowContext.getWorkitemService();
 
 	static final IWorkviewService wfvService = workflowContext.getWorkviewService();
+	static final IWorkviewSentService wfvsService = workflowContext.getWorkviewSentService();
 	static final IDelegationService wfdService = workflowContext.getDelegationService();
 
 	static final IUserStatService wfusService = workflowContext.getUserStatService();

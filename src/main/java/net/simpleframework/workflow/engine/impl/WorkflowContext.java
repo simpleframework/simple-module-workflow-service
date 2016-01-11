@@ -17,6 +17,7 @@ import net.simpleframework.workflow.engine.IUserStatService;
 import net.simpleframework.workflow.engine.IWorkflowContext;
 import net.simpleframework.workflow.engine.IWorkflowContextAware;
 import net.simpleframework.workflow.engine.IWorkitemService;
+import net.simpleframework.workflow.engine.IWorkviewSentService;
 import net.simpleframework.workflow.engine.IWorkviewService;
 import net.simpleframework.workflow.engine.bean.ActivityBean;
 import net.simpleframework.workflow.engine.bean.ActivityLobBean;
@@ -31,6 +32,7 @@ import net.simpleframework.workflow.engine.bean.VariableBean;
 import net.simpleframework.workflow.engine.bean.VariableLogBean;
 import net.simpleframework.workflow.engine.bean.WorkitemBean;
 import net.simpleframework.workflow.engine.bean.WorkviewBean;
+import net.simpleframework.workflow.engine.bean.WorkviewSentBean;
 import net.simpleframework.workflow.engine.comment.IWfCommentLogService;
 import net.simpleframework.workflow.engine.comment.IWfCommentService;
 import net.simpleframework.workflow.engine.comment.IWfCommentUserService;
@@ -77,6 +79,8 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 				new DbEntityTable(ActivityLobBean.class, "sf_workflow_activity_lob").setNoCache(true),
 
 				new DbEntityTable(WorkitemBean.class, "sf_workflow_workitem"),
+
+				new DbEntityTable(WorkviewSentBean.class, "sf_workflow_workview_sent"),
 				new DbEntityTable(WorkviewBean.class, "sf_workflow_workview"),
 
 				new DbEntityTable(UserStatBean.class, "sf_workflow_userstat"),
@@ -139,6 +143,11 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 	@Override
 	public IWorkviewService getWorkviewService() {
 		return singleton(WorkviewService.class);
+	}
+
+	@Override
+	public IWorkviewSentService getWorkviewSentService() {
+		return singleton(WorkviewSentService.class);
 	}
 
 	@Override

@@ -64,6 +64,8 @@ public interface IWorkflowContext extends IModuleContext {
 
 	IWorkviewService getWorkviewService();
 
+	IWorkviewSentService getWorkviewSentService();
+
 	IUserStatService getUserStatService();
 
 	/**

@@ -15,6 +15,7 @@ import net.simpleframework.workflow.engine.bean.AbstractWorkitemBean;
 import net.simpleframework.workflow.engine.bean.UserStatBean;
 import net.simpleframework.workflow.engine.bean.WorkitemBean;
 import net.simpleframework.workflow.engine.bean.WorkviewBean;
+import net.simpleframework.workflow.engine.bean.WorkviewSentBean;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -38,37 +39,56 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 
 	protected List<WorkviewBean> _createWorkviews(final AbstractWorkitemBean _workitem,
 			final ID... userIds) {
-		WorkviewBean workview2 = null;
+		WorkviewBean parent = null;
 		WorkitemBean workitem;
 		if (_workitem instanceof WorkitemBean) {
 			workitem = (WorkitemBean) _workitem;
 		} else {
-			workview2 = (WorkviewBean) _workitem;
-			workitem = wfwService.getBean(workview2.getWorkitemId());
+			parent = (WorkviewBean) _workitem;
+			workitem = wfwService.getBean(parent.getWorkitemId());
 		}
+
+		final ID processId = workitem.getProcessId();
+
+		// 创建发送记录
+		Date date = new Date();
+		WorkviewSentBean sent = wfvsService.createBean();
+		sent.setProcessId(processId);
+		sent.setWorkitemId(workitem.getId());
+		sent.setCreateDate(date);
+		if (parent != null) {
+			sent.setUserId(parent.getUserId());
+			sent.setWorkviewId(parent.getId());
+		} else {
+			sent.setUserId(workitem.getUserId2());
+		}
+		PermissionUser user = permission.getUser(sent.getUserId());
+		sent.setUserText(user.getText());
+		sent.setDomainId(user.getDomainId());
+		wfvsService.insert(sent);
+
+		// 创建接收记录
 		final List<WorkviewBean> list = new ArrayList<WorkviewBean>();
 		for (final ID id : userIds) {
-			final ID processId = workitem.getProcessId();
+			// 重复发送则忽略
 			if (getWorkviewBean(processId, id) != null) {
 				continue;
 			}
-			final WorkviewBean workview = createBean();
-			workview.setWorkitemId(workitem.getId());
-			workview.setSentId(workitem.getUserId2());
 
+			final WorkviewBean workview = createBean();
+			workview.setCreateDate(date);
+			workview.setSentId(sent.getId());
+			workview.setWorkitemId(workitem.getId());
 			workview.setProcessId(processId);
-			if (workview2 != null) {
-				workview.setParentId(workview2.getId());
+			if (parent != null) {
+				workview.setParentId(parent.getId());
 			}
 
-			final PermissionUser user = permission.getUser(id);
+			user = permission.getUser(id);
 			workview.setUserId(user.getId());
 			workview.setUserText(user.getText());
-			workview.setDeptId(user.getDept().getId());
-			final ID domainId = user.getDept().getDomainId();
-			if (domainId != null) {
-				workview.setDomainId(domainId);
-			}
+			workview.setDeptId(user.getDeptId());
+			workview.setDomainId(user.getDomainId());
 			insert(workview);
 			list.add(workview);
 		}
@@ -108,7 +128,6 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 		super.onInit();
 
 		addListener(new DbEntityAdapterEx<WorkviewBean>() {
-
 			@Override
 			public void onAfterUpdate(final IDbEntityManager<WorkviewBean> manager,
 					final String[] columns, final WorkviewBean[] beans) throws Exception {
