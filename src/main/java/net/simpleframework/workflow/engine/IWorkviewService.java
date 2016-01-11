@@ -47,4 +47,6 @@ public interface IWorkviewService extends IDbBeanService<WorkviewBean>, IWorkflo
 	 * @return
 	 */
 	IDataQuery<WorkviewBean> getWorkviewsList(ID userId);
+
+	IDataQuery<WorkviewBean> getWorkviewsListBySent(ID sentId);
 }

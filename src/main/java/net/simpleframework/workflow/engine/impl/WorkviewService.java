@@ -124,6 +124,11 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 	}
 
 	@Override
+	public IDataQuery<WorkviewBean> getWorkviewsListBySent(ID sentId) {
+		return query("sentId=?", sentId);
+	}
+
+	@Override
 	public void onInit() throws Exception {
 		super.onInit();
 
