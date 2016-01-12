@@ -1,17 +1,18 @@
 package net.simpleframework.workflow.engine;
 
+import static net.simpleframework.common.I18n.$m;
+
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import net.simpleframework.common.ID;
-import net.simpleframework.common.coll.CollectionUtils;
 import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.common.object.ObjectEx;
 import net.simpleframework.ctx.permission.PermissionRole;
 import net.simpleframework.ctx.script.IScriptEval;
+import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.bean.ProcessModelBean;
 import net.simpleframework.workflow.engine.participant.Participant;
 import net.simpleframework.workflow.schema.StartNode;
@@ -34,7 +35,7 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 	private ID roleId;
 
 	/* 实际参与者 */
-	private final Participant participant;
+	private Participant participant;
 
 	/* 传递给流程实例的变量 */
 	private final Map<String, Object> variables = new KVMap();
@@ -54,7 +55,6 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 		if (variables != null) {
 			this.variables.putAll(variables);
 		}
-		this.participant = new Participant(userId, roleId, null);
 	}
 
 	public ID getModelId() {
@@ -69,18 +69,14 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 		return variables;
 	}
 
-	/* 其它可启动的角色 */
-	public Collection<PermissionRole> roles() {
-		return CollectionUtils.toList(permission.getUser(getUserId()).roles(getVariables()));
-	}
-
-	private transient ProcessModelBean processModel;
-
-	public ProcessModelBean model() {
-		if (processModel == null) {
-			processModel = wfpmService.getBean(getModelId());
+	/* 可启动的角色 */
+	public List<PermissionRole> roles() {
+		final List<PermissionRole> l = permission.getUser(getUserId()).roles(getRoleId(),
+				getVariables());
+		if (l.size() == 0) {
+			throw WorkflowException.of($m("InitiateItem.0"));
 		}
-		return processModel;
+		return l;
 	}
 
 	public ID getRoleId() {
@@ -92,6 +88,9 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 	}
 
 	public Participant getParticipant() {
+		if (participant == null) {
+			participant = new Participant(getUserId(), getRoleId(), null);
+		}
 		return participant;
 	}
 
@@ -128,5 +127,14 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 	@Override
 	public String toString() {
 		return model().toString();
+	}
+
+	private transient ProcessModelBean processModel;
+
+	public ProcessModelBean model() {
+		if (processModel == null) {
+			processModel = wfpmService.getBean(getModelId());
+		}
+		return processModel;
 	}
 }

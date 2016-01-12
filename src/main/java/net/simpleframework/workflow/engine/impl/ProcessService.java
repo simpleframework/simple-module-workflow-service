@@ -43,6 +43,7 @@ import net.simpleframework.workflow.engine.bean.ProcessModelDomainR;
 import net.simpleframework.workflow.engine.bean.WorkitemBean;
 import net.simpleframework.workflow.engine.event.IProcessListener;
 import net.simpleframework.workflow.engine.event.IWorkflowListener;
+import net.simpleframework.workflow.engine.participant.Participant;
 import net.simpleframework.workflow.engine.remote.IProcessRemoteHandler;
 import net.simpleframework.workflow.schema.ProcessDocument;
 import net.simpleframework.workflow.schema.ProcessNode;
@@ -93,16 +94,12 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public ProcessBean doStartProcess(final InitiateItem initiateItem, final String topic) {
-		final ID roleId = initiateItem.getRoleId();
-		if (roleId == null) {
-			throw WorkflowException.of($m("ProcessService.2"));
-		}
 		final ProcessModelBean processModel = initiateItem.model();
 		if (processModel == null) {
 			throw WorkflowException.of($m("ProcessService.3"));
 		}
 
-		final ProcessBean process = _startProcess(processModel, initiateItem.getUserId(), roleId,
+		final ProcessBean process = _startProcess(processModel, initiateItem.getParticipant(),
 				initiateItem.getVariables(), null, topic);
 		// 事件
 		for (final IWorkflowListener listener : getEventListeners(process)) {
@@ -120,8 +117,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	@Override
 	public ProcessBean doStartProcess(final ProcessModelBean processModel, final KVMap variables,
 			final Properties properties, final String topic) {
-		final ProcessBean process = _startProcess(processModel, null, null, variables, properties,
-				topic);
+		final ProcessBean process = _startProcess(processModel, null, variables, properties, topic);
 		for (final IWorkflowListener listener : getEventListeners(process)) {
 			((IProcessListener) listener).onCreated(null, process);
 		}
@@ -142,14 +138,14 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		}
 	}
 
-	private ProcessBean _startProcess(final ProcessModelBean processModel, final ID userId,
-			final ID roleId, final Map<String, Object> variables, final Properties properties,
-			final String title) {
+	private ProcessBean _startProcess(final ProcessModelBean processModel,
+			final Participant participant, final Map<String, Object> variables,
+			final Properties properties, final String title) {
 		if (processModel.getStatus() != EProcessModelStatus.deploy) {
 			throw WorkflowException.of($m("ProcessService.1"));
 		}
 
-		final ProcessBean process = _create(processModel, userId, roleId, title);
+		final ProcessBean process = _create(processModel, participant, title);
 		if (properties != null) {
 			process.getProperties().putAll(properties);
 		}
@@ -387,7 +383,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		}
 	}
 
-	ProcessBean _create(final ProcessModelBean processModel, final ID userId, final ID roleId,
+	ProcessBean _create(final ProcessModelBean processModel, final Participant participant,
 			final String title) {
 		final ProcessBean process = createBean();
 		process.setModelId(processModel.getId());
@@ -397,18 +393,12 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		final ProcessDocument doc = wfpmService.getProcessDocument(processModel);
 		process.setVersion(doc.getProcessNode().getVersion().toString());
 
-		process.setRoleId(roleId);
-
-		final PermissionUser user = permission.getUser(userId);
+		final PermissionUser user = participant.getUser();
 		process.setUserId(user.getId());
 		process.setUserText(user.getText());
-
-		ID deptId = permission.getRole(roleId).setUser(user).getDept().getId();
-		if (deptId == null) {
-			deptId = user.getDeptId();
-		}
-		process.setDeptId(deptId);
+		process.setDeptId(participant.getDeptId());
 		process.setDomainId(user.getDomainId());
+		process.setRoleId(participant.getRoleId());
 		return process;
 	}
 

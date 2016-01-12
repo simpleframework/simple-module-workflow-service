@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -160,25 +159,13 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 		return processModel;
 	}
 
-	private final Map<ID, InitiateItems> itemsCache = new HashMap<ID, InitiateItems>();
-
 	@Override
 	public InitiateItems getInitiateItems(final ID userId) {
 		if (userId == null) {
 			return InitiateItems.NULL_ITEMS;
 		}
-		InitiateItems items = itemsCache.get(userId);
-		if (items != null) {
-			items = items.clone();
-			for (final InitiateItem item : items) {
-				if (item.model() == null || item.roles().size() == 0) {
-					items.remove(item.getModelId());
-				}
-			}
-			return items;
-		}
 
-		items = new InitiateItems();
+		InitiateItems items = new InitiateItems();
 		final IDataQuery<ProcessModelBean> query = getModelList(EProcessModelStatus.deploy);
 		ProcessModelBean processModel;
 		while ((processModel = query.next()) != null) {
@@ -207,7 +194,6 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 				//
 			}
 		}
-		itemsCache.put(userId, items);
 		return items;
 	}
 
@@ -244,18 +230,9 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 		super.onInit();
 
 		addListener(new DbEntityAdapterEx<ProcessModelBean>() {
-
-			@Override
-			public void onAfterInsert(final IDbEntityManager<ProcessModelBean> manager,
-					final ProcessModelBean[] beans) {
-				itemsCache.clear();
-			}
-
 			@Override
 			public void onAfterUpdate(final IDbEntityManager<ProcessModelBean> manager,
 					final String[] columns, final ProcessModelBean[] beans) {
-				itemsCache.clear();
-
 				if (ArrayUtils.contains(columns, "status", true)) {
 					for (final ProcessModelBean processModel : beans) {
 						for (final IWorkflowListener listener : getEventListeners(processModel)) {
@@ -286,12 +263,6 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 					// 删除domian
 					wfpmdService.deleteWith("modelId=?", id);
 				}
-			}
-
-			@Override
-			public void onAfterDelete(final IDbEntityManager<ProcessModelBean> manager,
-					final IParamsValue paramsValue) {
-				itemsCache.clear();
 			}
 		});
 	}

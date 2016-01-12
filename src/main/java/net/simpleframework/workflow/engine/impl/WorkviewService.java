@@ -87,7 +87,7 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 			user = permission.getUser(id);
 			workview.setUserId(user.getId());
 			workview.setUserText(user.getText());
-			workview.setDeptId(user.getDeptId());
+			workview.setDeptId(user.getDept().getId());
 			workview.setDomainId(user.getDomainId());
 			insert(workview);
 			list.add(workview);

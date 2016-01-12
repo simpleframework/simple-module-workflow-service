@@ -2,6 +2,7 @@ package net.simpleframework.workflow.engine.participant;
 
 import net.simpleframework.common.ID;
 import net.simpleframework.common.StringUtils;
+import net.simpleframework.ctx.permission.PermissionRole;
 import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.IWorkflowContextAware;
@@ -13,14 +14,18 @@ import net.simpleframework.workflow.engine.IWorkflowContextAware;
  *         http://www.simpleframework.net
  */
 public class Participant implements IWorkflowContextAware {
-	public ID userId;
-	public ID roleId;
-	public ID deptId;
+
+	private final PermissionUser user;
+
+	/* 角色id */
+	private ID roleId;
+	/* 部门id */
+	private ID deptId;
 
 	public Participant(final PermissionUser user, final ID roleId, final ID deptId) {
-		this.userId = user.getId();
-		this.roleId = roleId != null ? roleId : user.getRole().getId();
-		this.deptId = deptId != null ? deptId : user.getDeptId();
+		this.user = user;
+		this.roleId = roleId;
+		this.deptId = deptId;
 	}
 
 	public Participant(final ID userId, final ID roleId, final ID deptId) {
@@ -31,16 +36,52 @@ public class Participant implements IWorkflowContextAware {
 		this(user, null, null);
 	}
 
-	private static final String SEP = "#";
+	public PermissionUser getUser() {
+		return user;
+	}
+
+	public ID getUserId() {
+		return getUser().getId();
+	}
+
+	public ID getRoleId() {
+		if (roleId == null) {
+			// 如果没有指定角色, 则用用户的缺省角色
+			roleId = getUser().getRole().getId();
+		}
+		return roleId;
+	}
+
+	public void setRoleId(final ID roleId) {
+		this.roleId = roleId;
+	}
+
+	public ID getDeptId() {
+		if (deptId == null) {
+			// 获取当前用户user指定roleId的角色
+			final PermissionRole role = permission.getRole(getRoleId()).setUser(getUser());
+			deptId = role.getDept().getId();
+		}
+		if (deptId == null) {
+			deptId = getUser().getDept().getId();
+		}
+		return deptId;
+	}
+
+	public void setDeptId(final ID deptId) {
+		this.deptId = deptId;
+	}
 
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder();
-		sb.append(userId).append(SEP);
+		sb.append(getUserId()).append(SEP);
+		final ID roleId = getRoleId();
 		if (roleId != null) {
 			sb.append(roleId);
 		}
 		sb.append(SEP);
+		final ID deptId = getDeptId();
 		if (deptId != null) {
 			sb.append(deptId);
 		}
@@ -54,4 +95,6 @@ public class Participant implements IWorkflowContextAware {
 		}
 		throw WorkflowException.of("Participant.of");
 	}
+
+	private static final String SEP = "#";
 }
