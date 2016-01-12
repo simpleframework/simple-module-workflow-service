@@ -192,18 +192,19 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 				if (pt instanceof User) {
 					final ID userId2 = permission.getUser(participant).getId();
 					if (userId.equals(userId2)) {
-						items.add(new InitiateItem(processModel, userId, permission.getUser(userId)
-								.getRoleId(), variables));
+						items.add(new InitiateItem(processModel, userId, null, variables));
 					}
 				} else if (pt instanceof BaseRole) {
 					final ID roleId = permission.getRole(participant, variables).getId();
 					if (permission.getUser(userId).isMember(roleId, variables)) {
 						final ID _roleId = (ID) variables.get(PermissionConst.VAR_ROLEID);
+						// 采用VAR_ROLEID定义的角色, 角色嵌套
 						items.add(new InitiateItem(processModel, userId, _roleId != null ? _roleId
 								: roleId, variables));
 					}
 				}
 			} else {
+				//
 			}
 		}
 		itemsCache.put(userId, items);

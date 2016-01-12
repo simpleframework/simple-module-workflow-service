@@ -397,17 +397,18 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		final ProcessDocument doc = wfpmService.getProcessDocument(processModel);
 		process.setVersion(doc.getProcessNode().getVersion().toString());
 
+		process.setRoleId(roleId);
+
 		final PermissionUser user = permission.getUser(userId);
 		process.setUserId(user.getId());
 		process.setUserText(user.getText());
 
-		ID deptId = permission.getRole(roleId).getDept(userId).getId();
+		ID deptId = permission.getRole(roleId).setUser(user).getDept().getId();
 		if (deptId == null) {
 			deptId = user.getDeptId();
 		}
 		process.setDeptId(deptId);
 		process.setDomainId(user.getDomainId());
-		process.setRoleId(roleId);
 		return process;
 	}
 

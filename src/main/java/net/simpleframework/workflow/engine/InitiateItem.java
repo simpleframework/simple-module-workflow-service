@@ -10,8 +10,10 @@ import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.CollectionUtils;
 import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.common.object.ObjectEx;
+import net.simpleframework.ctx.permission.PermissionRole;
 import net.simpleframework.ctx.script.IScriptEval;
 import net.simpleframework.workflow.engine.bean.ProcessModelBean;
+import net.simpleframework.workflow.engine.participant.Participant;
 import net.simpleframework.workflow.schema.StartNode;
 import net.simpleframework.workflow.schema.TransitionNode;
 
@@ -26,16 +28,16 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 	/* 流程模型id */
 	private final ID modelId;
 
+	/* 定义的启动用户 */
 	private final ID userId;
-
-	/* 启动角色 */
+	/* 定义的启动角色 */
 	private ID roleId;
 
-	/* 实际启动角色 */
-	private ID selectedRoleId;
+	/* 实际参与者 */
+	private final Participant participant;
 
 	/* 传递给流程实例的变量 */
-	private final Map<String, Object> variables = new KVMap().add("userRole", true);
+	private final Map<String, Object> variables = new KVMap();
 
 	/* 存放开始节点的手动转移 */
 	private final Map<String, TransitionNode> _transitions = new LinkedHashMap<String, TransitionNode>();
@@ -45,9 +47,14 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 		this.modelId = processModel.getId();
 		this.userId = userId;
 		this.roleId = roleId;
+		// 如果用户
+		if (roleId == null) {
+			variables.put("userRole", true);
+		}
 		if (variables != null) {
 			this.variables.putAll(variables);
 		}
+		this.participant = new Participant(userId, roleId, null);
 	}
 
 	public ID getModelId() {
@@ -63,7 +70,7 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 	}
 
 	/* 其它可启动的角色 */
-	public Collection<ID> roles() {
+	public Collection<PermissionRole> roles() {
 		return CollectionUtils.toList(permission.getUser(getUserId()).roles(getVariables()));
 	}
 
@@ -84,12 +91,8 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 		this.roleId = roleId;
 	}
 
-	public ID getSelectedRoleId() {
-		return selectedRoleId == null ? getRoleId() : selectedRoleId;
-	}
-
-	public void setSelectedRoleId(final ID selectedRoleId) {
-		this.selectedRoleId = selectedRoleId;
+	public Participant getParticipant() {
+		return participant;
 	}
 
 	public boolean isTransitionManual() {

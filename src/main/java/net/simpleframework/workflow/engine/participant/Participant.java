@@ -17,23 +17,18 @@ public class Participant implements IWorkflowContextAware {
 	public ID roleId;
 	public ID deptId;
 
+	public Participant(final PermissionUser user, final ID roleId, final ID deptId) {
+		this.userId = user.getId();
+		this.roleId = roleId != null ? roleId : user.getRole().getId();
+		this.deptId = deptId != null ? deptId : user.getDeptId();
+	}
+
 	public Participant(final ID userId, final ID roleId, final ID deptId) {
-		this.userId = userId;
-		this.roleId = roleId != null ? roleId : getUser().getRoleId();
-		this.deptId = deptId != null ? deptId : getUser().getDeptId();
+		this(permission.getUser(userId), roleId, deptId);
 	}
 
-	public Participant(final ID userId) {
-		this(userId, null, null);
-	}
-
-	private PermissionUser _user;
-
-	private PermissionUser getUser() {
-		if (_user == null) {
-			_user = permission.getUser(userId);
-		}
-		return _user;
+	public Participant(final PermissionUser user) {
+		this(user, null, null);
 	}
 
 	private static final String SEP = "#";

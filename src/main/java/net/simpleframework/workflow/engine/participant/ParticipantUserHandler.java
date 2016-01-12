@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import net.simpleframework.common.ID;
+import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.ctx.script.IScriptEval;
 import net.simpleframework.ctx.script.ScriptEvalUtils;
 import net.simpleframework.workflow.engine.ActivityComplete;
@@ -24,9 +24,9 @@ public class ParticipantUserHandler extends AbstractParticipantHandler {
 		final ArrayList<Participant> participants = new ArrayList<Participant>();
 		final String participant = ScriptEvalUtils.replaceExpr(script, getParticipantType(variables)
 				.getParticipant());
-		final ID userId = permission.getUser(participant).getId();
-		if (userId != null) {
-			participants.add(new Participant(userId));
+		final PermissionUser user = permission.getUser(participant);
+		if (user.getId() != null) {
+			participants.add(new Participant(user));
 		}
 		return participants;
 	}
