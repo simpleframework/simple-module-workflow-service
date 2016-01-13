@@ -14,6 +14,7 @@
         userid char(32) not null,
         usertext varchar(32) not null,
         createdate timestamp not null,
+        lastupdate timestamp,
         processcount int not null,
         primary key(id),
         unique(modelname)

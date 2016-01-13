@@ -16,6 +16,7 @@ import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.db.common.SQLValue;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
+import net.simpleframework.common.Version;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.ctx.permission.PermissionConst;
@@ -92,14 +93,23 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 		try {
 			final ProcessDocument document = new ProcessDocument(model);
 			final ProcessNode processNode = document.getProcessNode();
+			processNode.getVersion().incMicro();
+			final Version nVer = processNode.getVersion();
+			final Version oVer = Version.getVersion((String) queryFor("modelver", "id=?",
+					processModel.getId()));
+			if (oVer.complies(nVer) || oVer.equals(nVer)) {
+				throw WorkflowException.of($m("ProcessModelService.3", nVer, oVer));
+			}
+
 			processModel.setModelName(processNode.getName());
-			processModel.setModelVer(processNode.getVersion().toString());
+			processModel.setModelVer(nVer.toString());
 			processModel.setModelText(processNode.getText());
+			processModel.setLastUpdate(new Date());
 			update(processModel);
 
 			final ProcessModelLobBean lob = getEntityManager(ProcessModelLobBean.class).getBean(
 					processModel.getId());
-			lob.setProcessSchema(model);
+			lob.setProcessSchema(document.toString().toCharArray());
 			getEntityManager(ProcessModelLobBean.class).update(lob);
 		} finally {
 			processModel.removeAttr("processDocument");
@@ -165,7 +175,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 			return InitiateItems.NULL_ITEMS;
 		}
 
-		InitiateItems items = new InitiateItems();
+		final InitiateItems items = new InitiateItems();
 		final IDataQuery<ProcessModelBean> query = getModelList(EProcessModelStatus.deploy);
 		ProcessModelBean processModel;
 		while ((processModel = query.next()) != null) {
