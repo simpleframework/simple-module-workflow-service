@@ -48,8 +48,9 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 		this.modelId = processModel.getId();
 		this.userId = userId;
 		this.roleId = roleId;
-		// 如果用户
+
 		if (roleId == null) {
+			// 如果用户, 则只显示用户角色
 			variables.put("userRole", true);
 		}
 		if (variables != null) {
