@@ -91,7 +91,7 @@ public class ProcessModelBean extends AbstractWorkflowBean {
 		return lastUpdate != null ? lastUpdate : getCreateDate();
 	}
 
-	public void setLastUpdate(Date lastUpdate) {
+	public void setLastUpdate(final Date lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
 
