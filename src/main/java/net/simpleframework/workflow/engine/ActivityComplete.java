@@ -2,6 +2,8 @@ package net.simpleframework.workflow.engine;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -219,7 +221,20 @@ public class ActivityComplete extends ObjectEx implements IWorkflowContextAware 
 	}
 
 	public List<TransitionNode> getTransitions() {
-		return new ArrayList<TransitionNode>(_transitions.values());
+		final ArrayList<TransitionNode> l = new ArrayList<TransitionNode>(_transitions.values());
+		Collections.sort(l, new Comparator<TransitionNode>() {
+			@Override
+			public int compare(final TransitionNode o1, final TransitionNode o2) {
+				final int order1 = o1.getOrder();
+				final int order2 = o2.getOrder();
+				if (order1 == order2) {
+					return 0;
+				} else {
+					return order1 > order2 ? 1 : -1;
+				}
+			}
+		});
+		return l;
 	}
 
 	public List<Participant> getParticipants(final TransitionNode transition) {
