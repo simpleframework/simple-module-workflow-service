@@ -6,6 +6,7 @@ import net.simpleframework.ctx.permission.PermissionRole;
 import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.IWorkflowContextAware;
+import net.simpleframework.workflow.engine.bean.WorkitemBean;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -30,6 +31,18 @@ public class Participant implements IWorkflowContextAware {
 
 	public Participant(final ID userId, final ID roleId, final ID deptId) {
 		this(permission.getUser(userId), roleId, deptId);
+	}
+
+	private WorkitemBean workitem;
+
+	public Participant(final WorkitemBean workitem, final boolean user2) {
+		this((user2 ? workitem.getUserId2() : workitem.getUserId()), workitem.getRoleId(), workitem
+				.getDeptId());
+		this.workitem = workitem;
+	}
+
+	public Participant(final WorkitemBean workitem) {
+		this(workitem, false);
 	}
 
 	public Participant(final PermissionUser user) {
@@ -70,6 +83,10 @@ public class Participant implements IWorkflowContextAware {
 
 	public void setDeptId(final ID deptId) {
 		this.deptId = deptId;
+	}
+
+	public WorkitemBean getWorkitem() {
+		return workitem;
 	}
 
 	@Override

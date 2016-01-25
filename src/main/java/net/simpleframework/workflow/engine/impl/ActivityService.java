@@ -865,7 +865,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			if (!all && workitem.getStatus().ordinal() > EWorkitemStatus.complete.ordinal()) {
 				continue;
 			}
-			list.add(new Participant(workitem.getUserId(), workitem.getRoleId(), workitem.getDeptId()));
+			list.add(new Participant(workitem));
 		}
 		return list;
 	}
@@ -875,7 +875,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		final List<Participant> list = new ArrayList<Participant>();
 		for (final WorkitemBean workitem : wfwService
 				.getWorkitems(activity, EWorkitemStatus.complete)) {
-			list.add(new Participant(workitem.getUserId2(), workitem.getRoleId(), workitem.getDeptId()));
+			list.add(new Participant(workitem, true));
 		}
 		return list;
 	}

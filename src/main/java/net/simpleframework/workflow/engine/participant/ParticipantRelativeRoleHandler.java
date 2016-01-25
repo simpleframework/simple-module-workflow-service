@@ -74,16 +74,14 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 								participants.addAll(_participants);
 							}
 						} else {
-							participants.add(new Participant(workitem.getUserId(), workitem.getRoleId(),
-									workitem.getDeptId()));
+							participants.add(new Participant(workitem));
 							// 其它已完成任务项
 							if (completes == null) {
 								completes = wfwService.getWorkitems(preActivity, EWorkitemStatus.complete);
 							}
 							for (final WorkitemBean workitem2 : completes) {
 								if (!workitem2.getId().equals(workitem.getId())) {
-									participants.add(new Participant(workitem2.getUserId(), workitem2
-											.getRoleId(), workitem2.getDeptId()));
+									participants.add(new Participant(workitem2));
 								}
 							}
 						}

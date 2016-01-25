@@ -279,8 +279,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	WorkitemBean _clone(final ActivityBean nActivity, final WorkitemBean workitem) {
-		final WorkitemBean nWorkitem = _create(nActivity, new Participant(workitem.getUserId(),
-				workitem.getRoleId(), workitem.getDeptId()), new Date());
+		final WorkitemBean nWorkitem = _create(nActivity, new Participant(workitem), new Date());
 
 		// 设置退回节点的引用
 		final ActivityBean preActivity = wfaService.getPreActivity(nActivity);
