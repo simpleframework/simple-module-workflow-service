@@ -83,6 +83,8 @@
         sourceid char(32) not null,
         status tinyint not null,
         createdate datetime not null,
+        ouserid char(32) not null,
+        ousertext varchar(32) not null,
         userid char(32) not null,
         usertext varchar(32) not null,
         startdate datetime,

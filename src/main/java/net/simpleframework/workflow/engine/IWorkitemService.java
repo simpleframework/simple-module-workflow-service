@@ -109,13 +109,14 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	 * 设置工作项委托
 	 * 
 	 * @param workitem
+	 * @param ouserId
 	 * @param userId
 	 * @param dStartDate
 	 * @param dCompleteDate
 	 * @param description
 	 */
-	void doWorkitemDelegation(WorkitemBean workitem, ID userId, Date dStartDate, Date dCompleteDate,
-			String description);
+	void doWorkitemDelegation(WorkitemBean workitem, ID ouserId, ID userId, Date dStartDate,
+			Date dCompleteDate, String description);
 
 	/**
 	 * 获取流程实例

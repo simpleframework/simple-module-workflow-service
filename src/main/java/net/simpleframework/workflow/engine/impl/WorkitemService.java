@@ -297,8 +297,9 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		if (delegation != null) {
 			final DelegationService wfdServiceImpl = (DelegationService) wfdService;
 			final DelegationBean nDelegation = wfdServiceImpl._create(EDelegationSource.workitem,
-					nWorkitem.getId(), delegation.getUserId(), delegation.getDstartDate(),
-					delegation.getDcompleteDate(), delegation.getDescription());
+					nWorkitem.getId(), delegation.getOuserId(), delegation.getUserId(),
+					delegation.getDstartDate(), delegation.getDcompleteDate(),
+					delegation.getDescription());
 			wfdServiceImpl.insert(nDelegation);
 			wfdServiceImpl._doDelegateTask(nDelegation, false);
 		}
@@ -355,7 +356,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	@Override
-	public void doWorkitemDelegation(final WorkitemBean workitem, final ID userId,
+	public void doWorkitemDelegation(final WorkitemBean workitem, final ID ouserId, final ID userId,
 			final Date dStartDate, final Date dCompleteDate, final String description) {
 		if (workitem.getUserId().equals(userId)) {
 			throw WorkflowException.of($m("WorkitemService.4"));
@@ -372,7 +373,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		}
 
 		final DelegationBean delegation = wfdServiceImpl._create(EDelegationSource.workitem,
-				workitem.getId(), userId, dStartDate, dCompleteDate, description);
+				workitem.getId(), ouserId, userId, dStartDate, dCompleteDate, description);
 		wfdServiceImpl.insert(delegation);
 		// 执行...
 		wfdServiceImpl._doDelegateTask(delegation, true);
@@ -581,8 +582,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 					final DelegationBean delegation = wfdService.queryRunningDelegation(workitem
 							.getUserId());
 					if (delegation != null) {
-						doWorkitemDelegation(workitem, delegation.getUserId(), null, null,
-								$m("WorkitemService.5", workitem.getUserText()));
+						doWorkitemDelegation(workitem, delegation.getSourceId(), delegation.getUserId(),
+								null, null, $m("WorkitemService.5", workitem.getUserText()));
 					}
 					// 设置用户统计
 					final ID userId = workitem.getUserId();

@@ -29,9 +29,13 @@ public class DelegationBean extends AbstractWorkflowBean implements IDescription
 	@ColumnMeta(columnText = "#(AbstractWorkflowBean.0)")
 	private EDelegationStatus status;
 
-	/* 委托的用户id */
-	private ID userId;
+	/* 操作人的用户id */
+	private ID ouserId;
+	/* 操作人的用户显示 */
+	private String ouserText;
 
+	/* 委托对象的用户id */
+	private ID userId;
 	private String userText;
 
 	/* 委托的实际开始时间和实际结束时间 */
@@ -75,6 +79,22 @@ public class DelegationBean extends AbstractWorkflowBean implements IDescription
 
 	public void setStatus(final EDelegationStatus status) {
 		this.status = status;
+	}
+
+	public ID getOuserId() {
+		return ouserId;
+	}
+
+	public void setOuserId(final ID ouserId) {
+		this.ouserId = ouserId;
+	}
+
+	public String getOuserText() {
+		return ouserText;
+	}
+
+	public void setOuserText(final String ouserText) {
+		this.ouserText = ouserText;
 	}
 
 	public ID getUserId() {

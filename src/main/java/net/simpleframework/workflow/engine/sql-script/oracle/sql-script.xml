@@ -83,6 +83,8 @@
         sourceid char(32) not null,
         status number(4) not null,
         createdate timestamp not null,
+        ouserid char(32) not null,
+        ousertext varchar2(32) not null,
         userid char(32) not null,
         usertext varchar2(32) not null,
         startdate timestamp,

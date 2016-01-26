@@ -114,8 +114,8 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 			throw WorkflowException.of($m("DelegationService.0"));
 		}
 
-		delegation = _create(EDelegationSource.user, sourceId, userId, dStartDate, dCompleteDate,
-				description);
+		delegation = _create(EDelegationSource.user, sourceId, sourceId, userId, dStartDate,
+				dCompleteDate, description);
 		insert(delegation);
 
 		_doDelegateTask(delegation, false);
@@ -178,12 +178,15 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	}
 
 	DelegationBean _create(final EDelegationSource delegationSource, final ID sourceId,
-			final ID userId, final Date dStartDate, final Date dCompleteDate, final String description) {
+			final ID ouserId, final ID userId, final Date dStartDate, final Date dCompleteDate,
+			final String description) {
 		final DelegationBean delegation = createBean();
 		delegation.setDelegationSource(delegationSource);
 		delegation.setSourceId(sourceId);
+		delegation.setOuserId(ouserId);
+		delegation.setOuserText(permission.getUser(ouserId).getText());
 		delegation.setUserId(userId);
-		delegation.setUserText(permission.getUser(userId).toString());
+		delegation.setUserText(permission.getUser(userId).getText());
 		delegation.setDstartDate(dStartDate);
 		delegation.setDcompleteDate(dCompleteDate);
 		delegation.setDescription(description);
