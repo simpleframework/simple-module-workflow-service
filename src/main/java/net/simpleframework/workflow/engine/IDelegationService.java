@@ -34,6 +34,8 @@ public interface IDelegationService extends IWorkflowService<DelegationBean> {
 	 */
 	IDataQuery<DelegationBean> queryDelegations(ID userId, EDelegationSource source);
 
+	IDataQuery<DelegationBean> queryRevDelegations(ID userId);
+
 	/**
 	 * 放弃当前委托
 	 * 

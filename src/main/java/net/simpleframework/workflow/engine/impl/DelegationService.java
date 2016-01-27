@@ -67,6 +67,18 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	}
 
 	@Override
+	public IDataQuery<DelegationBean> queryRevDelegations(ID userId) {
+		final StringBuilder sb = new StringBuilder();
+		sb.append("select d.*,w.processid from ")
+				.append(getTablename(DelegationBean.class))
+				.append(" d left join ")
+				.append(getTablename(WorkitemBean.class))
+				.append(
+						" w on d.sourceid = w.id where d.userId=? and d.delegationsource=? order by d.createdate desc");
+		return query(new SQLValue(sb, userId, EDelegationSource.workitem));
+	}
+
+	@Override
 	public void doAccept(final DelegationBean delegation, final String description2) {
 		_doAccept(delegation, description2, false);
 	}
