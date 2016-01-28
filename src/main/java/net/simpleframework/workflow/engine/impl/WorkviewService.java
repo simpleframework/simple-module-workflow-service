@@ -129,6 +129,20 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 	}
 
 	@Override
+	public IDataQuery<WorkviewBean> getChildren(final WorkitemBean workitem, final ID parentId) {
+		final StringBuilder sql = new StringBuilder("workitemid=?");
+		final List<Object> params = new ArrayList<Object>();
+		params.add(workitem.getId());
+		if (parentId == null) {
+			sql.append(" and parentid is null");
+		} else {
+			sql.append(" and parentid=?");
+			params.add(parentId);
+		}
+		return query(sql.append(getDefaultOrderby()), params.toArray());
+	}
+
+	@Override
 	public void onInit() throws Exception {
 		super.onInit();
 

@@ -40,6 +40,8 @@ public interface IWorkviewService extends IDbBeanService<WorkviewBean>, IWorkflo
 
 	IDataQuery<WorkviewBean> getUnreadWorkviewsList(ID userId);
 
+	IDataQuery<WorkviewBean> getChildren(WorkitemBean workitem, ID parentId);
+
 	/**
 	 * 获取指定用户的待阅
 	 * 
