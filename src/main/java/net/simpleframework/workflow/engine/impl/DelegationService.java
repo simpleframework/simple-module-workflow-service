@@ -67,7 +67,7 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	}
 
 	@Override
-	public IDataQuery<DelegationBean> queryRevDelegations(ID userId) {
+	public IDataQuery<DelegationBean> queryRevDelegations(final ID userId) {
 		final StringBuilder sb = new StringBuilder();
 		sb.append("select d.*,w.processid from ")
 				.append(getTablename(DelegationBean.class))

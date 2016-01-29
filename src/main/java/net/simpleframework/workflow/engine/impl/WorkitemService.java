@@ -597,7 +597,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			}
 
 			private void doUserStat_readMark(final WorkitemBean workitem) {
-				ID userId = workitem.getUserId2();
+				final ID userId = workitem.getUserId2();
 				final UserStatBean stat = wfusService.getUserStat(userId);
 				stat.setWorkitem_unread(getUnreadWorklist(userId).getCount());
 				wfusService.update(new String[] { "workitem_unread" }, stat);

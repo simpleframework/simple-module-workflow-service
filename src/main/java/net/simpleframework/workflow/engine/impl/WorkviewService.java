@@ -170,7 +170,7 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 			}
 
 			private void doUserStat_readMark(final WorkviewBean workview) {
-				ID userId = workview.getUserId();
+				final ID userId = workview.getUserId();
 				final UserStatBean stat = wfusService.getUserStat(userId);
 				stat.setWorkview_unread(getUnreadWorkviewsList(userId).getCount());
 				wfusService.update(new String[] { "workview_unread" }, stat);
