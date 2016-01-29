@@ -153,7 +153,7 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 				super.onAfterUpdate(manager, columns, beans);
 				for (final WorkviewBean workview : beans) {
 					if (ArrayUtils.contains(columns, "readMark", true)) {
-						doUserStat_readMark(workview.getUserId());
+						doUserStat_readMark(workview);
 					}
 				}
 			}
@@ -165,11 +165,12 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 
 				for (final WorkviewBean workview : beans) {
 					// 设置用户统计
-					doUserStat_readMark(workview.getUserId());
+					doUserStat_readMark(workview);
 				}
 			}
 
-			private void doUserStat_readMark(final ID userId) {
+			private void doUserStat_readMark(final WorkviewBean workview) {
+				ID userId = workview.getUserId();
 				final UserStatBean stat = wfusService.getUserStat(userId);
 				stat.setWorkview_unread(getUnreadWorkviewsList(userId).getCount());
 				wfusService.update(new String[] { "workview_unread" }, stat);
