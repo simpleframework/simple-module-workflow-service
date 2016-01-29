@@ -452,7 +452,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	@Override
 	public IDataQuery<WorkitemBean> getUnreadWorklist(final ID userId) {
 		final StringBuilder sql = new StringBuilder(
-				"userId2=? and readMark=? and (status=? or status=? or status=?)")
+				"userid2=? and readMark=? and (status=? or status=? or status=?)")
 				.append(getDefaultOrderby(null));
 		return query(sql, userId, Boolean.FALSE, EWorkitemStatus.running, EWorkitemStatus.suspended,
 				EWorkitemStatus.delegate);
@@ -562,12 +562,12 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 					final String[] columns, final WorkitemBean[] beans) throws Exception {
 				super.onAfterUpdate(manager, columns, beans);
 				for (final WorkitemBean workitem : beans) {
-					final ID userId = workitem.getUserId();
 					if (ArrayUtils.contains(columns, "readMark", true)) {
-						doUserStat_readMark(userId);
+						// 按实际执行者
+						doUserStat_readMark(workitem);
 					}
 					if (ArrayUtils.contains(columns, "status", true)) {
-						doUserStat_status(userId);
+						doUserStat_status(workitem.getUserId());
 					}
 				}
 			}
@@ -586,9 +586,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 								null, null, $m("WorkitemService.5", workitem.getUserText()));
 					}
 					// 设置用户统计
-					final ID userId = workitem.getUserId();
-					doUserStat_readMark(userId);
-					doUserStat_status(userId);
+					doUserStat_readMark(workitem);
+					doUserStat_status(workitem.getUserId());
 
 					// 触发创建事件
 					for (final IWorkflowListener listener : getEventListeners(workitem)) {
@@ -597,7 +596,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 				}
 			}
 
-			private void doUserStat_readMark(final ID userId) {
+			private void doUserStat_readMark(final WorkitemBean workitem) {
+				ID userId = workitem.getUserId2();
 				final UserStatBean stat = wfusService.getUserStat(userId);
 				stat.setWorkitem_unread(getUnreadWorklist(userId).getCount());
 				wfusService.update(new String[] { "workitem_unread" }, stat);
