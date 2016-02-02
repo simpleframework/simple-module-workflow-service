@@ -1,5 +1,6 @@
 package net.simpleframework.workflow.engine;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
@@ -148,6 +149,16 @@ public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 	 * @param title
 	 */
 	void doUpdateKV(ProcessBean process, Map<String, Object> kv);
+
+	/**
+	 * 更新流程的过期时间
+	 * 
+	 * @param process
+	 * @param timeoutDate
+	 */
+	void doUpdateTimeoutDate(ProcessBean process, Date timeoutDate);
+
+	void doUpdateTimeoutDate(ProcessBean process, int hours);
 
 	void doUpdateViews(ProcessBean process);
 
