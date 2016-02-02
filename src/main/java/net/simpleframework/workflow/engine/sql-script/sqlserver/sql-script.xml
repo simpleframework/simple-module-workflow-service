@@ -59,6 +59,7 @@
         createdate datetime not null,
         roleid char(32),
         completedate datetime,
+        timeoutdate datetime,
         comments int not null,
         views int not null,
         properties text,

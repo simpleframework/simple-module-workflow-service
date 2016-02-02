@@ -59,6 +59,7 @@
         createdate timestamp not null,
         roleid char(32),
         completedate timestamp,
+        timeoutdate timestamp,
         comments number(11) not null,
         views number(11) not null,
         properties varchar2(4000 char),

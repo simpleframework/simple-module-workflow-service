@@ -29,6 +29,9 @@ public class ProcessBean extends AbstractWorkflowBean implements IDomainBeanAwar
 
 	private Date completeDate;
 
+	/* 过期时间 */
+	private Date timeoutDate;
+
 	@ColumnMeta(columnText = "#(AbstractWorkflowBean.1)")
 	private String title;
 
@@ -85,6 +88,14 @@ public class ProcessBean extends AbstractWorkflowBean implements IDomainBeanAwar
 
 	public void setCompleteDate(final Date completeDate) {
 		this.completeDate = completeDate;
+	}
+
+	public Date getTimeoutDate() {
+		return timeoutDate;
+	}
+
+	public void setTimeoutDate(Date timeoutDate) {
+		this.timeoutDate = timeoutDate;
 	}
 
 	public EProcessStatus getStatus() {
