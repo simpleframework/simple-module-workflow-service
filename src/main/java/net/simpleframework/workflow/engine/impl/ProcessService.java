@@ -37,6 +37,7 @@ import net.simpleframework.workflow.engine.IProcessService;
 import net.simpleframework.workflow.engine.IWorkflowView;
 import net.simpleframework.workflow.engine.InitiateItem;
 import net.simpleframework.workflow.engine.bean.ActivityBean;
+import net.simpleframework.workflow.engine.bean.DelegationBean;
 import net.simpleframework.workflow.engine.bean.ProcessBean;
 import net.simpleframework.workflow.engine.bean.ProcessLobBean;
 import net.simpleframework.workflow.engine.bean.ProcessModelBean;
@@ -130,6 +131,13 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		// 创建开始任务
 		final StartNode startNode = getProcessNode(process).startNode();
 		final ActivityService wfaServiceImpl = (ActivityService) wfaService;
+
+		// 如果设置了用户委托，则无法启动流程
+		final DelegationBean delegation = wfdService.queryRunningDelegation(process.getUserId());
+		if (delegation != null) {
+			throw WorkflowException.of($m("ProcessService.2"));
+		}
+
 		final ActivityBean sActivity = wfaServiceImpl._create(process, startNode, null, new Date());
 		wfaServiceImpl.insert(sActivity);
 		if (transitions == null) {
