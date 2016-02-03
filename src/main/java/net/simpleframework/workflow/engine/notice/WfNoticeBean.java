@@ -31,6 +31,9 @@ public class WfNoticeBean extends AbstractUserAwareBean {
 	/* 发送的消息 */
 	private String smessage;
 
+	/* 发送次数 */
+	private int sents;
+
 	public ID getProcessId() {
 		return processId;
 	}
@@ -87,10 +90,22 @@ public class WfNoticeBean extends AbstractUserAwareBean {
 		this.smessage = smessage;
 	}
 
+	public int getSents() {
+		return sents;
+	}
+
+	public void setSents(int sents) {
+		this.sents = sents;
+	}
+
 	public static enum ENoticeStatus {
 		ready,
 
 		sent,
+
+		unsent,
+
+		fail,
 
 		abort
 	}

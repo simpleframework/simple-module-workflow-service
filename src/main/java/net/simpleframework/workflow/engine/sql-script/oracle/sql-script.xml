@@ -282,6 +282,7 @@
         workitemid char(32),
         dsentdate timestamp not null,
         sentdate timestamp,
+        sents number(11) not null,
         smessage varchar2(2000 char),
         primary key(id)
       );

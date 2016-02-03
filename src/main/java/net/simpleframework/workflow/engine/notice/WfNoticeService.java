@@ -60,8 +60,9 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 	}
 
 	void _doCheck() {
-		final IDataQuery<WfNoticeBean> dq = wfnService.query("status=? and dsentdate<?",
-				ENoticeStatus.ready, new Date());
+		final IDataQuery<WfNoticeBean> dq = wfnService.query(
+				"(status=? or status=?) and dsentdate<?", ENoticeStatus.ready, ENoticeStatus.fail,
+				new Date());
 		WfNoticeBean wfNotice;
 		while ((wfNotice = dq.next()) != null) {
 			final IWfNoticeTypeHandler handler = wfnService.getWfNoticeTypeHandler(wfNotice
@@ -71,13 +72,23 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 				doExecuteTransaction(new TransactionVoidCallback() {
 					@Override
 					protected void doTransactionVoidCallback() throws Throwable {
+						int sents = _wfNotice.getSents();
 						try {
-							handler.doSent(_wfNotice);
 							// 修改状态
-							_wfNotice.setStatus(ENoticeStatus.sent);
-							_wfNotice.setSentDate(new Date());
-							wfnService.update(new String[] { "status", "sentDate" }, _wfNotice);
+							if (handler.doSent(_wfNotice)) {
+								_wfNotice.setStatus(ENoticeStatus.sent);
+								_wfNotice.setSentDate(new Date());
+								_wfNotice.setSents(sents + 1);
+								wfnService
+										.update(new String[] { "status", "sentdate", "sents" }, _wfNotice);
+							} else {
+								_wfNotice.setStatus(ENoticeStatus.unsent);
+								wfnService.update(new String[] { "status" }, _wfNotice);
+							}
 						} catch (final Exception e) {
+							_wfNotice.setStatus(ENoticeStatus.fail);
+							_wfNotice.setSents(sents + 1);
+							wfnService.update(new String[] { "status", "sents" }, _wfNotice);
 							getLog().warn(e);
 						}
 					}

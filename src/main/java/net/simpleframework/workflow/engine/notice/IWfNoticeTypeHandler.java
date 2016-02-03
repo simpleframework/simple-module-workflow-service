@@ -14,8 +14,13 @@ public interface IWfNoticeTypeHandler extends IWorkflowContextAware {
 	 * 发消息
 	 * 
 	 * @param notice
+	 * @return
+	 *         true 已发送
+	 *         false 未发送
+	 * @throws Exception
+	 *         发送失败
 	 */
-	void doSent(WfNoticeBean notice) throws Exception;
+	boolean doSent(WfNoticeBean notice) throws Exception;
 
 	/**
 	 * 获取handler的唯一编号

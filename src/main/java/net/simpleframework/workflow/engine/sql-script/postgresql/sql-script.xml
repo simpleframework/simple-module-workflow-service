@@ -282,6 +282,7 @@
         workitemid char(32),
         dsentdate timestamp not null,
         sentdate timestamp,
+        sents int4 not null,
         smessage text,
         primary key(id)
       );
