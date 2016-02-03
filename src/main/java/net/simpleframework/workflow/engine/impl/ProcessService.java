@@ -16,6 +16,7 @@ import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.db.common.SQLValue;
 import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
+import net.simpleframework.ado.trans.TransactionVoidCallback;
 import net.simpleframework.common.BeanUtils;
 import net.simpleframework.common.Convert;
 import net.simpleframework.common.ID;
@@ -384,13 +385,13 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
-	public void doUpdateTimeoutDate(ProcessBean process, Date timeoutDate) {
+	public void doUpdateTimeoutDate(final ProcessBean process, final Date timeoutDate) {
 		process.setTimeoutDate(timeoutDate);
 		update(new String[] { "timeoutDate" }, process);
 	}
 
 	@Override
-	public void doUpdateTimeoutDate(ProcessBean process, int hours) {
+	public void doUpdateTimeoutDate(final ProcessBean process, final int hours) {
 		doUpdateTimeoutDate(process, getWorkCalendarListener(process).getRealDate(hours));
 	}
 
@@ -422,9 +423,45 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		return (IWorkflowView) (viewClass != null ? singleton(viewClass) : null);
 	}
 
+	void _doProcessTimeout() {
+		final IDataQuery<ProcessBean> dq = query(
+				"timeoutdate is not null and (status=? or status=?)", EProcessStatus.running,
+				EProcessStatus.timeout).setFetchSize(0);
+		ProcessBean process;
+		final Date n = new Date();
+		while ((process = dq.next()) != null) {
+			final ProcessBean nProcess = process;
+			doExecuteTransaction(new TransactionVoidCallback() {
+				@Override
+				protected void doTransactionVoidCallback() throws Throwable {
+					final EProcessStatus status = nProcess.getStatus();
+					if (status != EProcessStatus.timeout && n.after(nProcess.getTimeoutDate())) {
+						// 设置过期状态
+						nProcess.setStatus(EProcessStatus.timeout);
+						update(new String[] { "status" }, nProcess);
+					}
+
+					// 触发超期检测事件，比如一些通知
+					for (final IWorkflowListener listener : getEventListeners(nProcess)) {
+						((IProcessListener) listener).onTimeoutCheck(nProcess);
+					}
+				}
+			});
+		}
+	}
+
 	@Override
 	public void onInit() throws Exception {
 		super.onInit();
+
+		// 启动过期监控
+		final ITaskExecutor taskExecutor = workflowContext.getTaskExecutor();
+		taskExecutor.addScheduledTask(new ExecutorRunnableEx("process_timeout_check") {
+			@Override
+			protected void task(final Map<String, Object> cache) throws Exception {
+				_doProcessTimeout();
+			}
+		});
 
 		addListener(new DbEntityAdapterEx<ProcessBean>() {
 			@Override

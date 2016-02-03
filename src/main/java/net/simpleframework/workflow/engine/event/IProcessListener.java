@@ -28,6 +28,13 @@ public interface IProcessListener extends IWorkflowListener {
 	void onDelete(ProcessBean process);
 
 	/**
+	 * 过期检查
+	 * 
+	 * @param process
+	 */
+	void onTimeoutCheck(ProcessBean process);
+
+	/**
 	 * 当流程状态改变时触发
 	 * 
 	 * @param process
@@ -43,6 +50,10 @@ public interface IProcessListener extends IWorkflowListener {
 
 		@Override
 		public void onDelete(final ProcessBean process) {
+		}
+
+		@Override
+		public void onTimeoutCheck(ProcessBean process) {
 		}
 
 		@Override
