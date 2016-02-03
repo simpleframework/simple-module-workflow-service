@@ -274,19 +274,19 @@
     <![CDATA[
       create table sf_workflow_notice (
         id char(32) not null,
-        sentid varchar(64) not null,
         createdate timestamp not null,
         userid char(32) not null,
         processid char(32) not null,
         status tinyint not null,
         typeno int not null,
         workitemid char(32),
+        sentkey varchar(64),
         dsentdate timestamp not null,
         sentdate timestamp,
         sents int not null,
         smessage clob,
         primary key(id),
-        unique(sentid)
+        unique(userid, sentkey)
       );
     ]]>
   </tran-sql>

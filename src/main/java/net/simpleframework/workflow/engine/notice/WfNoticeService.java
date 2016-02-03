@@ -3,10 +3,12 @@ package net.simpleframework.workflow.engine.notice;
 import static net.simpleframework.common.I18n.$m;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
+import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.ado.trans.TransactionVoidCallback;
 import net.simpleframework.common.ID;
@@ -26,25 +28,25 @@ import net.simpleframework.workflow.engine.notice.WfNoticeBean.ENoticeStatus;
 public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> implements
 		IWfNoticeService {
 	@Override
-	public WfNoticeBean addWfNotice(String sentId, final ProcessBean process, ID userId,
+	public WfNoticeBean addWfNotice(String sentKey, final ProcessBean process, ID userId,
 			final Date dsentDate, final String smessage, final int typeno) {
-		return _addWfNotice(sentId, process.getId(), null, userId, dsentDate, smessage, typeno);
+		return _addWfNotice(sentKey, process.getId(), null, userId, dsentDate, smessage, typeno);
 	}
 
 	@Override
-	public WfNoticeBean addWfNotice(String sentId, final WorkitemBean workitem,
+	public WfNoticeBean addWfNotice(String sentKey, final WorkitemBean workitem,
 			final Date dsentDate, final String smessage, final int typeno) {
-		return _addWfNotice(sentId, workitem.getProcessId(), workitem.getId(), workitem.getUserId2(),
-				dsentDate, smessage, typeno);
+		return _addWfNotice(sentKey, workitem.getProcessId(), workitem.getId(),
+				workitem.getUserId2(), dsentDate, smessage, typeno);
 	}
 
-	WfNoticeBean _addWfNotice(String sentId, final ID processId, final ID workitemId, ID userId,
+	WfNoticeBean _addWfNotice(String sentKey, final ID processId, final ID workitemId, ID userId,
 			final Date dsentDate, final String smessage, final int typeno) {
 		if (getWfNoticeTypeHandler(typeno) == null) {
 			throw WorkflowException.of($m("WfNoticeService.0"));
 		}
 		final WfNoticeBean notice = createBean();
-		notice.setSentId(sentId);
+		notice.setSentKey(sentKey);
 		notice.setProcessId(processId);
 		notice.setTypeNo(typeno);
 		notice.setWorkitemId(workitemId);
@@ -56,8 +58,13 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 	}
 
 	@Override
-	public WfNoticeBean getNoticeBeanBySentId(String sentId) {
-		return getBean("sentid=?", sentId);
+	public List<WfNoticeBean> getWfNoticeList(String sentKey) {
+		return DataQueryUtils.toList(query("sentkey=?", sentKey));
+	}
+
+	@Override
+	public WfNoticeBean getWfNotice(ID userId, String sentKey) {
+		return getBean("userid=? and sentkey=?", userId, sentKey);
 	}
 
 	@Override

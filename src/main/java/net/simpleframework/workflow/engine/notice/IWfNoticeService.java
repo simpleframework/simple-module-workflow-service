@@ -1,6 +1,7 @@
 package net.simpleframework.workflow.engine.notice;
 
 import java.util.Date;
+import java.util.List;
 
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.IDbBeanService;
@@ -19,7 +20,7 @@ public interface IWfNoticeService extends IDbBeanService<WfNoticeBean>, IWorkflo
 	/**
 	 * 按流程添加通知消息
 	 * 
-	 * @param sentId
+	 * @param sentKey
 	 * @param process
 	 * @param userId
 	 * @param dsentDate
@@ -27,28 +28,30 @@ public interface IWfNoticeService extends IDbBeanService<WfNoticeBean>, IWorkflo
 	 * @param typeno
 	 * @return
 	 */
-	WfNoticeBean addWfNotice(String sentId, ProcessBean process, ID userId, Date dsentDate,
+	WfNoticeBean addWfNotice(String sentKey, ProcessBean process, ID userId, Date dsentDate,
 			String smessage, int typeno);
 
 	/**
 	 * 按任务项添加通知消息
 	 * 
-	 * @param sentId
+	 * @param sentKey
 	 * @param workitem
 	 * @param dsentDate
 	 * @param smessage
 	 * @param typeno
 	 * @return
 	 */
-	WfNoticeBean addWfNotice(String sentId, WorkitemBean workitem, Date dsentDate, String smessage,
+	WfNoticeBean addWfNotice(String sentKey, WorkitemBean workitem, Date dsentDate, String smessage,
 			int typeno);
 
 	/**
 	 * 
-	 * @param sentId
+	 * @param sentKey
 	 * @return
 	 */
-	WfNoticeBean getNoticeBeanBySentId(String sentId);
+	List<WfNoticeBean> getWfNoticeList(String sentKey);
+
+	WfNoticeBean getWfNotice(ID userId, String sentKey);
 
 	/**
 	 * 根据no号获取
