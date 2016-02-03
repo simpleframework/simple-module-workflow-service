@@ -180,6 +180,9 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 
 		if (endActivity != null) {
+			// 检测状态
+			_assert(process, EProcessStatus.running, EProcessStatus.timeout);
+
 			process.setStatus(EProcessStatus.complete);
 			process.setCompleteDate(endActivity.getCompleteDate());
 			wfpService.update(new String[] { "completeDate", "status" }, process);
