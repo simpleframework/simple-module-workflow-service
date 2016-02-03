@@ -18,6 +18,9 @@ public class WfNoticeBean extends AbstractUserAwareBean {
 	/* 关联的工作项id */
 	private ID workitemId;
 
+	/* 发送id，唯一 */
+	private String sentId;
+
 	/* 状态 */
 	private ENoticeStatus status;
 
@@ -48,6 +51,14 @@ public class WfNoticeBean extends AbstractUserAwareBean {
 
 	public void setWorkitemId(final ID workitemId) {
 		this.workitemId = workitemId;
+	}
+
+	public String getSentId() {
+		return sentId;
+	}
+
+	public void setSentId(String sentId) {
+		this.sentId = sentId;
 	}
 
 	public ENoticeStatus getStatus() {

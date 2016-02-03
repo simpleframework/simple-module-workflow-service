@@ -19,6 +19,7 @@ public interface IWfNoticeService extends IDbBeanService<WfNoticeBean>, IWorkflo
 	/**
 	 * 按流程添加通知消息
 	 * 
+	 * @param sentId
 	 * @param process
 	 * @param userId
 	 * @param dsentDate
@@ -26,19 +27,28 @@ public interface IWfNoticeService extends IDbBeanService<WfNoticeBean>, IWorkflo
 	 * @param typeno
 	 * @return
 	 */
-	WfNoticeBean addWfNotice(ProcessBean process, ID userId, Date dsentDate, String smessage,
-			int typeno);
+	WfNoticeBean addWfNotice(String sentId, ProcessBean process, ID userId, Date dsentDate,
+			String smessage, int typeno);
 
 	/**
 	 * 按任务项添加通知消息
 	 * 
+	 * @param sentId
 	 * @param workitem
 	 * @param dsentDate
 	 * @param smessage
 	 * @param typeno
 	 * @return
 	 */
-	WfNoticeBean addWfNotice(WorkitemBean workitem, Date dsentDate, String smessage, int typeno);
+	WfNoticeBean addWfNotice(String sentId, WorkitemBean workitem, Date dsentDate, String smessage,
+			int typeno);
+
+	/**
+	 * 
+	 * @param sentId
+	 * @return
+	 */
+	WfNoticeBean getNoticeBeanBySentId(String sentId);
 
 	/**
 	 * 根据no号获取

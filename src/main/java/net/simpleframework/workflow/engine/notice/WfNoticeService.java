@@ -26,24 +26,25 @@ import net.simpleframework.workflow.engine.notice.WfNoticeBean.ENoticeStatus;
 public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> implements
 		IWfNoticeService {
 	@Override
-	public WfNoticeBean addWfNotice(final ProcessBean process, ID userId, final Date dsentDate,
-			final String smessage, final int typeno) {
-		return _addWfNotice(process.getId(), null, userId, dsentDate, smessage, typeno);
+	public WfNoticeBean addWfNotice(String sentId, final ProcessBean process, ID userId,
+			final Date dsentDate, final String smessage, final int typeno) {
+		return _addWfNotice(sentId, process.getId(), null, userId, dsentDate, smessage, typeno);
 	}
 
 	@Override
-	public WfNoticeBean addWfNotice(final WorkitemBean workitem, final Date dsentDate,
-			final String smessage, final int typeno) {
-		return _addWfNotice(workitem.getProcessId(), workitem.getId(), workitem.getUserId2(),
+	public WfNoticeBean addWfNotice(String sentId, final WorkitemBean workitem,
+			final Date dsentDate, final String smessage, final int typeno) {
+		return _addWfNotice(sentId, workitem.getProcessId(), workitem.getId(), workitem.getUserId2(),
 				dsentDate, smessage, typeno);
 	}
 
-	WfNoticeBean _addWfNotice(final ID processId, final ID workitemId, ID userId,
+	WfNoticeBean _addWfNotice(String sentId, final ID processId, final ID workitemId, ID userId,
 			final Date dsentDate, final String smessage, final int typeno) {
 		if (getWfNoticeTypeHandler(typeno) == null) {
 			throw WorkflowException.of($m("WfNoticeService.0"));
 		}
 		final WfNoticeBean notice = createBean();
+		notice.setSentId(sentId);
 		notice.setProcessId(processId);
 		notice.setTypeNo(typeno);
 		notice.setWorkitemId(workitemId);
@@ -52,6 +53,11 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 		notice.setSmessage(smessage);
 		insert(notice);
 		return notice;
+	}
+
+	@Override
+	public WfNoticeBean getNoticeBeanBySentId(String sentId) {
+		return getBean("sentid=?", sentId);
 	}
 
 	@Override
@@ -67,33 +73,33 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 		while ((wfNotice = dq.next()) != null) {
 			final IWfNoticeTypeHandler handler = wfnService.getWfNoticeTypeHandler(wfNotice
 					.getTypeNo());
-			if (handler != null) {
-				final WfNoticeBean _wfNotice = wfNotice;
-				doExecuteTransaction(new TransactionVoidCallback() {
-					@Override
-					protected void doTransactionVoidCallback() throws Throwable {
-						int sents = _wfNotice.getSents();
-						try {
-							// 修改状态
-							if (handler.doSent(_wfNotice)) {
-								_wfNotice.setStatus(ENoticeStatus.sent);
-								_wfNotice.setSentDate(new Date());
-								_wfNotice.setSents(sents + 1);
-								wfnService
-										.update(new String[] { "status", "sentdate", "sents" }, _wfNotice);
-							} else {
-								_wfNotice.setStatus(ENoticeStatus.unsent);
-								wfnService.update(new String[] { "status" }, _wfNotice);
-							}
-						} catch (final Exception e) {
-							_wfNotice.setStatus(ENoticeStatus.fail);
-							_wfNotice.setSents(sents + 1);
-							wfnService.update(new String[] { "status", "sents" }, _wfNotice);
-							getLog().warn(e);
-						}
-					}
-				});
+			if (handler == null) {
+				continue;
 			}
+			final WfNoticeBean _wfNotice = wfNotice;
+			doExecuteTransaction(new TransactionVoidCallback() {
+				@Override
+				protected void doTransactionVoidCallback() throws Throwable {
+					int sents = _wfNotice.getSents();
+					try {
+						// 修改状态
+						if (handler.doSent(_wfNotice)) {
+							_wfNotice.setStatus(ENoticeStatus.sent);
+							_wfNotice.setSentDate(new Date());
+							_wfNotice.setSents(sents + 1);
+							wfnService.update(new String[] { "status", "sentdate", "sents" }, _wfNotice);
+						} else {
+							_wfNotice.setStatus(ENoticeStatus.unsent);
+							wfnService.update(new String[] { "status" }, _wfNotice);
+						}
+					} catch (final Exception e) {
+						_wfNotice.setStatus(ENoticeStatus.fail);
+						_wfNotice.setSents(sents + 1);
+						wfnService.update(new String[] { "status", "sents" }, _wfNotice);
+						getLog().warn(e);
+					}
+				}
+			});
 		}
 	}
 

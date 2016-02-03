@@ -274,6 +274,7 @@
     <![CDATA[
       create table sf_workflow_notice (
         id char(32) not null,
+        sentid varchar(64) not null,
         createdate timestamp not null,
         userid char(32) not null,
         processid char(32) not null,
@@ -284,7 +285,8 @@
         sentdate timestamp,
         sents int not null,
         smessage clob,
-        primary key(id)
+        primary key(id),
+        unique(sentid)
       );
     ]]>
   </tran-sql>
