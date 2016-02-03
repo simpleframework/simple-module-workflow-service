@@ -2,6 +2,7 @@ package net.simpleframework.workflow.engine.notice;
 
 import java.util.Date;
 
+import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.IDbBeanService;
 import net.simpleframework.workflow.engine.IWorkflowContextAware;
 import net.simpleframework.workflow.engine.bean.ProcessBean;
@@ -19,12 +20,14 @@ public interface IWfNoticeService extends IDbBeanService<WfNoticeBean>, IWorkflo
 	 * 按流程添加通知消息
 	 * 
 	 * @param process
+	 * @param userId
 	 * @param dsentDate
 	 * @param smessage
 	 * @param typeno
 	 * @return
 	 */
-	WfNoticeBean addWfNotice(ProcessBean process, Date dsentDate, String smessage, int typeno);
+	WfNoticeBean addWfNotice(ProcessBean process, ID userId, Date dsentDate, String smessage,
+			int typeno);
 
 	/**
 	 * 按任务项添加通知消息

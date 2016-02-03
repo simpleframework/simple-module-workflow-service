@@ -26,19 +26,20 @@ import net.simpleframework.workflow.engine.notice.WfNoticeBean.ENoticeStatus;
 public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> implements
 		IWfNoticeService {
 	@Override
-	public WfNoticeBean addWfNotice(final ProcessBean process, final Date dsentDate,
+	public WfNoticeBean addWfNotice(final ProcessBean process, ID userId, final Date dsentDate,
 			final String smessage, final int typeno) {
-		return _addWfNotice(process.getId(), null, dsentDate, smessage, typeno);
+		return _addWfNotice(process.getId(), null, userId, dsentDate, smessage, typeno);
 	}
 
 	@Override
 	public WfNoticeBean addWfNotice(final WorkitemBean workitem, final Date dsentDate,
 			final String smessage, final int typeno) {
-		return _addWfNotice(workitem.getProcessId(), workitem.getId(), dsentDate, smessage, typeno);
+		return _addWfNotice(workitem.getProcessId(), workitem.getId(), workitem.getUserId2(),
+				dsentDate, smessage, typeno);
 	}
 
-	WfNoticeBean _addWfNotice(final ID processId, final ID workitemId, final Date dsentDate,
-			final String smessage, final int typeno) {
+	WfNoticeBean _addWfNotice(final ID processId, final ID workitemId, ID userId,
+			final Date dsentDate, final String smessage, final int typeno) {
 		if (getWfNoticeTypeHandler(typeno) == null) {
 			throw WorkflowException.of($m("WfNoticeService.0"));
 		}
@@ -46,6 +47,7 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 		notice.setProcessId(processId);
 		notice.setTypeNo(typeno);
 		notice.setWorkitemId(workitemId);
+		notice.setUserId(userId);
 		notice.setDsentDate(dsentDate);
 		notice.setSmessage(smessage);
 		insert(notice);

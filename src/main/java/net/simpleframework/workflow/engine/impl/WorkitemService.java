@@ -515,11 +515,14 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 	void doUserStat_status(final ID userId) {
 		final UserStatBean stat = wfusService.getUserStat(userId);
+		// 初始化状态
+		for (EWorkitemStatus status : EWorkitemStatus.values()) {
+			BeanUtils.setProperty(stat, "workitem_" + status.name(), 0);
+		}
 		final IDataQuery<Map<String, Object>> dq = getEntityManager().queryMapSet(
 				new SQLValue("select status, count(status) as cc from "
 						+ getTablename(WorkitemBean.class) + " where userid=? group by status", userId));
 		Map<String, Object> map;
-		UserStatService.reset(stat);
 		while ((map = dq.next()) != null) {
 			final EWorkitemStatus status = Convert.toEnum(EWorkitemStatus.class, map.get("status"));
 			if (status != null) {

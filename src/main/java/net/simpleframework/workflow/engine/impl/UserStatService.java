@@ -7,7 +7,6 @@ import java.util.Map;
 import net.simpleframework.ado.db.common.SQLValue;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.BeanUtils;
-import net.simpleframework.common.BeanUtils.PropertyWrapper;
 import net.simpleframework.common.Convert;
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
@@ -74,13 +73,5 @@ public class UserStatService extends AbstractDbBeanService<UserStatBean> impleme
 			count += cc;
 		}
 		return new int[] { complete, count };
-	}
-
-	static void reset(final UserStatBean stat) {
-		for (final PropertyWrapper p : BeanUtils.getProperties(UserStatBean.class).values()) {
-			if ("int".equals(p.type.getName())) {
-				BeanUtils.setProperty(stat, p.name, 0);
-			}
-		}
 	}
 }
