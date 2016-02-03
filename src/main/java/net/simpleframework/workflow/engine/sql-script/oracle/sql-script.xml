@@ -280,7 +280,7 @@
         status number(4) not null,
         typeno number(11) not null,
         workitemid char(32),
-        sentid varchar2(64 char),
+        sentkey varchar2(64 char),
         dsentdate timestamp not null,
         sentdate timestamp,
         sents number(11) not null,

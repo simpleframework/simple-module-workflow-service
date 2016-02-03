@@ -280,7 +280,7 @@
         status tinyint not null,
         typeno int not null,
         workitemid char(32),
-        sentid varchar(64),
+        sentkey varchar(64),
         dsentdate datetime not null,
         sentdate datetime,
         sents int not null,
