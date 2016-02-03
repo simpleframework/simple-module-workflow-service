@@ -1,6 +1,7 @@
 package net.simpleframework.workflow.engine.comment;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import net.simpleframework.ado.IParamsValue;
@@ -33,11 +34,18 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 		final ProcessBean process = wfpService.getBean(c.getContentId());
 		if (process != null) {
 			final IWfCommentUserService uService = workflowContext.getCommentUserService();
+			// 获取除放弃状态下的任务项，通知新到意见数
 			final List<WorkitemBean> list = wfwService.getWorkitems(process, null,
-					EWorkitemStatus.running, EWorkitemStatus.delegate);
+					EWorkitemStatus.running, EWorkitemStatus.suspended, EWorkitemStatus.delegate,
+					EWorkitemStatus.complete);
+
+			final ID processId = process.getId();
+			final HashSet<ID> users = new HashSet<ID>();
 			for (final WorkitemBean w : list) {
-				final ID userId = w.getUserId();
-				final ID processId = w.getProcessId();
+				users.add(w.getUserId2());
+			}
+
+			for (final ID userId : users) {
 				WfCommentUser commentUser = uService.getCommentUser(userId, processId);
 				if (commentUser == null) {
 					commentUser = uService.createBean();
@@ -50,6 +58,12 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 				uService.update(new String[] { "ncomments" }, commentUser);
 			}
 		}
+	}
+
+	protected void updateProcessComments(final WfComment c) {
+		final ProcessBean process = wfpService.getBean(c.getContentId());
+		process.setComments(count("contentId=?", process.getId()));
+		wfpService.update(new String[] { "comments" }, process);
 	}
 
 	@Override
@@ -84,12 +98,6 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 					updateProcessComments(c);
 					updateUserComments(c, -1);
 				}
-			}
-
-			private void updateProcessComments(final WfComment c) {
-				final ProcessBean process = wfpService.getBean(c.getContentId());
-				process.setComments(count("contentId=?", process.getId()));
-				wfpService.update(new String[] { "comments" }, process);
 			}
 
 			@Override
