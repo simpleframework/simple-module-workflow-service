@@ -10,39 +10,30 @@ import static net.simpleframework.common.I18n.$m;
  */
 public enum EProcessStatus {
 	running {
-
 		@Override
 		public String toString() {
 			return $m("EProcessStatus.running");
 		}
 	},
-
 	suspended {
-
 		@Override
 		public String toString() {
 			return $m("EProcessStatus.suspended");
 		}
 	},
-
 	timeout {
-
 		@Override
 		public String toString() {
 			return $m("EProcessStatus.timeout");
 		}
 	},
-
 	complete {
-
 		@Override
 		public String toString() {
 			return $m("EProcessStatus.complete");
 		}
 	},
-
 	abort {
-
 		@Override
 		public String toString() {
 			return $m("EProcessStatus.abort");
