@@ -3,12 +3,10 @@ package net.simpleframework.workflow.engine.notice;
 import static net.simpleframework.common.I18n.$m;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
-import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.ado.trans.TransactionVoidCallback;
 import net.simpleframework.common.ID;
@@ -58,8 +56,8 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 	}
 
 	@Override
-	public List<WfNoticeBean> getWfNoticeList(String sentKey) {
-		return DataQueryUtils.toList(query("sentkey=?", sentKey));
+	public IDataQuery<WfNoticeBean> queryWfNotices(String sentKey) {
+		return query("sentkey=?", sentKey);
 	}
 
 	@Override

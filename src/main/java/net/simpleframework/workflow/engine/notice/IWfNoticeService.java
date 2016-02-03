@@ -1,8 +1,8 @@
 package net.simpleframework.workflow.engine.notice;
 
 import java.util.Date;
-import java.util.List;
 
+import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.IDbBeanService;
 import net.simpleframework.workflow.engine.IWorkflowContextAware;
@@ -49,7 +49,7 @@ public interface IWfNoticeService extends IDbBeanService<WfNoticeBean>, IWorkflo
 	 * @param sentKey
 	 * @return
 	 */
-	List<WfNoticeBean> getWfNoticeList(String sentKey);
+	IDataQuery<WfNoticeBean> queryWfNotices(String sentKey);
 
 	WfNoticeBean getWfNotice(ID userId, String sentKey);
 
