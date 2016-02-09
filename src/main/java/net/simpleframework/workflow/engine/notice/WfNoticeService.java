@@ -26,20 +26,20 @@ import net.simpleframework.workflow.engine.notice.WfNoticeBean.ENoticeStatus;
 public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> implements
 		IWfNoticeService {
 	@Override
-	public WfNoticeBean addWfNotice(String sentKey, final ProcessBean process, ID userId,
-			final Date dsentDate, final String smessage, final int typeno) {
+	public WfNoticeBean addWfNotice(final String sentKey, final ProcessBean process,
+			final ID userId, final Date dsentDate, final String smessage, final int typeno) {
 		return _addWfNotice(sentKey, process.getId(), null, userId, dsentDate, smessage, typeno);
 	}
 
 	@Override
-	public WfNoticeBean addWfNotice(String sentKey, final WorkitemBean workitem,
+	public WfNoticeBean addWfNotice(final String sentKey, final WorkitemBean workitem,
 			final Date dsentDate, final String smessage, final int typeno) {
 		return _addWfNotice(sentKey, workitem.getProcessId(), workitem.getId(),
 				workitem.getUserId2(), dsentDate, smessage, typeno);
 	}
 
-	WfNoticeBean _addWfNotice(String sentKey, final ID processId, final ID workitemId, ID userId,
-			final Date dsentDate, final String smessage, final int typeno) {
+	WfNoticeBean _addWfNotice(final String sentKey, final ID processId, final ID workitemId,
+			final ID userId, final Date dsentDate, final String smessage, final int typeno) {
 		if (getWfNoticeTypeHandler(typeno) == null) {
 			throw WorkflowException.of($m("WfNoticeService.0"));
 		}
@@ -56,12 +56,12 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 	}
 
 	@Override
-	public IDataQuery<WfNoticeBean> queryWfNotices(String sentKey) {
+	public IDataQuery<WfNoticeBean> queryWfNotices(final String sentKey) {
 		return query("sentkey=?", sentKey);
 	}
 
 	@Override
-	public WfNoticeBean getWfNotice(ID userId, String sentKey) {
+	public WfNoticeBean getWfNotice(final ID userId, final String sentKey) {
 		return getBean("userid=? and sentkey=?", userId, sentKey);
 	}
 
@@ -85,7 +85,7 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 			doExecuteTransaction(new TransactionVoidCallback() {
 				@Override
 				protected void doTransactionVoidCallback() throws Throwable {
-					int sents = _wfNotice.getSents();
+					final int sents = _wfNotice.getSents();
 					try {
 						// 修改状态
 						if (handler.doSent(_wfNotice)) {

@@ -516,7 +516,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	void doUserStat_status(final ID userId) {
 		final UserStatBean stat = wfusService.getUserStat(userId);
 		// 初始化状态
-		for (EWorkitemStatus status : EWorkitemStatus.values()) {
+		for (final EWorkitemStatus status : EWorkitemStatus.values()) {
 			BeanUtils.setProperty(stat, "workitem_" + status.name(), 0);
 		}
 		final IDataQuery<Map<String, Object>> dq = getEntityManager().queryMapSet(

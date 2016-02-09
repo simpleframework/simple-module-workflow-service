@@ -53,7 +53,7 @@ public interface IProcessListener extends IWorkflowListener {
 		}
 
 		@Override
-		public void onTimeoutCheck(ProcessBean process) {
+		public void onTimeoutCheck(final ProcessBean process) {
 		}
 
 		@Override

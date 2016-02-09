@@ -57,7 +57,7 @@ public class WfNoticeBean extends AbstractUserAwareBean {
 		return sentKey;
 	}
 
-	public void setSentKey(String sentKey) {
+	public void setSentKey(final String sentKey) {
 		this.sentKey = sentKey;
 	}
 
@@ -105,7 +105,7 @@ public class WfNoticeBean extends AbstractUserAwareBean {
 		return sents;
 	}
 
-	public void setSents(int sents) {
+	public void setSents(final int sents) {
 		this.sents = sents;
 	}
 

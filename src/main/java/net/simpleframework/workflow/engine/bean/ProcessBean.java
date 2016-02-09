@@ -94,7 +94,7 @@ public class ProcessBean extends AbstractWorkflowBean implements IDomainBeanAwar
 		return timeoutDate;
 	}
 
-	public void setTimeoutDate(Date timeoutDate) {
+	public void setTimeoutDate(final Date timeoutDate) {
 		this.timeoutDate = timeoutDate;
 	}
 
