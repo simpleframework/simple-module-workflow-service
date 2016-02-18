@@ -172,7 +172,7 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	}
 
 	@Transaction(context = IWorkflowContext.class)
-	public void doDelegation_inTran(DelegationBean delegation) {
+	public void doDelegation_inTran(final DelegationBean delegation) {
 		// 保证每条数据在一个事务内
 		if (delegation.getStatus() == EDelegationStatus.ready) {
 			_doDelegateTask(delegation, false);
