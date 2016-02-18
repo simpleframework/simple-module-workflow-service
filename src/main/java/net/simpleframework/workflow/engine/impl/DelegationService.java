@@ -9,16 +9,17 @@ import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.db.common.SQLValue;
 import net.simpleframework.ado.query.IDataQuery;
-import net.simpleframework.ado.trans.TransactionVoidCallback;
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.ctx.task.ExecutorRunnableEx;
+import net.simpleframework.ctx.trans.Transaction;
 import net.simpleframework.module.common.log.LogEntity;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.EDelegationSource;
 import net.simpleframework.workflow.engine.EDelegationStatus;
 import net.simpleframework.workflow.engine.EWorkitemStatus;
 import net.simpleframework.workflow.engine.IDelegationService;
+import net.simpleframework.workflow.engine.IWorkflowContext;
 import net.simpleframework.workflow.engine.bean.DelegationBean;
 import net.simpleframework.workflow.engine.bean.WorkitemBean;
 
@@ -170,24 +171,20 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 		}
 	}
 
-	void _doCheck() {
-		final IDataQuery<DelegationBean> dq = query("status=? or status=?", EDelegationStatus.ready,
-				EDelegationStatus.running).setFetchSize(0);
-		DelegationBean delegation;
-		while ((delegation = dq.next()) != null) {
-			if (delegation.getStatus() == EDelegationStatus.ready) {
-				_doDelegateTask(delegation, false);
-			} else {
-				final Date endDate = delegation.getDcompleteDate();
-				final Date n = new Date();
-				if (endDate != null && endDate.before(n)) {
-					_abort(delegation);
-					_updateWorkitem(delegation, EWorkitemStatus.running);
+	@Transaction(context = IWorkflowContext.class)
+	public void doDelegation_inTran(DelegationBean delegation) {
+		// 保证每条数据在一个事务内
+		if (delegation.getStatus() == EDelegationStatus.ready) {
+			_doDelegateTask(delegation, false);
+		} else {
+			final Date endDate = delegation.getDcompleteDate();
+			if (endDate != null && endDate.before(new Date())) {
+				_abort(delegation);
+				_updateWorkitem(delegation, EWorkitemStatus.running);
 
-					// 修改标记
-					delegation.setTimeoutMark(true);
-					update(new String[] { "timeoutMark" }, delegation);
-				}
+				// 修改标记
+				delegation.setTimeoutMark(true);
+				update(new String[] { "timeoutMark" }, delegation);
 			}
 		}
 	}
@@ -216,12 +213,12 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 		getTaskExecutor().addScheduledTask(new ExecutorRunnableEx("delegation_check") {
 			@Override
 			protected void task(final Map<String, Object> cache) throws Exception {
-				doExecuteTransaction(new TransactionVoidCallback() {
-					@Override
-					protected void doTransactionVoidCallback() throws Throwable {
-						_doCheck();
-					}
-				});
+				final IDataQuery<DelegationBean> dq = query("status=? or status=?",
+						EDelegationStatus.ready, EDelegationStatus.running).setFetchSize(0);
+				DelegationBean delegation;
+				while ((delegation = dq.next()) != null) {
+					doDelegation_inTran(delegation);
+				}
 			}
 		});
 
