@@ -13,7 +13,6 @@ import net.simpleframework.ado.trans.TransactionVoidCallback;
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.ctx.task.ExecutorRunnableEx;
-import net.simpleframework.ctx.task.ITaskExecutor;
 import net.simpleframework.module.common.log.LogEntity;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.EDelegationSource;
@@ -171,20 +170,24 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 		}
 	}
 
-	void _doTimeoutTask() {
-		final IDataQuery<DelegationBean> dq = query("status=?", EDelegationStatus.running)
-				.setFetchSize(0);
+	void _doCheck() {
+		final IDataQuery<DelegationBean> dq = query("status=? or status=?", EDelegationStatus.ready,
+				EDelegationStatus.running).setFetchSize(0);
 		DelegationBean delegation;
 		while ((delegation = dq.next()) != null) {
-			final Date endDate = delegation.getDcompleteDate();
-			final Date n = new Date();
-			if (endDate != null && endDate.before(n)) {
-				_abort(delegation);
-				_updateWorkitem(delegation, EWorkitemStatus.running);
+			if (delegation.getStatus() == EDelegationStatus.ready) {
+				_doDelegateTask(delegation, false);
+			} else {
+				final Date endDate = delegation.getDcompleteDate();
+				final Date n = new Date();
+				if (endDate != null && endDate.before(n)) {
+					_abort(delegation);
+					_updateWorkitem(delegation, EWorkitemStatus.running);
 
-				// 修改标记
-				delegation.setTimeoutMark(true);
-				update(new String[] { "timeoutMark" }, delegation);
+					// 修改标记
+					delegation.setTimeoutMark(true);
+					update(new String[] { "timeoutMark" }, delegation);
+				}
 			}
 		}
 	}
@@ -209,15 +212,14 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	public void onInit() throws Exception {
 		super.onInit();
 
-		// 检测是否过期
-		final ITaskExecutor taskExecutor = workflowContext.getTaskExecutor();
-		taskExecutor.addScheduledTask(new ExecutorRunnableEx("delegation_timeout_check") {
+		// 检测任务
+		getTaskExecutor().addScheduledTask(new ExecutorRunnableEx("delegation_check") {
 			@Override
 			protected void task(final Map<String, Object> cache) throws Exception {
 				doExecuteTransaction(new TransactionVoidCallback() {
 					@Override
 					protected void doTransactionVoidCallback() throws Throwable {
-						_doTimeoutTask();
+						_doCheck();
 					}
 				});
 			}

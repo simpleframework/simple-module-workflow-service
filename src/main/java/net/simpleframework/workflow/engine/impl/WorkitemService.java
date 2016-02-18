@@ -584,7 +584,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 					// 如果存在用户委托，则创建
 					final DelegationBean delegation = wfdService.queryRunningDelegation(workitem
 							.getUserId());
-					if (delegation != null) {
+					if (delegation != null && delegation.getStatus() == EDelegationStatus.running) {
 						doWorkitemDelegation(workitem, delegation.getSourceId(), delegation.getUserId(),
 								null, null, $m("WorkitemService.5", workitem.getUserText()));
 					}
