@@ -51,6 +51,7 @@
         version varchar2(16 char) not null,
         title varchar2(128 char),
         pno varchar2(64 char),
+        ppriority number(4) not null,
         status number(4) not null,
         userid char(32),
         deptid char(32),

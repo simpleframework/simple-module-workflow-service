@@ -40,6 +40,8 @@ public class ProcessBean extends AbstractWorkflowBean implements IDomainBeanAwar
 
 	/* 流程编号 */
 	private String pno;
+	/* 紧急程度 */
+	private int ppriority;
 
 	/* 流程启动者及启动角色 */
 	private ID userId, roleId;
@@ -120,6 +122,14 @@ public class ProcessBean extends AbstractWorkflowBean implements IDomainBeanAwar
 
 	public void setPno(final String pno) {
 		this.pno = pno;
+	}
+
+	public int getPpriority() {
+		return ppriority;
+	}
+
+	public void setPpriority(int ppriority) {
+		this.ppriority = ppriority;
 	}
 
 	public ID getUserId() {
