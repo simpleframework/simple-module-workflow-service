@@ -128,7 +128,7 @@ public class ProcessBean extends AbstractWorkflowBean implements IDomainBeanAwar
 		return ppriority;
 	}
 
-	public void setPpriority(int ppriority) {
+	public void setPpriority(final int ppriority) {
 		this.ppriority = ppriority;
 	}
 
