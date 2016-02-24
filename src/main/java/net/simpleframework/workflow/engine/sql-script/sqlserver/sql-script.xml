@@ -282,7 +282,7 @@
         typeno int not null,
         workitemid char(32),
         sentkey varchar(64),
-        dsentdate datetime not null,
+        dsentdate datetime,
         sentdate datetime,
         sents int not null,
         smessage text,

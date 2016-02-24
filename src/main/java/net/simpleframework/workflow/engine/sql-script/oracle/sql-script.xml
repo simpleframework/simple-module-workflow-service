@@ -282,7 +282,7 @@
         typeno number(11) not null,
         workitemid char(32),
         sentkey varchar2(64 char),
-        dsentdate timestamp not null,
+        dsentdate timestamp,
         sentdate timestamp,
         sents number(11) not null,
         smessage varchar2(2000 char),
