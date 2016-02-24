@@ -8,11 +8,12 @@ import java.util.Map;
 import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.query.IDataQuery;
-import net.simpleframework.ado.trans.TransactionVoidCallback;
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
 import net.simpleframework.ctx.task.ExecutorRunnableEx;
+import net.simpleframework.ctx.trans.Transaction;
 import net.simpleframework.workflow.WorkflowException;
+import net.simpleframework.workflow.engine.IWorkflowContext;
 import net.simpleframework.workflow.engine.bean.ProcessBean;
 import net.simpleframework.workflow.engine.bean.WorkitemBean;
 import net.simpleframework.workflow.engine.notice.WfNoticeBean.ENoticeStatus;
@@ -43,16 +44,18 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 		if (getWfNoticeTypeHandler(typeno) == null) {
 			throw WorkflowException.of($m("WfNoticeService.0"));
 		}
-		final WfNoticeBean notice = createBean();
-		notice.setSentKey(sentKey);
-		notice.setProcessId(processId);
-		notice.setTypeNo(typeno);
-		notice.setWorkitemId(workitemId);
-		notice.setUserId(userId);
-		notice.setDsentDate(dsentDate);
-		notice.setSmessage(smessage);
-		insert(notice);
-		return notice;
+		final WfNoticeBean wfNotice = createBean();
+		wfNotice.setSentKey(sentKey);
+		wfNotice.setProcessId(processId);
+		wfNotice.setTypeNo(typeno);
+		wfNotice.setWorkitemId(workitemId);
+		wfNotice.setUserId(userId);
+		wfNotice.setDsentDate(dsentDate);
+		wfNotice.setSmessage(smessage);
+		insert(wfNotice);
+		// 发送任务
+		_doWfNoticeTask(wfNotice);
+		return wfNotice;
 	}
 
 	@Override
@@ -70,41 +73,48 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 		return AbstractWfNoticeTypeHandler.regists.get(no);
 	}
 
-	void _doCheck() {
-		final IDataQuery<WfNoticeBean> dq = wfnService.query(
-				"(status=? or status=?) and dsentdate<?", ENoticeStatus.ready, ENoticeStatus.fail,
-				new Date());
-		WfNoticeBean wfNotice;
-		while ((wfNotice = dq.next()) != null) {
-			final IWfNoticeTypeHandler handler = wfnService.getWfNoticeTypeHandler(wfNotice
-					.getTypeNo());
-			if (handler == null) {
-				continue;
+	void _doWfNoticeTask(final WfNoticeBean wfNotice) {
+		ENoticeStatus status = wfNotice.getStatus();
+		if (status == ENoticeStatus.ready) {
+			final Date dsentDate = wfNotice.getDsentDate();
+			if (dsentDate == null || dsentDate.before(new Date())) {
+				_doSent(wfNotice);
 			}
-			final WfNoticeBean _wfNotice = wfNotice;
-			doExecuteTransaction(new TransactionVoidCallback() {
-				@Override
-				protected void doTransactionVoidCallback() throws Throwable {
-					final int sents = _wfNotice.getSents();
-					try {
-						// 修改状态
-						if (handler.doSent(_wfNotice)) {
-							_wfNotice.setStatus(ENoticeStatus.sent);
-							_wfNotice.setSentDate(new Date());
-							_wfNotice.setSents(sents + 1);
-							wfnService.update(new String[] { "status", "sentdate", "sents" }, _wfNotice);
-						} else {
-							_wfNotice.setStatus(ENoticeStatus.unsent);
-							wfnService.update(new String[] { "status" }, _wfNotice);
-						}
-					} catch (final Exception e) {
-						_wfNotice.setStatus(ENoticeStatus.fail);
-						_wfNotice.setSents(sents + 1);
-						wfnService.update(new String[] { "status", "sents" }, _wfNotice);
-						getLog().warn(e);
-					}
-				}
-			});
+		}
+	}
+
+	void _doSent(final WfNoticeBean wfNotice) {
+		final IWfNoticeTypeHandler handler = wfnService.getWfNoticeTypeHandler(wfNotice.getTypeNo());
+		if (handler == null) {
+			return;
+		}
+
+		final int sents = wfNotice.getSents();
+		try {
+			// 修改状态
+			if (handler.doSent(wfNotice)) {
+				wfNotice.setStatus(ENoticeStatus.sent);
+				wfNotice.setSentDate(new Date());
+				wfNotice.setSents(sents + 1);
+				wfnService.update(new String[] { "status", "sentdate", "sents" }, wfNotice);
+			} else {
+				wfNotice.setStatus(ENoticeStatus.unsent);
+				wfnService.update(new String[] { "status" }, wfNotice);
+			}
+		} catch (final Exception e) {
+			wfNotice.setStatus(ENoticeStatus.fail);
+			wfNotice.setSents(sents + 1);
+			wfnService.update(new String[] { "status", "sents" }, wfNotice);
+			getLog().warn(e);
+		}
+	}
+
+	@Transaction(context = IWorkflowContext.class)
+	public void doWfNotice_inTran(final WfNoticeBean wfNotice) {
+		if (wfNotice.getStatus() == ENoticeStatus.ready) {
+			_doWfNoticeTask(wfNotice);
+		} else {
+			_doSent(wfNotice);
 		}
 	}
 
@@ -116,7 +126,12 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 		getTaskExecutor().addScheduledTask(new ExecutorRunnableEx("wfnotice_check") {
 			@Override
 			protected void task(final Map<String, Object> cache) throws Exception {
-				_doCheck();
+				final IDataQuery<WfNoticeBean> dq = wfnService.query("(status=? or status=?)",
+						ENoticeStatus.ready, ENoticeStatus.fail);
+				WfNoticeBean wfNotice;
+				while ((wfNotice = dq.next()) != null) {
+					doWfNotice_inTran(wfNotice);
+				}
 			}
 		});
 
