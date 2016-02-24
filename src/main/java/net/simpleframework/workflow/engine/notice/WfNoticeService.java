@@ -74,7 +74,7 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 	}
 
 	void _doWfNoticeTask(final WfNoticeBean wfNotice) {
-		ENoticeStatus status = wfNotice.getStatus();
+		final ENoticeStatus status = wfNotice.getStatus();
 		if (status == ENoticeStatus.ready) {
 			final Date dsentDate = wfNotice.getDsentDate();
 			if (dsentDate == null || dsentDate.before(new Date())) {
