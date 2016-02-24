@@ -62,7 +62,7 @@ public class WfNoticeBean extends AbstractUserAwareBean {
 	}
 
 	public ENoticeStatus getStatus() {
-		return status;
+		return status == null ? ENoticeStatus.ready : status;
 	}
 
 	public void setStatus(final ENoticeStatus status) {
