@@ -24,12 +24,13 @@ public interface IWfNoticeService extends IDbBeanService<WfNoticeBean>, IWorkflo
 	 * @param process
 	 * @param userId
 	 * @param dsentDate
+	 * @param topic
 	 * @param smessage
 	 * @param typeno
 	 * @return
 	 */
 	WfNoticeBean addWfNotice(String sentKey, ProcessBean process, ID userId, Date dsentDate,
-			String smessage, int typeno);
+			String topic, String smessage, int typeno);
 
 	/**
 	 * 按任务项添加通知消息
@@ -37,12 +38,13 @@ public interface IWfNoticeService extends IDbBeanService<WfNoticeBean>, IWorkflo
 	 * @param sentKey
 	 * @param workitem
 	 * @param dsentDate
+	 * @param topic
 	 * @param smessage
 	 * @param typeno
 	 * @return
 	 */
-	WfNoticeBean addWfNotice(String sentKey, WorkitemBean workitem, Date dsentDate, String smessage,
-			int typeno);
+	WfNoticeBean addWfNotice(String sentKey, WorkitemBean workitem, Date dsentDate, String topic,
+			String smessage, int typeno);
 
 	/**
 	 * 

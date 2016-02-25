@@ -31,8 +31,11 @@ public class WfNoticeBean extends AbstractUserAwareBean {
 
 	/* 接口唯一编号 */
 	private int typeNo;
+
 	/* 发送的消息 */
 	private String smessage;
+	/* 消息标题 */
+	private String topic;
 
 	/* 发送次数 */
 	private int sents;
@@ -91,6 +94,14 @@ public class WfNoticeBean extends AbstractUserAwareBean {
 
 	public void setTypeNo(final int typeNo) {
 		this.typeNo = typeNo;
+	}
+
+	public String getTopic() {
+		return topic;
+	}
+
+	public void setTopic(String topic) {
+		this.topic = topic;
 	}
 
 	public String getSmessage() {

@@ -285,6 +285,7 @@
         dsentdate timestamp,
         sentdate timestamp,
         sents int4 not null,
+        topic varchar(128),
         smessage text,
         primary key(id),
         unique(userid, sentkey)
