@@ -28,7 +28,7 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 		IWfNoticeService {
 	@Override
 	public WfNoticeBean addWfNotice(final String sentKey, final ProcessBean process,
-			final ID userId, final Date dsentDate, String topic, final String smessage,
+			final ID userId, final Date dsentDate, final String topic, final String smessage,
 			final int typeno) {
 		return _addWfNotice(sentKey, process.getId(), null, userId, dsentDate, topic, smessage,
 				typeno);
@@ -36,13 +36,13 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 
 	@Override
 	public WfNoticeBean addWfNotice(final String sentKey, final WorkitemBean workitem,
-			final Date dsentDate, String topic, final String smessage, final int typeno) {
+			final Date dsentDate, final String topic, final String smessage, final int typeno) {
 		return _addWfNotice(sentKey, workitem.getProcessId(), workitem.getId(),
 				workitem.getUserId2(), dsentDate, topic, smessage, typeno);
 	}
 
 	WfNoticeBean _addWfNotice(final String sentKey, final ID processId, final ID workitemId,
-			final ID userId, final Date dsentDate, String topic, final String smessage,
+			final ID userId, final Date dsentDate, final String topic, final String smessage,
 			final int typeno) {
 		if (getWfNoticeTypeHandler(typeno) == null) {
 			throw WorkflowException.of($m("WfNoticeService.0"));
