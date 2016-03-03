@@ -45,6 +45,11 @@ public class WorkitemBean extends AbstractWorkitemBean {
 	/* 取回工作项的引用 */
 	private ID retakeRef;
 
+	/* 扩展字段3 */
+	// private double ext3;
+	/* 扩展字段4 */
+	// private Date ext4;
+
 	public EWorkitemStatus getStatus() {
 		return status != null ? status : EWorkitemStatus.running;
 	}
