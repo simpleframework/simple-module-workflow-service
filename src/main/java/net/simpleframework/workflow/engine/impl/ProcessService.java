@@ -510,6 +510,10 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 				super.onBeforeDelete(manager, paramsValue);
 
 				for (final ProcessBean process : coll(manager, paramsValue)) {
+					if (!isFinalStatus(process)) {
+						throw WorkflowException.of($m("ProcessService.5"));
+					}
+
 					final Object id = process.getId();
 					// 触发删除事件
 					for (final IWorkflowListener listener : getEventListeners(process)) {
