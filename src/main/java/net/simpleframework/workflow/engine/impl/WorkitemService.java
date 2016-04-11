@@ -26,6 +26,7 @@ import net.simpleframework.workflow.engine.EActivityAbortPolicy;
 import net.simpleframework.workflow.engine.EActivityStatus;
 import net.simpleframework.workflow.engine.EDelegationSource;
 import net.simpleframework.workflow.engine.EDelegationStatus;
+import net.simpleframework.workflow.engine.EProcessAbortPolicy;
 import net.simpleframework.workflow.engine.EProcessStatus;
 import net.simpleframework.workflow.engine.EWorkitemStatus;
 import net.simpleframework.workflow.engine.IWorkitemService;
@@ -489,7 +490,11 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 				throw WorkflowException.of($m("WorkitemService.3"));
 			}
 		}
-		wfpService.delete(processId);
+		ProcessBean process = wfpService.getBean(processId);
+		if (process != null) {
+			wfpService.doAbort(process, EProcessAbortPolicy.normal);
+			wfpService.delete(process);
+		}
 	}
 
 	WorkitemBean _create(final ActivityBean activity, final Participant participant,
