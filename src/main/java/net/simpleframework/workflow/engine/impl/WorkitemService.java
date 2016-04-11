@@ -490,7 +490,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 				throw WorkflowException.of($m("WorkitemService.3"));
 			}
 		}
-		ProcessBean process = wfpService.getBean(processId);
+		final ProcessBean process = wfpService.getBean(processId);
 		if (process != null) {
 			wfpService.doAbort(process, EProcessAbortPolicy.normal);
 			wfpService.delete(process);
