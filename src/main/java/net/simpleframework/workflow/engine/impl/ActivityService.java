@@ -847,7 +847,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			formClass = ((UserNode) tasknode).getFormClass();
 		}
 		if (formClass == null) {
-			formClass = ((ProcessNode) tasknode.getParent()).getFormClass();
+			formClass = wfpService.getProcessNode(wfpService.getBean(activity.getProcessId()))
+					.getFormClass();
 		}
 		return (IWorkflowForm) (formClass != null ? singleton(formClass) : null);
 	}
