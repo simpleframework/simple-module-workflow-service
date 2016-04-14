@@ -204,7 +204,7 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 	protected static void _assert(final AbstractWorkflowBean t, final Enum<?>... status) {
 		final Enum<?> status2 = (Enum<?>) BeanUtils.getProperty(t, "status");
 		if (!ArrayUtils.contains(status, status2)) {
-			throw WorkflowStatusException.of(status2, status);
+			throw WorkflowStatusException.of(t, status2, status);
 		}
 	}
 

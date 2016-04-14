@@ -249,7 +249,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 				wfaServiceImpl.update(new String[] { "properties" }, nActivity);
 			}
 		} else {
-			throw WorkflowStatusException.of(aStatus, EActivityStatus.running,
+			throw WorkflowStatusException.of(activity, aStatus, EActivityStatus.running,
 					EActivityStatus.complete);
 		}
 

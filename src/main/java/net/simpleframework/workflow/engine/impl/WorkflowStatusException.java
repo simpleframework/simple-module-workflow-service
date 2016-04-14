@@ -12,6 +12,7 @@ import net.simpleframework.workflow.engine.EDelegationStatus;
 import net.simpleframework.workflow.engine.EProcessModelStatus;
 import net.simpleframework.workflow.engine.EProcessStatus;
 import net.simpleframework.workflow.engine.EWorkitemStatus;
+import net.simpleframework.workflow.engine.bean.AbstractWorkflowBean;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -40,11 +41,11 @@ public class WorkflowStatusException extends RuntimeExceptionEx {
 		return _of(WorkflowStatusException.class, msg);
 	}
 
-	public static WorkflowStatusException of(final Enum<?> currentStatus,
+	public static WorkflowStatusException of(AbstractWorkflowBean t, final Enum<?> currentStatus,
 			final Enum<?>... needStatus) {
 		return of($m(
 				"WorkflowStatusException." + BEANCLASS_LIST.indexOf(currentStatus.getDeclaringClass()),
-				currentStatus, StringUtils.join(needStatus, ", ")));
+				t, currentStatus, StringUtils.join(needStatus, ", ")));
 	}
 
 	private static final long serialVersionUID = 6719697728857540597L;
