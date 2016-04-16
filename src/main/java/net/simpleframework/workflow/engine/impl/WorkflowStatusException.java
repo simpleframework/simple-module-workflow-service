@@ -41,8 +41,8 @@ public class WorkflowStatusException extends RuntimeExceptionEx {
 		return _of(WorkflowStatusException.class, msg);
 	}
 
-	public static WorkflowStatusException of(AbstractWorkflowBean t, final Enum<?> currentStatus,
-			final Enum<?>... needStatus) {
+	public static WorkflowStatusException of(final AbstractWorkflowBean t,
+			final Enum<?> currentStatus, final Enum<?>... needStatus) {
 		return of($m(
 				"WorkflowStatusException." + BEANCLASS_LIST.indexOf(currentStatus.getDeclaringClass()),
 				t, currentStatus, StringUtils.join(needStatus, ", ")));
