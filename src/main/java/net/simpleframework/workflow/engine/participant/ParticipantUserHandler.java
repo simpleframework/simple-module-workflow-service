@@ -1,12 +1,13 @@
 package net.simpleframework.workflow.engine.participant;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.ctx.script.IScriptEval;
-import net.simpleframework.ctx.script.ScriptEvalUtils;
 import net.simpleframework.workflow.engine.ActivityComplete;
 import net.simpleframework.workflow.engine.participant.IParticipantHandler.AbstractParticipantHandler;
 
@@ -21,13 +22,28 @@ public class ParticipantUserHandler extends AbstractParticipantHandler {
 	@Override
 	public Collection<Participant> getParticipants(final IScriptEval script,
 			final ActivityComplete activityComplete, final Map<String, Object> variables) {
-		final ArrayList<Participant> participants = new ArrayList<Participant>();
-		final String participant = ScriptEvalUtils.replaceExpr(script, getParticipantType(variables)
-				.getParticipant());
-		final PermissionUser user = permission.getUser(participant);
-		if (user.getId() != null) {
-			participants.add(new Participant(user));
+		final List<Participant> participants = new ArrayList<Participant>();
+		final Object participant = eval(script, getParticipantType(variables).getParticipant());
+		if (participant != null) {
+			if (participant instanceof Iterable) {
+				for (final Object user : (Iterable<?>) participant) {
+					addParticipant(participants, user);
+				}
+			} else if (participant.getClass().isArray()) {
+				for (int i = 0; i < Array.getLength(participant); i++) {
+					addParticipant(participants, Array.get(participant, i));
+				}
+			} else {
+				addParticipant(participants, participant);
+			}
 		}
 		return participants;
+	}
+
+	private void addParticipant(final List<Participant> participants, final Object user) {
+		final PermissionUser puser = permission.getUser(user);
+		if (puser.exists()) {
+			participants.add(new Participant(puser));
+		}
 	}
 }

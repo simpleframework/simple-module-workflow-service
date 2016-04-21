@@ -35,5 +35,13 @@ public interface IParticipantHandler extends IWorkflowHandler, IWorkflowContextA
 			return ((UserNode) ((TransitionNode) variables.get("transition")).to())
 					.getParticipantType();
 		}
+
+		protected Object eval(final IScriptEval script, String val) {
+			val = val.trim();
+			if (val.startsWith("${") && val.endsWith("}")) {
+				return script.eval(val.substring(2, val.length() - 1));
+			}
+			return val;
+		}
 	}
 }

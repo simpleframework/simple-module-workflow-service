@@ -45,6 +45,7 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 	static Collection<String> defaultExpr;
 	static {
 		defaultExpr = new ArrayList<String>();
+		defaultExpr.add("import " + ID.class.getPackage().getName() + ".*;");
 		defaultExpr.add("import " + WorkflowContext.class.getPackage().getName() + ".*;");
 	}
 

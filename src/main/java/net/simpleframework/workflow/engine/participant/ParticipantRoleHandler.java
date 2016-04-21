@@ -9,7 +9,6 @@ import net.simpleframework.common.ID;
 import net.simpleframework.ctx.permission.PermissionConst;
 import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.ctx.script.IScriptEval;
-import net.simpleframework.ctx.script.ScriptEvalUtils;
 import net.simpleframework.workflow.engine.ActivityComplete;
 import net.simpleframework.workflow.engine.participant.IParticipantHandler.AbstractParticipantHandler;
 
@@ -25,8 +24,7 @@ public class ParticipantRoleHandler extends AbstractParticipantHandler {
 	public Collection<Participant> getParticipants(final IScriptEval script,
 			final ActivityComplete activityComplete, final Map<String, Object> variables) {
 		final ArrayList<Participant> participants = new ArrayList<Participant>();
-		final String participant = ScriptEvalUtils.replaceExpr(script, getParticipantType(variables)
-				.getParticipant());
+		final Object participant = eval(script, getParticipantType(variables).getParticipant());
 		final ID roleId = permission.getRole(participant, variables).getId();
 		final Iterator<PermissionUser> users = permission.users(roleId, variables);
 		while (users.hasNext()) {
