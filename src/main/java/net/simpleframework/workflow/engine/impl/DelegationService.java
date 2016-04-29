@@ -26,7 +26,8 @@ import net.simpleframework.workflow.engine.bean.WorkitemBean;
 /**
  * Licensed under the Apache License, Version 2.0
  * 
- * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
+ * @author 陈侃(cknet@126.com, 13910090885)
+ *         https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
 public class DelegationService extends AbstractWorkflowService<DelegationBean> implements
@@ -152,9 +153,9 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 
 	void _updateWorkitem(final DelegationBean delegation, final EWorkitemStatus status) {
 		// 更新Workitem
-		WorkitemBean workitem;
-		if (delegation.getDelegationSource() == EDelegationSource.workitem
-				&& (workitem = wfwService.getBean(delegation.getSourceId())) != null) {
+		final WorkitemBean workitem = delegation.getDelegationSource() == EDelegationSource.workitem ? wfwService
+				.getBean(delegation.getSourceId()) : null;
+		if (workitem != null) {
 			workitem.setStatus(status);
 			final ID userId = workitem.getUserId();
 			workitem.setUserId2(status == EWorkitemStatus.delegate ? delegation.getUserId() : userId);
@@ -174,6 +175,13 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	@Transaction(context = IWorkflowContext.class)
 	public void doDelegation_inTran(final DelegationBean delegation) {
 		// 保证每条数据在一个事务内
+		final WorkitemBean workitem = delegation.getDelegationSource() == EDelegationSource.workitem ? wfwService
+				.getBean(delegation.getSourceId()) : null;
+		// 如果任务已经完成，则放弃
+		if (workitem != null && wfwService.isFinalStatus(workitem)) {
+			_abort(delegation);
+		}
+
 		if (delegation.getStatus() == EDelegationStatus.ready) {
 			_doDelegateTask(delegation, false);
 		} else {
@@ -217,7 +225,11 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 						EDelegationStatus.ready, EDelegationStatus.running).setFetchSize(0);
 				DelegationBean delegation;
 				while ((delegation = dq.next()) != null) {
-					doDelegation_inTran(delegation);
+					try {
+						doDelegation_inTran(delegation);
+					} catch (final Exception ex) {
+						getLog().error(ex);
+					}
 				}
 			}
 		});
