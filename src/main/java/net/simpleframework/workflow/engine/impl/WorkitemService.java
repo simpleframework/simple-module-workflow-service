@@ -500,7 +500,9 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	WorkitemBean _create(final ActivityBean activity, final Participant participant,
 			final Date createDate) {
 		final WorkitemBean workitem = createBean();
-		workitem.setProcessId(activity.getProcessId());
+		final ProcessBean process = wfpService.getBean(activity.getProcessId());
+		workitem.setModelId(process.getModelId());
+		workitem.setProcessId(process.getId());
 		workitem.setActivityId(activity.getId());
 		workitem.setCreateDate(createDate);
 

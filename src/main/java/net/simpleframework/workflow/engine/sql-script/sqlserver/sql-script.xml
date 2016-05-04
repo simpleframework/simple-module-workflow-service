@@ -123,6 +123,7 @@
     <![CDATA[
       create table sf_workflow_workitem (
         id char(32) not null,
+        modelid char(32) not null,
         processid char(32) not null,
         activityid char(32) not null,
         status tinyint not null,
@@ -198,6 +199,7 @@
         id char(32) not null,
         sentid char(32) not null,
         parentid char(32),
+        modelid char(32) not null,
         processid char(32) not null,
         workitemid char(32) not null,        
         userid char(32) not null,

@@ -79,6 +79,7 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 			workview.setCreateDate(date);
 			workview.setSentId(sent.getId());
 			workview.setWorkitemId(workitem.getId());
+			workview.setModelId(workitem.getModelId());
 			workview.setProcessId(processId);
 			if (parent != null) {
 				workview.setParentId(parent.getId());

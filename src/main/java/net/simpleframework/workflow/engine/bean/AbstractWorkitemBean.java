@@ -14,6 +14,8 @@ import net.simpleframework.common.ID;
  */
 @SuppressWarnings("serial")
 public abstract class AbstractWorkitemBean extends AbstractWorkflowBean implements IDomainBeanAware {
+	/* 流程模型id */
+	private ID modelId;
 	/* 流程实例id */
 	private ID processId;
 
@@ -40,6 +42,14 @@ public abstract class AbstractWorkitemBean extends AbstractWorkflowBean implemen
 	private String ext1;
 	/* 扩展字段2 */
 	private int ext2;
+
+	public ID getModelId() {
+		return modelId;
+	}
+
+	public void setModelId(ID modelId) {
+		this.modelId = modelId;
+	}
 
 	public ID getProcessId() {
 		return processId;
