@@ -47,7 +47,7 @@ public abstract class AbstractWorkitemBean extends AbstractWorkflowBean implemen
 		return modelId;
 	}
 
-	public void setModelId(ID modelId) {
+	public void setModelId(final ID modelId) {
 		this.modelId = modelId;
 	}
 

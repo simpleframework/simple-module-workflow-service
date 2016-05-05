@@ -8,6 +8,7 @@ import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.workflow.engine.bean.ActivityBean;
 import net.simpleframework.workflow.engine.bean.ProcessBean;
+import net.simpleframework.workflow.engine.bean.ProcessModelBean;
 import net.simpleframework.workflow.engine.bean.WorkitemBean;
 
 /**
@@ -47,31 +48,36 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	List<WorkitemBean> getWorkitems(ProcessBean process, ID userId, EWorkitemStatus... status);
 
 	/**
-	 * 获取运行态的工作列表
-	 * 
-	 * @param user
-	 * @return
-	 */
-	IDataQuery<WorkitemBean> getRunningWorklist(ID userId);
-
-	/**
 	 * 获取指定用户的工作列表
 	 * 
 	 * @param userId
+	 * @param models
 	 * @param status
 	 * @return
 	 */
-	IDataQuery<WorkitemBean> getWorklist(ID userId, EWorkitemStatus... status);
+	IDataQuery<WorkitemBean> getWorklist(ID userId, List<ProcessModelBean> models,
+			EWorkitemStatus... status);
 
-	IDataQuery<WorkitemBean> getWorklist(ID userId, FilterItems items, EWorkitemStatus... status);
+	IDataQuery<WorkitemBean> getWorklist(ID userId, List<ProcessModelBean> models,
+			FilterItems items, EWorkitemStatus... status);
+
+	/**
+	 * 获取运行态的工作列表
+	 * 
+	 * @param userId
+	 * @param models
+	 * @return
+	 */
+	IDataQuery<WorkitemBean> getRunningWorklist(ID userId, List<ProcessModelBean> models);
 
 	/**
 	 * 获取未读的工作列表
 	 * 
-	 * @param user
+	 * @param userId
+	 * @param models
 	 * @return
 	 */
-	IDataQuery<WorkitemBean> getUnreadWorklist(ID userId);
+	IDataQuery<WorkitemBean> getRunningWorklist_Unread(ID userId, List<ProcessModelBean> models);
 
 	/**
 	 * 完成当前的工作项

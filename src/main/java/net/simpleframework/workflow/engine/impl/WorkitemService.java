@@ -36,6 +36,7 @@ import net.simpleframework.workflow.engine.WorkitemComplete;
 import net.simpleframework.workflow.engine.bean.ActivityBean;
 import net.simpleframework.workflow.engine.bean.DelegationBean;
 import net.simpleframework.workflow.engine.bean.ProcessBean;
+import net.simpleframework.workflow.engine.bean.ProcessModelBean;
 import net.simpleframework.workflow.engine.bean.UserStatBean;
 import net.simpleframework.workflow.engine.bean.WorkitemBean;
 import net.simpleframework.workflow.engine.event.IWorkflowListener;
@@ -402,15 +403,32 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		return DataQueryUtils.toList(_getWorklist(process, userId, (FilterItems) null, status));
 	}
 
+	protected EWorkitemStatus[] STATUS_RUNNINGs = new EWorkitemStatus[] { EWorkitemStatus.running,
+			EWorkitemStatus.suspended, EWorkitemStatus.delegate };
+
 	@Override
-	public IDataQuery<WorkitemBean> getWorklist(final ID userId, final EWorkitemStatus... status) {
-		return getWorklist(userId, null, status);
+	public IDataQuery<WorkitemBean> getWorklist(final ID userId,
+			final List<ProcessModelBean> models, final FilterItems items,
+			final EWorkitemStatus... status) {
+		return _getWorklist(null, userId, items, status);
 	}
 
 	@Override
-	public IDataQuery<WorkitemBean> getWorklist(final ID userId, final FilterItems items,
-			final EWorkitemStatus... status) {
-		return _getWorklist(null, userId, items, status);
+	public IDataQuery<WorkitemBean> getWorklist(final ID userId,
+			final List<ProcessModelBean> models, final EWorkitemStatus... status) {
+		return getWorklist(userId, models, null, status);
+	}
+
+	@Override
+	public IDataQuery<WorkitemBean> getRunningWorklist(final ID userId,
+			final List<ProcessModelBean> models) {
+		return getWorklist(userId, models, STATUS_RUNNINGs);
+	}
+
+	@Override
+	public IDataQuery<WorkitemBean> getRunningWorklist_Unread(final ID userId,
+			final List<ProcessModelBean> models) {
+		return getWorklist(userId, models, FilterItems.of("readMark", Boolean.FALSE), STATUS_RUNNINGs);
 	}
 
 	protected String getDefaultOrderby(final String dateColumn) {
@@ -442,21 +460,6 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			sql.append(getDefaultOrderby(null));
 		}
 		return query(sql, params.toArray());
-	}
-
-	@Override
-	public IDataQuery<WorkitemBean> getRunningWorklist(final ID userId) {
-		return getWorklist(userId, EWorkitemStatus.running, EWorkitemStatus.suspended,
-				EWorkitemStatus.delegate);
-	}
-
-	@Override
-	public IDataQuery<WorkitemBean> getUnreadWorklist(final ID userId) {
-		final StringBuilder sql = new StringBuilder(
-				"userid2=? and readMark=? and (status=? or status=? or status=?)")
-				.append(getDefaultOrderby(null));
-		return query(sql, userId, Boolean.FALSE, EWorkitemStatus.running, EWorkitemStatus.suspended,
-				EWorkitemStatus.delegate);
 	}
 
 	@Override
@@ -609,7 +612,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			private void doUserStat_readMark(final WorkitemBean workitem) {
 				final ID userId = workitem.getUserId2();
 				final UserStatBean stat = wfusService.getUserStat(userId);
-				stat.setWorkitem_unread(getUnreadWorklist(userId).getCount());
+				stat.setWorkitem_unread(getRunningWorklist_Unread(userId, null).getCount());
 				wfusService.update(new String[] { "workitem_unread" }, stat);
 			}
 		});
