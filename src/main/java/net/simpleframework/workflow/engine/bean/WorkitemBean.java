@@ -34,6 +34,8 @@ public class WorkitemBean extends AbstractWorkitemBean {
 	/* 实际执行的用户所在的部门 */
 	private ID deptId2;
 
+	/* 最后一次更新时间 */
+	private Date lastUpdate;
 	/* 实际完成时间 */
 	private Date completeDate;
 
@@ -96,6 +98,17 @@ public class WorkitemBean extends AbstractWorkitemBean {
 
 	public void setDeptId2(final ID deptId2) {
 		this.deptId2 = deptId2;
+	}
+
+	public Date getLastUpdate() {
+		if (lastUpdate == null) {
+			lastUpdate = getCreateDate();
+		}
+		return lastUpdate;
+	}
+
+	public void setLastUpdate(Date lastUpdate) {
+		this.lastUpdate = lastUpdate;
 	}
 
 	public Date getCompleteDate() {

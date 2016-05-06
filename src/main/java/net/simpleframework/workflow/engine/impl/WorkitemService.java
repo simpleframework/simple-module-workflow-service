@@ -358,6 +358,12 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	@Override
+	public void doLastUpdate(final WorkitemBean workitem, final Date lastUpdate) {
+		workitem.setLastUpdate(lastUpdate);
+		update(new String[] { "lastUpdate" }, workitem);
+	}
+
+	@Override
 	public void doWorkitemDelegation(final WorkitemBean workitem, final ID ouserId, final ID userId,
 			final Date dStartDate, final Date dCompleteDate, final String description) {
 		if (workitem.getUserId().equals(userId)) {
@@ -433,7 +439,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 	protected String getDefaultOrderby(final String dateColumn) {
 		return " order by topmark desc, "
-				+ (StringUtils.hasText(dateColumn) ? dateColumn : "createdate") + " desc";
+				+ (StringUtils.hasText(dateColumn) ? dateColumn : "lastupdate") + " desc";
 	}
 
 	private IDataQuery<WorkitemBean> _getWorklist(final ProcessBean process, final ID userId,

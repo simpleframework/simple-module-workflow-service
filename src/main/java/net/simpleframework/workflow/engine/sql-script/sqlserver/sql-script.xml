@@ -136,6 +136,7 @@
         usertext2 varchar(32),
         deptid2 char(32),
         createdate datetime not null,
+        lastupdate datetime not null,
         completedate datetime,
         readmark bit not null,
         readdate datetime,

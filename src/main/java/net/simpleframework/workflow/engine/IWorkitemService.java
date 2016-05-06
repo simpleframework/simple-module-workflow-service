@@ -112,6 +112,14 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	void doTopMark(WorkitemBean workitem);
 
 	/**
+	 * 更新最后一次更改时间
+	 * 
+	 * @param workitem
+	 * @param lastUpdate
+	 */
+	void doLastUpdate(WorkitemBean workitem, Date lastUpdate);
+
+	/**
 	 * 设置工作项委托
 	 * 
 	 * @param workitem
