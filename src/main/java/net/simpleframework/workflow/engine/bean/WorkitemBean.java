@@ -107,7 +107,7 @@ public class WorkitemBean extends AbstractWorkitemBean {
 		return lastUpdate;
 	}
 
-	public void setLastUpdate(Date lastUpdate) {
+	public void setLastUpdate(final Date lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
 
