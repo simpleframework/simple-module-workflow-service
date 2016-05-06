@@ -400,7 +400,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	@Override
 	public List<WorkitemBean> getWorkitems(final ProcessBean process, final ID userId,
 			final EWorkitemStatus... status) {
-		return DataQueryUtils.toList(_getWorklist(process, userId, (FilterItems) null, status));
+		return DataQueryUtils.toList(_getWorklist(process, userId, null, (FilterItems) null, status));
 	}
 
 	protected EWorkitemStatus[] STATUS_RUNNINGs = new EWorkitemStatus[] { EWorkitemStatus.running,
@@ -410,7 +410,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	public IDataQuery<WorkitemBean> getWorklist(final ID userId,
 			final List<ProcessModelBean> models, final FilterItems items,
 			final EWorkitemStatus... status) {
-		return _getWorklist(null, userId, items, status);
+		return _getWorklist(null, userId, models, items, status);
 	}
 
 	@Override
@@ -437,12 +437,24 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	private IDataQuery<WorkitemBean> _getWorklist(final ProcessBean process, final ID userId,
-			final FilterItems items, final EWorkitemStatus... status) {
+			final List<ProcessModelBean> models, final FilterItems items,
+			final EWorkitemStatus... status) {
 		final StringBuilder sql = new StringBuilder("1=1");
 		final ArrayList<Object> params = new ArrayList<Object>();
 		if (process != null) {
 			sql.append(" and processid=?");
 			params.add(process.getId());
+		} else if (models != null && models.size() > 0) {
+			sql.append(" and (");
+			int i = 0;
+			for (final ProcessModelBean pm : models) {
+				if (i++ > 0) {
+					sql.append(" or ");
+				}
+				sql.append("modelid=?");
+				params.add(pm.getId());
+			}
+			sql.append(")");
 		}
 		if (userId != null) {
 			sql.append(" and userid2=?");
