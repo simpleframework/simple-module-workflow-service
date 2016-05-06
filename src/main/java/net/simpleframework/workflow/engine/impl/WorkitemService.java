@@ -266,7 +266,9 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	void _abort(final WorkitemBean workitem) {
-		_status(workitem, EWorkitemStatus.abort);
+		workitem.setStatus(EWorkitemStatus.abort);
+		workitem.setCompleteDate(new Date());
+		update(new String[] { "status", "completeDate" }, workitem);
 
 		if (!workitem.isReadMark()) { // 未读
 			workitem.setReadMark(true);

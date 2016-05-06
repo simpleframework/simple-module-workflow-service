@@ -111,7 +111,9 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	}
 
 	void _abort(final DelegationBean delegation) {
-		_status(delegation, EDelegationStatus.abort);
+		delegation.setStatus(EDelegationStatus.abort);
+		delegation.setCompleteDate(new Date());
+		update(new String[] { "status", "completeDate" }, delegation);
 	}
 
 	@Override

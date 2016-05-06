@@ -641,20 +641,15 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			throw WorkflowException.of($m("ActivityService.0"));
 		}
 
-		// 退回前一指定任务
-		final ActivityBean preActivity = getPreActivity(activity, taskname);
+		// 退回前一指定任务，有环节的是直退，没有环节的是退回，
+		ActivityBean preActivity = null;
+		if (StringUtils.hasText(taskname)) {
+			preActivity = getPreActivity(activity, taskname);
+		} else {
+			preActivity = getPreTasknode(activity);
+		}
 		if (preActivity == null) {
 			throw WorkflowException.of($m("ActivityService.8"));
-		}
-
-		// 有环节的是直退，没有环节的是退回，退回要求不能有后续完成实例
-		if (!StringUtils.hasText(taskname)) {
-			// 验证是否存在已完成的后续任务
-			for (final ActivityBean next : getNextActivities(preActivity)) {
-				if (next.getStatus() == EActivityStatus.complete) {
-					throw WorkflowException.of($m("ActivityService.0"));
-				}
-			}
 		}
 
 		// 放弃当前操作环节
@@ -792,11 +787,25 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	@Override
+	public ActivityBean getPreTasknode(final ActivityBean activity) {
+		final List<String> preTaskIds = new ArrayList<String>();
+		for (final TransitionNode transition : getTaskNode(activity).fromTransitions()) {
+			preTaskIds.add(transition.getFrom());
+		}
+		ActivityBean preActivity = activity;
+		while (preActivity != null) {
+			if (preTaskIds.contains(preActivity.getTasknodeId())) {
+				break;
+			}
+			preActivity = getPreActivity(preActivity);
+		}
+		return preActivity;
+	}
+
+	@Override
 	public ActivityBean getPreActivity(final ActivityBean activity, final String taskname) {
 		ActivityBean preActivity = activity;
-		if (taskname == null) {
-			preActivity = getPreActivity(preActivity);
-		} else {
+		if (StringUtils.hasText(taskname)) {
 			while (preActivity != null) {
 				if (taskname.equals(preActivity.getTasknodeId())
 						|| taskname.equals(getTaskNode(preActivity).getName())) {
@@ -804,6 +813,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				}
 				preActivity = getPreActivity(preActivity);
 			}
+		} else {
+			preActivity = getPreActivity(preActivity);
 		}
 		return preActivity;
 	}

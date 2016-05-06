@@ -92,6 +92,14 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	ActivityBean getPreActivity(ActivityBean activity, String taskname);
 
 	/**
+	 * 获取前一定义的环节实例（非前一实例）
+	 * 
+	 * @param activity
+	 * @return
+	 */
+	ActivityBean getPreTasknode(ActivityBean activity);
+
+	/**
 	 * 
 	 * @param processBean
 	 * @return
