@@ -38,8 +38,6 @@ public interface IWorkviewService extends IDbBeanService<WorkviewBean>, IWorkflo
 
 	void doReadMark(WorkviewBean workview);
 
-	IDataQuery<WorkviewBean> getUnreadWorkviewsList(ID userId);
-
 	IDataQuery<WorkviewBean> getChildren(WorkitemBean workitem, ID parentId);
 
 	/**
@@ -49,6 +47,8 @@ public interface IWorkviewService extends IDbBeanService<WorkviewBean>, IWorkflo
 	 * @return
 	 */
 	IDataQuery<WorkviewBean> getWorkviewsList(ID userId);
+
+	IDataQuery<WorkviewBean> getUnreadWorkviewsList(ID userId);
 
 	IDataQuery<WorkviewBean> getWorkviewsListBySent(ID sentId);
 }
