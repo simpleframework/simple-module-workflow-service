@@ -163,6 +163,7 @@
         workitem_retake number(11) not null,
         workitem_unread number(11) not null,
         workview_unread number(11) not null,
+        worklist_refresh_interval number(11) not null,
         primary key(id)
       );
     ]]>

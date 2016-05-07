@@ -27,6 +27,11 @@ public class UserStatBean extends AbstractIdBean {
 	/* 未读待阅 */
 	private int workview_unread;
 
+	/*--------------用户的一些其他配置属性------------*/
+
+	/* 启动工作列表自动刷新，0不刷新，>0循环时间，单位秒 */
+	private int worklist_refresh_interval;
+
 	public ID getUserId() {
 		return userId;
 	}
@@ -97,6 +102,14 @@ public class UserStatBean extends AbstractIdBean {
 
 	public void setWorkview_unread(final int workview_unread) {
 		this.workview_unread = workview_unread;
+	}
+
+	public int getWorklist_refresh_interval() {
+		return worklist_refresh_interval;
+	}
+
+	public void setWorklist_refresh_interval(int worklist_refresh_interval) {
+		this.worklist_refresh_interval = worklist_refresh_interval;
 	}
 
 	private static final long serialVersionUID = 6821091881344434822L;
