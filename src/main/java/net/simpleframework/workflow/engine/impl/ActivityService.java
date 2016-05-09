@@ -642,19 +642,30 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 
 		// 退回前一指定任务，有环节的是直退，没有环节的是退回，
+		// 要保证退回环节的状态是已完成
+		final boolean fallback2 = StringUtils.hasText(taskname);
 		ActivityBean preActivity = null;
-		if (StringUtils.hasText(taskname)) {
+		if (fallback2) {
 			preActivity = getPreActivity(activity, taskname);
+			while (preActivity != null && preActivity.getStatus() != EActivityStatus.complete) {
+				preActivity = getPreActivity(preActivity, taskname);
+			}
 		} else {
-			preActivity = getPreTasknode(activity);
+			preActivity = getPreActivity(activity);
+			while (preActivity != null && preActivity.getStatus() != EActivityStatus.complete) {
+				// 查找上一个activity节点
+				final ActivityBean activity2 = getPreActivity(preActivity, activity.getTasknodeId());
+				preActivity = getPreActivity(activity2);
+			}
 		}
+
 		if (preActivity == null) {
 			throw WorkflowException.of($m("ActivityService.8"));
 		}
 
 		// 放弃当前操作环节
-		_abort(activity, EActivityAbortPolicy.nextActivities,
-				StringUtils.hasText(taskname) ? EActivityStatus.fallback2 : EActivityStatus.fallback);
+		_abort(activity, EActivityAbortPolicy.nextActivities, fallback2 ? EActivityStatus.fallback2
+				: EActivityStatus.fallback);
 		// 放弃所有后续
 		for (final ActivityBean _activity : getNextActivities(preActivity)) {
 			_abort(_activity, EActivityAbortPolicy.nextActivities);
@@ -677,6 +688,11 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		} else {
 			throw WorkflowException.of($m("ActivityService.1"));
 		}
+	}
+
+	@Override
+	public void doFallback(final ActivityBean activity) {
+		doFallback(activity, null, false);
 	}
 
 	private ActivityBean _clone(final ActivityBean oActivity, final ActivityBean preActivity) {
@@ -722,11 +738,6 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			}
 		}
 		return nActivity;
-	}
-
-	@Override
-	public void doFallback(final ActivityBean activity) {
-		doFallback(activity, null, false);
 	}
 
 	@Override
@@ -784,22 +795,6 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	@Override
 	public ActivityBean getPreActivity(final ActivityBean activity) {
 		return activity != null ? getBean(activity.getPreviousId()) : null;
-	}
-
-	@Override
-	public ActivityBean getPreTasknode(final ActivityBean activity) {
-		final List<String> preTaskIds = new ArrayList<String>();
-		for (final TransitionNode transition : getTaskNode(activity).fromTransitions()) {
-			preTaskIds.add(transition.getFrom());
-		}
-		ActivityBean preActivity = activity;
-		while (preActivity != null) {
-			if (preTaskIds.contains(preActivity.getTasknodeId())) {
-				break;
-			}
-			preActivity = getPreActivity(preActivity);
-		}
-		return preActivity;
 	}
 
 	@Override

@@ -108,7 +108,7 @@ public class UserStatBean extends AbstractIdBean {
 		return worklist_refresh_interval;
 	}
 
-	public void setWorklist_refresh_interval(int worklist_refresh_interval) {
+	public void setWorklist_refresh_interval(final int worklist_refresh_interval) {
 		this.worklist_refresh_interval = worklist_refresh_interval;
 	}
 
