@@ -28,18 +28,19 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 		IWorkviewService {
 
 	@Override
-	public List<WorkviewBean> createWorkviews(final WorkitemBean workitem, final ID... userIds) {
-		return _createWorkviews(workitem, userIds);
+	public List<WorkviewBean> createWorkviews(final WorkitemBean workitem, final boolean allowSent,
+			final ID... userIds) {
+		return _createWorkviews(workitem, allowSent, userIds);
 	}
 
 	@Override
 	public List<WorkviewBean> createForwardWorkviews(final WorkviewBean workview,
-			final ID... userIds) {
-		return _createWorkviews(workview, userIds);
+			final boolean allowSent, final ID... userIds) {
+		return _createWorkviews(workview, allowSent, userIds);
 	}
 
 	protected List<WorkviewBean> _createWorkviews(final AbstractWorkitemBean _workitem,
-			final ID... userIds) {
+			final boolean allowSent, final ID... userIds) {
 		WorkviewBean parent = null;
 		WorkitemBean workitem;
 		if (_workitem instanceof WorkitemBean) {
@@ -82,6 +83,7 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean> impleme
 			workview.setWorkitemId(workitem.getId());
 			workview.setModelId(workitem.getModelId());
 			workview.setProcessId(processId);
+			workview.setAllowSent(allowSent);
 			if (parent != null) {
 				workview.setParentId(parent.getId());
 			}

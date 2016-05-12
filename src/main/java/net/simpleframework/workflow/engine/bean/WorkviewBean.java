@@ -52,7 +52,7 @@ public class WorkviewBean extends AbstractWorkitemBean {
 		return allowSent;
 	}
 
-	public void setAllowSent(boolean allowSent) {
+	public void setAllowSent(final boolean allowSent) {
 		this.allowSent = allowSent;
 	}
 

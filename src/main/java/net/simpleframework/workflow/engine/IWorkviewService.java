@@ -20,12 +20,14 @@ public interface IWorkviewService extends IDbBeanService<WorkviewBean>, IWorkflo
 	 * 创建待阅项
 	 * 
 	 * @param workitem
+	 * @param allowSent
 	 * @param userIds
 	 * @return
 	 */
-	List<WorkviewBean> createWorkviews(WorkitemBean workitem, ID... userIds);
+	List<WorkviewBean> createWorkviews(WorkitemBean workitem, boolean allowSent, ID... userIds);
 
-	List<WorkviewBean> createForwardWorkviews(WorkviewBean workview, ID... userIds);
+	List<WorkviewBean> createForwardWorkviews(WorkviewBean workview, boolean allowSent,
+			ID... userIds);
 
 	/**
 	 * 获取待阅bean对象

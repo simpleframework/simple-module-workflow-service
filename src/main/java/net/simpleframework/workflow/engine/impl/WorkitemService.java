@@ -569,12 +569,12 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 		addListener(new DbEntityAdapterEx<WorkitemBean>() {
 			@Override
-			public void onBeforeDelete(IDbEntityManager<WorkitemBean> manager, IParamsValue paramsValue)
-					throws Exception {
+			public void onBeforeDelete(final IDbEntityManager<WorkitemBean> manager,
+					final IParamsValue paramsValue) throws Exception {
 				super.onBeforeDelete(manager, paramsValue);
 				for (final WorkitemBean workitem : coll(manager, paramsValue)) {
 					// 放弃并删除
-					DelegationBean delegation = wfdService.queryRunningDelegation(workitem);
+					final DelegationBean delegation = wfdService.queryRunningDelegation(workitem);
 					if (delegation != null) {
 						wfdService.doAbort(delegation);
 					}
