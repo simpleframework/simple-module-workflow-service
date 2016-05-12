@@ -20,7 +20,6 @@ import net.simpleframework.workflow.engine.IWorkitemService;
 import net.simpleframework.workflow.engine.IWorkviewSentService;
 import net.simpleframework.workflow.engine.IWorkviewService;
 import net.simpleframework.workflow.engine.bean.ActivityBean;
-import net.simpleframework.workflow.engine.bean.ActivityLobBean;
 import net.simpleframework.workflow.engine.bean.DelegationBean;
 import net.simpleframework.workflow.engine.bean.ProcessBean;
 import net.simpleframework.workflow.engine.bean.ProcessLobBean;
@@ -76,7 +75,6 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 				new DbEntityTable(DelegationBean.class, "sf_workflow_delegation"),
 
 				new DbEntityTable(ActivityBean.class, "sf_workflow_activity"),
-				new DbEntityTable(ActivityLobBean.class, "sf_workflow_activity_lob").setNoCache(true),
 
 				new DbEntityTable(WorkitemBean.class, "sf_workflow_workitem"),
 
