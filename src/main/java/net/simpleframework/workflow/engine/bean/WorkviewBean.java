@@ -21,6 +21,9 @@ public class WorkviewBean extends AbstractWorkitemBean {
 	/* 发送id */
 	private ID sentId;
 
+	/* 是否允许发送 */
+	private boolean allowSent;
+
 	public ID getParentId() {
 		return parentId;
 	}
@@ -43,6 +46,14 @@ public class WorkviewBean extends AbstractWorkitemBean {
 
 	public void setSentId(final ID sentId) {
 		this.sentId = sentId;
+	}
+
+	public boolean isAllowSent() {
+		return allowSent;
+	}
+
+	public void setAllowSent(boolean allowSent) {
+		this.allowSent = allowSent;
 	}
 
 	private static final long serialVersionUID = 7218560930454033577L;

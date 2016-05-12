@@ -5,6 +5,7 @@ import java.util.Map;
 
 import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
+import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.db.common.SqlUtils;
 import net.simpleframework.common.Convert;
 import net.simpleframework.common.ID;
@@ -17,6 +18,7 @@ import net.simpleframework.workflow.engine.bean.AbstractWorkflowBean;
 import net.simpleframework.workflow.engine.bean.ActivityBean;
 import net.simpleframework.workflow.engine.bean.ProcessBean;
 import net.simpleframework.workflow.engine.bean.VariableBean;
+import net.simpleframework.workflow.engine.bean.VariableLogBean;
 import net.simpleframework.workflow.schema.EVariableType;
 import net.simpleframework.workflow.schema.VariableNode;
 
@@ -175,9 +177,10 @@ public class VariableService extends AbstractDbBeanService<VariableBean> impleme
 			public void onBeforeDelete(final IDbEntityManager<VariableBean> manager,
 					final IParamsValue paramsValue) throws Exception {
 				super.onBeforeDelete(manager, paramsValue);
-				// for (final VariableBean var : coll(paramsValue)) {
-				// getEntityManager(VariableLogBean.class);
-				// }
+				for (final VariableBean var : coll(manager, paramsValue)) {
+					getEntityManager(VariableLogBean.class).delete(
+							new ExpressionValue("variableId=?", var.getId()));
+				}
 			}
 		});
 	}

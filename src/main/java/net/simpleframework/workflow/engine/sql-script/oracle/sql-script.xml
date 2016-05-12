@@ -209,6 +209,7 @@
         deptid char(32),
         domainid char(32),
         createdate timestamp not null,
+        allowsent number(1) not null,
         readmark number(1) not null,
         readdate timestamp,
         topmark number(1) not null,

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.simpleframework.ado.FilterItems;
+import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.db.common.SQLValue;
@@ -567,6 +568,21 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		super.onInit();
 
 		addListener(new DbEntityAdapterEx<WorkitemBean>() {
+			@Override
+			public void onBeforeDelete(IDbEntityManager<WorkitemBean> manager, IParamsValue paramsValue)
+					throws Exception {
+				super.onBeforeDelete(manager, paramsValue);
+				for (final WorkitemBean workitem : coll(manager, paramsValue)) {
+					// 放弃并删除
+					DelegationBean delegation = wfdService.queryRunningDelegation(workitem);
+					if (delegation != null) {
+						wfdService.doAbort(delegation);
+					}
+					wfdService.deleteWith("delegationSource=? and sourceId=?",
+							EDelegationSource.workitem, workitem.getId());
+				}
+			}
+
 			@Override
 			public void onBeforeUpdate(final IDbEntityManager<WorkitemBean> manager,
 					final String[] columns, final WorkitemBean[] beans) throws Exception {

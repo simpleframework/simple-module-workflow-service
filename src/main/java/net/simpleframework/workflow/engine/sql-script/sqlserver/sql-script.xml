@@ -138,6 +138,7 @@
         createdate datetime not null,
         lastupdate datetime not null,
         completedate datetime,
+        allowsent bit not null,
         readmark bit not null,
         readdate datetime,
         topmark bit not null,
