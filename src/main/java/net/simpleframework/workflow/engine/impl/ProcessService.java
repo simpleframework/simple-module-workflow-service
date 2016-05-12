@@ -525,8 +525,10 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 					// 删除任务环节
 					wfaService.deleteWith("processId=?", id);
+
 					// 删除待阅
 					wfvService.deleteWith("processId=?", id);
+					wfvsService.deleteWith("processId=?", id);
 
 					// 删除流程变量
 					vServiceImpl.deleteVariables(EVariableSource.process, id);
