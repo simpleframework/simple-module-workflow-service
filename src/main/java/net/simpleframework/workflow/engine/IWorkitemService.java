@@ -37,6 +37,8 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	 */
 	List<WorkitemBean> getWorkitems(ActivityBean activity, EWorkitemStatus... status);
 
+	List<WorkitemBean> getNextWorkitems(ActivityBean preActivity, EWorkitemStatus... status);
+
 	/**
 	 * 获取指定流程的工作列表
 	 * 
