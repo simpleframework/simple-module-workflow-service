@@ -444,7 +444,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 				properties.setProperty(IProcessRemoteHandler.SUB_ACTIVITYID,
 						String.valueOf(nActivity.getId()));
 			}
-			wfpService.doStartProcess(wfpmService.getProcessModel(to.getModel()), variables,
+
+			wfpService.doStartProcess(wfpmService.getProcessModel(to.getModel()), null, variables,
 					properties, null);
 			if (sync) {
 				_status(nActivity, EActivityStatus.waiting);
