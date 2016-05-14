@@ -10,6 +10,7 @@ import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.workflow.engine.bean.ProcessBean;
 import net.simpleframework.workflow.engine.bean.ProcessModelBean;
 import net.simpleframework.workflow.engine.bean.WorkitemBean;
+import net.simpleframework.workflow.engine.participant.Participant;
 import net.simpleframework.workflow.schema.ProcessDocument;
 import net.simpleframework.workflow.schema.ProcessNode;
 
@@ -52,13 +53,14 @@ public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 	 * 非人工方式启动流程，一般用在子流程及接口方式
 	 * 
 	 * @param processModel
+	 * @param participant
 	 * @param variables
 	 * @param properties
 	 * @param topic
 	 * @return
 	 */
-	ProcessBean doStartProcess(ProcessModelBean processModel, KVMap variables,
-			Properties properties, String topic);
+	ProcessBean doStartProcess(ProcessModelBean processModel, Participant participant,
+			KVMap variables, Properties properties, String topic);
 
 	/**
 	 * 获取流程实例列表
