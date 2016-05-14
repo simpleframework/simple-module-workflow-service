@@ -117,8 +117,9 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	@Override
-	public ProcessBean doStartProcess(final ProcessModelBean processModel, Participant participant,
-			final KVMap variables, final Properties properties, final String topic) {
+	public ProcessBean doStartProcess(final ProcessModelBean processModel,
+			final Participant participant, final KVMap variables, final Properties properties,
+			final String topic) {
 		final ProcessBean process = _startProcess(processModel, participant, variables, properties,
 				topic);
 		for (final IWorkflowListener listener : getEventListeners(process)) {

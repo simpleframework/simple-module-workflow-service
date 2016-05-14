@@ -391,9 +391,10 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	@Override
-	public List<WorkitemBean> getNextWorkitems(ActivityBean preActivity, EWorkitemStatus... status) {
+	public List<WorkitemBean> getNextWorkitems(final ActivityBean preActivity,
+			final EWorkitemStatus... status) {
 		final List<WorkitemBean> workitems = new ArrayList<WorkitemBean>();
-		for (ActivityBean activity : wfaService.getNextActivities(preActivity)) {
+		for (final ActivityBean activity : wfaService.getNextActivities(preActivity)) {
 			workitems.addAll(getWorkitems(activity, status));
 		}
 		return workitems;
