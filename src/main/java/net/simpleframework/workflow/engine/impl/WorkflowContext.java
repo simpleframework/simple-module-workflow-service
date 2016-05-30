@@ -2,6 +2,7 @@ package net.simpleframework.workflow.engine.impl;
 
 import static net.simpleframework.common.I18n.$m;
 import net.simpleframework.ado.db.DbEntityTable;
+import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.ctx.AbstractADOModuleContext;
 import net.simpleframework.ctx.IApplicationContext;
 import net.simpleframework.ctx.Module;
@@ -100,12 +101,13 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 
 	@Override
 	protected Module createModule() {
-		return new Module() {
-			@Override
-			public String getManagerRole() {
-				return ROLE_WORKFLOW_MANAGER;
-			}
-		}.setName(MODULE_NAME).setText($m("WorkflowContext.0")).setOrder(31);
+		return super.createModule().setName(MODULE_NAME).setText($m("WorkflowContext.0"))
+				.setOrder(31);
+	}
+
+	@Override
+	protected String getManagerRole(final KVMap vars) {
+		return ROLE_WORKFLOW_MANAGER;
 	}
 
 	@Override
