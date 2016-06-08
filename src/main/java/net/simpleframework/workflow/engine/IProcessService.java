@@ -10,6 +10,7 @@ import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.workflow.engine.bean.ProcessBean;
 import net.simpleframework.workflow.engine.bean.ProcessModelBean;
 import net.simpleframework.workflow.engine.bean.WorkitemBean;
+import net.simpleframework.workflow.engine.event.IWorkCalendarListener;
 import net.simpleframework.workflow.engine.participant.Participant;
 import net.simpleframework.workflow.schema.ProcessDocument;
 import net.simpleframework.workflow.schema.ProcessNode;
@@ -171,4 +172,12 @@ public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
 	 * @return
 	 */
 	IWorkflowView getWorkflowView(ProcessBean process);
+
+	/**
+	 * 获取工作日历接口
+	 * 
+	 * @param process
+	 * @return
+	 */
+	IWorkCalendarListener getWorkCalendarListener(ProcessBean process);
 }

@@ -899,7 +899,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public void doUpdateTimeoutDate(final ActivityBean activity, final int hours) {
-		doUpdateTimeoutDate(activity, getWorkCalendarListener(activity).getRealDate(hours));
+		doUpdateTimeoutDate(activity, getWorkCalendarListener(activity).getRealDate(hours * 60));
 	}
 
 	void _doActivityTimeout() {

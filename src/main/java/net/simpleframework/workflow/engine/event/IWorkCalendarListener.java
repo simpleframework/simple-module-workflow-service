@@ -12,21 +12,35 @@ import java.util.Date;
 public interface IWorkCalendarListener extends IWorkflowListener {
 
 	/**
-	 * 工作日历，根据小时数推算真实日期
+	 * 工作日历，根据minute数推算真实日期
 	 * 
-	 * @param hours
+	 * @param minute
 	 * @return
 	 */
-	Date getRealDate(int hours);
+	Date getRealDate(Date start, int minute);
+
+	Date getRealDate(int minute);
+
+	long getRelativeMilliseconds(Date start, Date end);
 
 	public static class WorkCalendarAdapter implements IWorkCalendarListener {
 
 		@Override
-		public Date getRealDate(final int hours) {
+		public Date getRealDate(Date start, final int minute) {
 			final Calendar cal = Calendar.getInstance();
-			cal.setTimeInMillis(System.currentTimeMillis());
-			cal.add(Calendar.HOUR_OF_DAY, hours);
+			cal.setTimeInMillis(start.getTime());
+			cal.add(Calendar.MINUTE, minute);
 			return cal.getTime();
+		}
+
+		@Override
+		public Date getRealDate(int minute) {
+			return getRealDate(new Date(), minute);
+		}
+
+		@Override
+		public long getRelativeMilliseconds(Date start, Date end) {
+			return Math.max(0, end.getTime() - start.getTime());
 		}
 	}
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.simpleframework.workflow.engine.bean.ActivityBean;
 import net.simpleframework.workflow.engine.bean.ProcessBean;
+import net.simpleframework.workflow.engine.event.IWorkCalendarListener;
 import net.simpleframework.workflow.engine.participant.Participant;
 import net.simpleframework.workflow.schema.AbstractTaskNode;
 
@@ -210,4 +211,12 @@ public interface IActivityService extends IWorkflowVariableAware<ActivityBean>,
 	 * @return
 	 */
 	List<Participant> getEmptyParticipants(ActivityBean activity);
+
+	/**
+	 * 获取工作日历接口
+	 * 
+	 * @param activity
+	 * @return
+	 */
+	IWorkCalendarListener getWorkCalendarListener(ActivityBean activity);
 }
