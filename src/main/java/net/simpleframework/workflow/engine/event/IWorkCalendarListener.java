@@ -26,7 +26,7 @@ public interface IWorkCalendarListener extends IWorkflowListener {
 	public static class WorkCalendarAdapter implements IWorkCalendarListener {
 
 		@Override
-		public Date getRealDate(Date start, final int minute) {
+		public Date getRealDate(final Date start, final int minute) {
 			final Calendar cal = Calendar.getInstance();
 			cal.setTimeInMillis(start.getTime());
 			cal.add(Calendar.MINUTE, minute);
@@ -34,12 +34,12 @@ public interface IWorkCalendarListener extends IWorkflowListener {
 		}
 
 		@Override
-		public Date getRealDate(int minute) {
+		public Date getRealDate(final int minute) {
 			return getRealDate(new Date(), minute);
 		}
 
 		@Override
-		public long getRelativeMilliseconds(Date start, Date end) {
+		public long getRelativeMilliseconds(final Date start, final Date end) {
 			return Math.max(0, end.getTime() - start.getTime());
 		}
 	}
