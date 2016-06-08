@@ -402,7 +402,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public void doUpdateTimeoutDate(final ProcessBean process, final int hours) {
-		doUpdateTimeoutDate(process, getWorkCalendarListener(process).getRealDate(hours * 60));
+		doUpdateTimeoutDate(process, getWorkCalendarListener(process)
+				.getRealDate(process, hours * 60));
 	}
 
 	ProcessBean _create(final ProcessModelBean processModel, final Participant participant,
