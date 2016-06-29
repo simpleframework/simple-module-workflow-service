@@ -1,7 +1,7 @@
 package net.simpleframework.workflow.engine;
 
-import net.simpleframework.ado.bean.AbstractIdBean;
 import net.simpleframework.ctx.service.ado.db.IDbBeanService;
+import net.simpleframework.workflow.engine.bean.ProcessAuthBean;
 
 /**
  * Licensed under the Apache License, Version 2.0
@@ -10,14 +10,6 @@ import net.simpleframework.ctx.service.ado.db.IDbBeanService;
  *         https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public interface IWorkflowService<T extends AbstractIdBean> extends IDbBeanService<T>,
-		IWorkflowContextAware {
+public interface IProcessAuthService extends IDbBeanService<ProcessAuthBean> {
 
-	/**
-	 * 是否最终状态，不能再发生状态转换
-	 * 
-	 * @param t
-	 * @return
-	 */
-	boolean isFinalStatus(T t);
 }
