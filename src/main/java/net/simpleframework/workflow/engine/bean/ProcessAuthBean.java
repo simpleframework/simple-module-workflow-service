@@ -25,7 +25,7 @@ public class ProcessAuthBean extends AbstractWorkflowBean {
 		return processId;
 	}
 
-	public void setProcessId(ID processId) {
+	public void setProcessId(final ID processId) {
 		this.processId = processId;
 	}
 
@@ -33,7 +33,7 @@ public class ProcessAuthBean extends AbstractWorkflowBean {
 		return fromId;
 	}
 
-	public void setFromId(ID fromId) {
+	public void setFromId(final ID fromId) {
 		this.fromId = fromId;
 	}
 
@@ -41,7 +41,7 @@ public class ProcessAuthBean extends AbstractWorkflowBean {
 		return toId;
 	}
 
-	public void setToId(ID toId) {
+	public void setToId(final ID toId) {
 		this.toId = toId;
 	}
 
@@ -49,7 +49,7 @@ public class ProcessAuthBean extends AbstractWorkflowBean {
 		return description;
 	}
 
-	public void setDescription(String description) {
+	public void setDescription(final String description) {
 		this.description = description;
 	}
 
