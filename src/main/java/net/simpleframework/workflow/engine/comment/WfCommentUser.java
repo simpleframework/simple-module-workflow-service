@@ -1,6 +1,7 @@
 package net.simpleframework.workflow.engine.comment;
 
 import net.simpleframework.ado.bean.AbstractUserAwareBean;
+import net.simpleframework.ado.db.common.EntityInterceptor;
 import net.simpleframework.common.ID;
 
 /**
@@ -10,6 +11,7 @@ import net.simpleframework.common.ID;
  *         https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
+@EntityInterceptor(listenerTypes = { "net.simpleframework.module.log.EntityDeleteLogAdapter" })
 public class WfCommentUser extends AbstractUserAwareBean {
 	/* 流程id */
 	private ID contentId;

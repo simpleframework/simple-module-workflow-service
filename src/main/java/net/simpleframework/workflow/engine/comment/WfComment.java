@@ -1,5 +1,6 @@
 package net.simpleframework.workflow.engine.comment;
 
+import net.simpleframework.ado.db.common.EntityInterceptor;
 import net.simpleframework.common.ID;
 import net.simpleframework.module.common.content.AbstractComment;
 
@@ -10,6 +11,7 @@ import net.simpleframework.module.common.content.AbstractComment;
  *         https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
+@EntityInterceptor(listenerTypes = { "net.simpleframework.module.log.EntityDeleteLogAdapter" })
 public class WfComment extends AbstractComment {
 	/* 工作项id，每一个工作项只允许一个意见 */
 	private ID workitemId;
