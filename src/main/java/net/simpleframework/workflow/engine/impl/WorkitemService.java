@@ -321,7 +321,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	protected void assertRetakeWorkitems(final ActivityBean nextActivity) {
 		for (final WorkitemBean workitem : getWorkitems(nextActivity)) {
 			if (workitem.getStatus() == EWorkitemStatus.delegate) {
-				DelegationBean delegation = wfdService.queryRunningDelegation(workitem);
+				final DelegationBean delegation = wfdService.queryRunningDelegation(workitem);
 				if (delegation != null && delegation.getStatus() == EDelegationStatus.running) {
 					throw WorkflowException.of($m("WorkitemService.8"));
 				}
