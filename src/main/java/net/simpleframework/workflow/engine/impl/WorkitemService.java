@@ -174,6 +174,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			for (final ActivityBean nextActivity : wfaServiceImpl.getNextActivities(activity)) {
 				final AbstractTaskNode tasknode = wfaServiceImpl.getTaskNode(nextActivity);
 				if (tasknode instanceof UserNode) {
+					// nextActivity
 					// 如果用户环节，则不能出现已读和完成
 					assertRetakeWorkitems(nextActivity);
 					// 放弃
@@ -319,7 +320,15 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 	protected void assertRetakeWorkitems(final ActivityBean nextActivity) {
 		for (final WorkitemBean workitem : getWorkitems(nextActivity)) {
-			_assert(workitem, EWorkitemStatus.running);
+			if (workitem.getStatus() == EWorkitemStatus.delegate) {
+				DelegationBean delegation = wfdService.queryRunningDelegation(workitem);
+				if (delegation != null && delegation.getStatus() == EDelegationStatus.running) {
+					throw WorkflowException.of($m("WorkitemService.8"));
+				}
+			} else {
+				_assert(workitem, EWorkitemStatus.running);
+			}
+
 			if (workitem.isReadMark()) {
 				throw WorkflowException.of($m("WorkitemService.1"));
 			}
