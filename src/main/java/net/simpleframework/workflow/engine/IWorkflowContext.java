@@ -70,6 +70,13 @@ public interface IWorkflowContext extends IModuleContext {
 	IUserStatService getUserStatService();
 
 	/**
+	 * 流程授权服务
+	 * 
+	 * @return
+	 */
+	IProcessAuthService getProcessAuthService();
+
+	/**
 	 * 获取评论服务
 	 * 
 	 * @return
