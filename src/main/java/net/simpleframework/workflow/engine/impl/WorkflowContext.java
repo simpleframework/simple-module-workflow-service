@@ -11,6 +11,7 @@ import net.simpleframework.ctx.settings.ContextSettings;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.IActivityService;
 import net.simpleframework.workflow.engine.IDelegationService;
+import net.simpleframework.workflow.engine.IProcessAuthService;
 import net.simpleframework.workflow.engine.IProcessModelDomainRService;
 import net.simpleframework.workflow.engine.IProcessModelService;
 import net.simpleframework.workflow.engine.IProcessService;
@@ -154,6 +155,11 @@ public abstract class WorkflowContext extends AbstractADOModuleContext implement
 	@Override
 	public IUserStatService getUserStatService() {
 		return singleton(UserStatService.class);
+	}
+
+	@Override
+	public IProcessAuthService getProcessAuthService() {
+		return singleton(ProcessAuthService.class);
 	}
 
 	@Override
