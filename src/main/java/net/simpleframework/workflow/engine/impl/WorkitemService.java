@@ -384,6 +384,9 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		}
 		_assert(workitem, EWorkitemStatus.running, EWorkitemStatus.delegate);
 
+		// 设置已读
+		doReadMark(workitem);
+
 		final DelegationService wfdServiceImpl = (DelegationService) wfdService;
 		if (workitem.getStatus() == EWorkitemStatus.delegate) {
 			// 如果已经委托了，则放弃
