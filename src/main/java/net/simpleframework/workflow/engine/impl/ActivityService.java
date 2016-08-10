@@ -808,6 +808,13 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 						|| taskname.equals(getTaskNode(preActivity).getName())) {
 					break;
 				}
+				// 优先查找合并节点
+				for (final String activityId : _getMergePreActivities(preActivity)) {
+					final ActivityBean preActivity2 = getPreActivity(getBean(activityId), taskname);
+					if (preActivity2 != null) {
+						return preActivity2;
+					}
+				}
 				preActivity = getPreActivity(preActivity);
 			}
 		} else {
