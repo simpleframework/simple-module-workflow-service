@@ -3,7 +3,6 @@ package net.simpleframework.workflow.engine.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -214,25 +213,6 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 	protected void _status(final T t, final Enum<?> status) {
 		BeanUtils.setProperty(t, "status", status);
 		update(new String[] { "status" }, t);
-	}
-
-	protected void buildStatusSQL(final StringBuilder sql, final List<Object> params,
-			final String alias, final Enum<?>... status) {
-		if (status != null && status.length > 0) {
-			sql.append(" and (");
-			int i = 0;
-			for (final Enum<?> s : status) {
-				if (i++ > 0) {
-					sql.append(" or ");
-				}
-				if (alias != null) {
-					sql.append(alias).append(".");
-				}
-				sql.append("status=?");
-				params.add(s);
-			}
-			sql.append(")");
-		}
 	}
 
 	protected static VariableService vServiceImpl = singleton(VariableService.class);
