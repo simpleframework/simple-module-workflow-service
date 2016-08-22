@@ -49,9 +49,9 @@ public class WorkitemBean extends AbstractWorkitemBean {
 	private ID retakeRef;
 
 	/* 扩展字段3 */
-	// private double ext3;
+	private double ext3;
 	/* 扩展字段4 */
-	// private Date ext4;
+	private String ext4;
 
 	public EWorkitemStatus getStatus() {
 		return status != null ? status : EWorkitemStatus.running;
@@ -142,6 +142,22 @@ public class WorkitemBean extends AbstractWorkitemBean {
 
 	public void setRetakeRef(final ID retakeRef) {
 		this.retakeRef = retakeRef;
+	}
+
+	public double getExt3() {
+		return ext3;
+	}
+
+	public void setExt3(double ext3) {
+		this.ext3 = ext3;
+	}
+
+	public String getExt4() {
+		return ext4;
+	}
+
+	public void setExt4(String ext4) {
+		this.ext4 = ext4;
 	}
 
 	@Override
