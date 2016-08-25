@@ -148,7 +148,7 @@ public class WorkitemBean extends AbstractWorkitemBean {
 		return ext3;
 	}
 
-	public void setExt3(double ext3) {
+	public void setExt3(final double ext3) {
 		this.ext3 = ext3;
 	}
 
@@ -156,7 +156,7 @@ public class WorkitemBean extends AbstractWorkitemBean {
 		return ext4;
 	}
 
-	public void setExt4(String ext4) {
+	public void setExt4(final String ext4) {
 		this.ext4 = ext4;
 	}
 
