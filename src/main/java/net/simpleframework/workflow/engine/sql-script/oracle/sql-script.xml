@@ -146,6 +146,8 @@
         retakeref char(32),
         ext1 varchar2(64 char),
         ext2 number(11) not null,
+        ext3 number(20, 14) not null,
+        ext4 varchar2(64 char),
         primary key(id)
       );
     ]]>
