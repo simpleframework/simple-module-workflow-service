@@ -44,8 +44,8 @@ public interface IWorkCalendarListener extends IWorkflowListener {
 		}
 
 		@Override
-		public long getRelativeMilliseconds(final AbstractWorkflowBean workflowBean,
-				final Date start, final Date end) {
+		public long getRelativeMilliseconds(final AbstractWorkflowBean workflowBean, final Date start,
+				final Date end) {
 			return Math.max(0, end.getTime() - start.getTime());
 		}
 	}

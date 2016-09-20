@@ -1,6 +1,7 @@
 package net.simpleframework.workflow.engine.impl;
 
 import static net.simpleframework.common.I18n.$m;
+
 import net.simpleframework.ado.db.DbEntityTable;
 import net.simpleframework.common.coll.KVMap;
 import net.simpleframework.ctx.AbstractADOModuleContext;

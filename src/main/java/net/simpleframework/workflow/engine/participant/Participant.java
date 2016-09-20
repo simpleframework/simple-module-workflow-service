@@ -36,8 +36,8 @@ public class Participant implements IWorkflowContextAware {
 	private WorkitemBean workitem;
 
 	public Participant(final WorkitemBean workitem, final boolean user2) {
-		this((user2 ? workitem.getUserId2() : workitem.getUserId()), workitem.getRoleId(), workitem
-				.getDeptId());
+		this((user2 ? workitem.getUserId2() : workitem.getUserId()), workitem.getRoleId(),
+				workitem.getDeptId());
 		this.workitem = workitem;
 	}
 

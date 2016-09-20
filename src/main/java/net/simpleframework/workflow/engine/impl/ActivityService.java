@@ -66,8 +66,8 @@ import net.simpleframework.workflow.schema.VariableNode;
  *         https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class ActivityService extends AbstractWorkflowService<ActivityBean> implements
-		IActivityService {
+public class ActivityService extends AbstractWorkflowService<ActivityBean>
+		implements IActivityService {
 
 	@Override
 	public ProcessBean getProcessBean(final ActivityBean activity) {
@@ -76,8 +76,9 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 
 	@Override
 	public AbstractTaskNode getTaskNode(final ActivityBean activity) {
-		return activity == null ? null : (AbstractTaskNode) wfpService.getProcessNode(
-				getProcessBean(activity)).getNodeById(activity.getTasknodeId());
+		return activity == null ? null
+				: (AbstractTaskNode) wfpService.getProcessNode(getProcessBean(activity))
+						.getNodeById(activity.getTasknodeId());
 	}
 
 	@Override
@@ -261,8 +262,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	@Override
 	public List<Participant> getEmptyParticipants(final ActivityBean activity) {
 		final List<Participant> participants = new ArrayList<Participant>();
-		for (final String participant : StringUtils.split(
-				activity.getProperties().getProperty(EMPTY_PARTICIPANTS), ";")) {
+		for (final String participant : StringUtils
+				.split(activity.getProperties().getProperty(EMPTY_PARTICIPANTS), ";")) {
 			participants.add(Participant.of(participant));
 		}
 		return participants;
@@ -296,10 +297,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		// 更新每次的preActivity
 		final ID preId = preActivity.getId();
 		if (!preId.equals(nActivity.getPreviousId())) {
-			_setMergePreActivities(
-					nActivity,
-					new String[] { nActivity.getProperties().getProperty(MERGE_PRE_ACTIVITIES),
-							preId.toString() });
+			_setMergePreActivities(nActivity, new String[] {
+					nActivity.getProperties().getProperty(MERGE_PRE_ACTIVITIES), preId.toString() });
 			update(new String[] { "properties" }, nActivity);
 		}
 
@@ -376,11 +375,12 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	List<String> _getMergePreActivities(final ActivityBean mActivity) {
-		return ArrayUtils.asList(StringUtils.split(
-				mActivity.getProperties().getProperty(MERGE_PRE_ACTIVITIES), ";"));
+		return ArrayUtils.asList(
+				StringUtils.split(mActivity.getProperties().getProperty(MERGE_PRE_ACTIVITIES), ";"));
 	}
 
-	boolean _isPreviousOfMergeActivity(final ActivityBean mActivity, final ActivityBean preActivity) {
+	boolean _isPreviousOfMergeActivity(final ActivityBean mActivity,
+			final ActivityBean preActivity) {
 		return preActivity.getId().equals(mActivity.getPreviousId())
 				|| _getMergePreActivities(mActivity).contains(preActivity.getId().toString());
 	}
@@ -391,8 +391,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		if (StringUtils.hasText(serverUrl)) {
 			wfpService.doBackToRemote(sProcess);
 		} else {
-			final ActivityBean nActivity = getBean(properties
-					.getProperty(IProcessRemoteHandler.SUB_ACTIVITYID));
+			final ActivityBean nActivity = getBean(
+					properties.getProperty(IProcessRemoteHandler.SUB_ACTIVITYID));
 			doSubComplete(nActivity, new IMappingVal() {
 				@Override
 				public Object val(final String mapping) {
@@ -425,7 +425,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		new ActivityComplete(activity).complete();
 	}
 
-	private void _doSubNode(final ActivityBean preActivity, final SubNode to, final Date createDate) {
+	private void _doSubNode(final ActivityBean preActivity, final SubNode to,
+			final Date createDate) {
 		final ActivityBean nActivity = _create(to, preActivity, createDate);
 		insert(nActivity);
 
@@ -666,8 +667,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		}
 
 		// 放弃当前操作环节
-		_abort(activity, EActivityAbortPolicy.nextActivities, fallback2 ? EActivityStatus.fallback2
-				: EActivityStatus.fallback);
+		_abort(activity, EActivityAbortPolicy.nextActivities,
+				fallback2 ? EActivityStatus.fallback2 : EActivityStatus.fallback);
 		// 放弃所有后续
 		for (final ActivityBean _activity : getNextActivities(preActivity)) {
 			_abort(_activity, EActivityAbortPolicy.nextActivities);
@@ -752,8 +753,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 		if (preActivity == null) {
 			return CollectionUtils.EMPTY_LIST();
 		}
-		final List<ActivityBean> list = DataQueryUtils.toList(query("previousId=?",
-				preActivity.getId()));
+		final List<ActivityBean> list = DataQueryUtils
+				.toList(query("previousId=?", preActivity.getId()));
 		// 查找合并节点
 		final IDataQuery<ActivityBean> dq = query("processId=? and tasknodeType=?",
 				preActivity.getProcessId(), AbstractTaskNode.TT_MERGE);
@@ -845,7 +846,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	}
 
 	@Override
-	public void setVariable(final ActivityBean activity, final String[] names, final Object[] values) {
+	public void setVariable(final ActivityBean activity, final String[] names,
+			final Object[] values) {
 		vServiceImpl.setVariableValue(activity, names, values);
 	}
 
@@ -892,8 +894,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 	@Override
 	public List<Participant> getParticipants2(final ActivityBean activity) {
 		final List<Participant> list = new ArrayList<Participant>();
-		for (final WorkitemBean workitem : wfwService
-				.getWorkitems(activity, EWorkitemStatus.complete)) {
+		for (final WorkitemBean workitem : wfwService.getWorkitems(activity,
+				EWorkitemStatus.complete)) {
 			list.add(new Participant(workitem, true));
 		}
 		return list;
@@ -974,7 +976,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean> imple
 			protected void task(final Map<String, Object> cache) throws Exception {
 				final IDataQuery<?> qs = query("tasknodeType=? and (status=? or status=?)",
 						AbstractTaskNode.TT_SUB, EActivityStatus.running, EActivityStatus.waiting)
-						.setFetchSize(0);
+								.setFetchSize(0);
 				ActivityBean activity;
 				while ((activity = (ActivityBean) qs.next()) != null) {
 					final ActivityBean nActivity = activity;

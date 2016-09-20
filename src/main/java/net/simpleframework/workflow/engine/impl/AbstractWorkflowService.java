@@ -40,8 +40,8 @@ import net.simpleframework.workflow.schema.ProcessNode;
  *         https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
-		AbstractDbBeanService<T> implements IWorkflowService<T> {
+public abstract class AbstractWorkflowService<T extends AbstractIdBean>
+		extends AbstractDbBeanService<T> implements IWorkflowService<T> {
 	static Collection<String> defaultExpr;
 	static {
 		defaultExpr = new ArrayList<String>();
@@ -184,7 +184,8 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean> extends
 		return set;
 	}
 
-	public void addEventListener(final T bean, final Class<? extends IWorkflowListener> listenerClass) {
+	public void addEventListener(final T bean,
+			final Class<? extends IWorkflowListener> listenerClass) {
 		final ID id = bean.getId();
 		Set<String> set = listenerClassMap.get(id);
 		if (set == null) {

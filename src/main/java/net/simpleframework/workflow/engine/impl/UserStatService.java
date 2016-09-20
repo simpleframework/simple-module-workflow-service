@@ -22,8 +22,8 @@ import net.simpleframework.workflow.engine.bean.WorkitemBean;
  *         https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class UserStatService extends AbstractDbBeanService<UserStatBean> implements
-		IUserStatService {
+public class UserStatService extends AbstractDbBeanService<UserStatBean>
+		implements IUserStatService {
 
 	@Override
 	public UserStatBean getUserStat(final ID userId) {
@@ -57,11 +57,10 @@ public class UserStatService extends AbstractDbBeanService<UserStatBean> impleme
 		c2.setTime(c1.getTime());
 		c2.add(Calendar.DATE, 1);
 
-		final IDataQuery<Map<String, Object>> dq = getEntityManager().queryMapSet(
-				new SQLValue("select status, count(status) as cc from "
-						+ getTablename(WorkitemBean.class)
-						+ " where userid=? and (createdate>? and createdate<?) group by status", userId,
-						c1.getTime(), c2.getTime()));
+		final IDataQuery<Map<String, Object>> dq = getEntityManager().queryMapSet(new SQLValue(
+				"select status, count(status) as cc from " + getTablename(WorkitemBean.class)
+						+ " where userid=? and (createdate>? and createdate<?) group by status",
+				userId, c1.getTime(), c2.getTime()));
 		Map<String, Object> map;
 		int complete = 0;
 		int count = 0;

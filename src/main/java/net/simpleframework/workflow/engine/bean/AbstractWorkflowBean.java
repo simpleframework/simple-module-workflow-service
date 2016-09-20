@@ -11,6 +11,6 @@ import net.simpleframework.workflow.engine.IWorkflowContextAware;
  *         http://www.simpleframework.net
  */
 @SuppressWarnings("serial")
-public abstract class AbstractWorkflowBean extends AbstractDateAwareBean implements
-		IWorkflowContextAware {
+public abstract class AbstractWorkflowBean extends AbstractDateAwareBean
+		implements IWorkflowContextAware {
 }

@@ -55,8 +55,8 @@ import net.simpleframework.workflow.schema.UserNode;
  *         https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class WorkitemService extends AbstractWorkflowService<WorkitemBean> implements
-		IWorkitemService {
+public class WorkitemService extends AbstractWorkflowService<WorkitemBean>
+		implements IWorkitemService {
 
 	@Override
 	public ActivityBean getActivity(final WorkitemBean workitem) {
@@ -131,8 +131,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 						_createSequentialWorkitem(activity, o);
 					} else {
 						// 多实例，创建环节实例，同时完成当前环节
-						final ActivityBean nActivity = wfaServiceImpl._create(process, tasknode,
-								activity, new Date());
+						final ActivityBean nActivity = wfaServiceImpl._create(process, tasknode, activity,
+								new Date());
 						PropSequential.set(nActivity, list);
 						wfaServiceImpl.insert(nActivity);
 						_createSequentialWorkitem(nActivity, o);
@@ -199,8 +199,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 						if (activity.getId().toString().equals(preActivities.remove(size - 1))) {
 							// 新建merge环节
 							if (status2 == EActivityStatus.running) {
-								wfaServiceImpl
-										._setMergePreActivities(nextActivity, preActivities.toArray());
+								wfaServiceImpl._setMergePreActivities(nextActivity,
+										preActivities.toArray());
 								wfaServiceImpl.update(new String[] { "properties" }, nextActivity);
 							} else if (status2 == EActivityStatus.complete) {
 								final ActivityBean mActivity = wfaServiceImpl._create(tasknode,
@@ -314,8 +314,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	}
 
 	DelegationBean _getDelegation(final WorkitemBean workitem) {
-		return workitem.getUserId().equals(workitem.getUserId2()) ? null : wfdService
-				.queryRunningDelegation(workitem);
+		return workitem.getUserId().equals(workitem.getUserId2()) ? null
+				: wfdService.queryRunningDelegation(workitem);
 	}
 
 	protected void assertRetakeWorkitems(final ActivityBean nextActivity) {
@@ -441,15 +441,14 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 			EWorkitemStatus.suspended, EWorkitemStatus.delegate };
 
 	@Override
-	public IDataQuery<WorkitemBean> getWorklist(final ID userId,
-			final List<ProcessModelBean> models, final FilterItems items,
-			final EWorkitemStatus... status) {
+	public IDataQuery<WorkitemBean> getWorklist(final ID userId, final List<ProcessModelBean> models,
+			final FilterItems items, final EWorkitemStatus... status) {
 		return _getWorklist(null, userId, models, items, status);
 	}
 
 	@Override
-	public IDataQuery<WorkitemBean> getWorklist(final ID userId,
-			final List<ProcessModelBean> models, final EWorkitemStatus... status) {
+	public IDataQuery<WorkitemBean> getWorklist(final ID userId, final List<ProcessModelBean> models,
+			final EWorkitemStatus... status) {
 		return getWorklist(userId, models, null, status);
 	}
 
@@ -462,7 +461,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 	@Override
 	public IDataQuery<WorkitemBean> getRunningWorklist_Unread(final ID userId,
 			final List<ProcessModelBean> models) {
-		return getWorklist(userId, models, FilterItems.of("readMark", Boolean.FALSE), STATUS_RUNNINGs);
+		return getWorklist(userId, models, FilterItems.of("readMark", Boolean.FALSE),
+				STATUS_RUNNINGs);
 	}
 
 	protected String getDefaultOrderby(final String dateColumn) {
@@ -575,8 +575,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 		for (final EWorkitemStatus status : EWorkitemStatus.values()) {
 			BeanUtils.setProperty(stat, "workitem_" + status.name(), 0);
 		}
-		final IDataQuery<Map<String, Object>> dq = getEntityManager().queryMapSet(
-				new SQLValue("select status, count(status) as cc from "
+		final IDataQuery<Map<String, Object>> dq = getEntityManager()
+				.queryMapSet(new SQLValue("select status, count(status) as cc from "
 						+ getTablename(WorkitemBean.class) + " where userid=? group by status", userId));
 		Map<String, Object> map;
 		while ((map = dq.next()) != null) {
@@ -653,8 +653,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean> imple
 
 				for (final WorkitemBean workitem : beans) {
 					// 如果存在用户委托，则创建
-					final DelegationBean delegation = wfdService.queryRunningDelegation(workitem
-							.getUserId());
+					final DelegationBean delegation = wfdService
+							.queryRunningDelegation(workitem.getUserId());
 					if (delegation != null && delegation.getStatus() == EDelegationStatus.running) {
 						doWorkitemDelegation(workitem, delegation.getSourceId(), delegation.getUserId(),
 								null, null, $m("WorkitemService.5", workitem.getUserText()));

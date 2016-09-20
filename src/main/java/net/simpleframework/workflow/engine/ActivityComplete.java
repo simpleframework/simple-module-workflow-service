@@ -144,7 +144,8 @@ public class ActivityComplete extends ObjectEx implements IWorkflowContextAware 
 		} else {
 			final IParticipantHandler hdl = ParticipantUtils.getParticipantHandler(pt.getClass());
 			Collection<Participant> _participants;
-			if (hdl != null && (_participants = hdl.getParticipants(script, this, variables)) != null) {
+			if (hdl != null
+					&& (_participants = hdl.getParticipants(script, this, variables)) != null) {
 				participants.addAll(_participants);
 			}
 		}
@@ -210,14 +211,14 @@ public class ActivityComplete extends ObjectEx implements IWorkflowContextAware 
 	}
 
 	public boolean isParticipantManual(final AbstractTaskNode taskNode) {
-		final AbstractParticipantType pt = taskNode instanceof UserNode ? ((UserNode) taskNode)
-				.getParticipantType() : null;
+		final AbstractParticipantType pt = taskNode instanceof UserNode
+				? ((UserNode) taskNode).getParticipantType() : null;
 		return pt instanceof Role && ((Role) pt).isManual();
 	}
 
 	public boolean isParticipantMultiSelected(final AbstractTaskNode taskNode) {
-		final AbstractParticipantType pt = taskNode instanceof UserNode ? ((UserNode) taskNode)
-				.getParticipantType() : null;
+		final AbstractParticipantType pt = taskNode instanceof UserNode
+				? ((UserNode) taskNode).getParticipantType() : null;
 		return pt instanceof Role && ((Role) pt).isMultiSelected();
 	}
 

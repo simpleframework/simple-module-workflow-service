@@ -25,8 +25,8 @@ public abstract class PropSequential implements IWorkflowContextAware {
 		final List<Object> l = new ArrayList<Object>();
 		for (final String str : StringUtils.split(activity.getProperties().getProperty(SEQUENTIAL),
 				";")) {
-			final Object o = str.charAt(0) == '#' ? wfwService.getBean(str.substring(1)) : Participant
-					.of(str);
+			final Object o = str.charAt(0) == '#' ? wfwService.getBean(str.substring(1))
+					: Participant.of(str);
 			if (o != null) {
 				l.add(o);
 			}

@@ -15,7 +15,7 @@ public interface IWfNoticeTypeHandler extends IWorkflowContextAware {
 	 * 
 	 * @param notice
 	 * @return
-	 *         true 已发送
+	 * 			true 已发送
 	 *         false 未发送
 	 * @throws Exception
 	 *         发送失败

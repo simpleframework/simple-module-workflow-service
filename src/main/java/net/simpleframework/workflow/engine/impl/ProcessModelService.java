@@ -46,16 +46,16 @@ import net.simpleframework.workflow.schema.ProcessNode;
  *         https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class ProcessModelService extends AbstractWorkflowService<ProcessModelBean> implements
-		IProcessModelService {
+public class ProcessModelService extends AbstractWorkflowService<ProcessModelBean>
+		implements IProcessModelService {
 
 	@Override
 	public ProcessDocument getProcessDocument(final ProcessModelBean processModel) {
 		return processModel.getAttrCache(ATTR_PROCESS_DOCUMENT, new CacheV<ProcessDocument>() {
 			@Override
 			public ProcessDocument get() {
-				final ProcessModelLobBean lob = getEntityManager(ProcessModelLobBean.class).getBean(
-						processModel.getId());
+				final ProcessModelLobBean lob = getEntityManager(ProcessModelLobBean.class)
+						.getBean(processModel.getId());
 				return new ProcessDocument(new StringReader(new String(lob.getProcessSchema()).trim()));
 			}
 		});
@@ -96,8 +96,8 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 			final ProcessNode processNode = document.getProcessNode();
 			processNode.getVersion().incMicro();
 			final Version nVer = processNode.getVersion();
-			final Version oVer = Version.getVersion((String) queryFor("modelver", "id=?",
-					processModel.getId()));
+			final Version oVer = Version
+					.getVersion((String) queryFor("modelver", "id=?", processModel.getId()));
 			if (oVer.complies(nVer) || oVer.equals(nVer)) {
 				throw WorkflowException.of($m("ProcessModelService.3", nVer, oVer));
 			}
@@ -108,8 +108,8 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 			processModel.setLastUpdate(new Date());
 			update(processModel);
 
-			final ProcessModelLobBean lob = getEntityManager(ProcessModelLobBean.class).getBean(
-					processModel.getId());
+			final ProcessModelLobBean lob = getEntityManager(ProcessModelLobBean.class)
+					.getBean(processModel.getId());
 			lob.setProcessSchema(document.toString().toCharArray());
 			getEntityManager(ProcessModelLobBean.class).update(lob);
 		} finally {
@@ -132,9 +132,9 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 			final EProcessModelStatus... status) {
 		final StringBuilder sql = new StringBuilder(
 				"select m.*, d.processCount as processCount2 from ")
-				.append(getTablename(ProcessModelDomainR.class)).append(" d right join ")
-				.append(getTablename(ProcessModelBean.class))
-				.append(" m on d.modelid = m.id where d.domainid=?");
+						.append(getTablename(ProcessModelDomainR.class)).append(" d right join ")
+						.append(getTablename(ProcessModelBean.class))
+						.append(" m on d.modelid = m.id where d.domainid=?");
 		final ArrayList<Object> params = new ArrayList<Object>();
 		params.add(domainId);
 		buildStatusSQL(sql, params, "m", status);
@@ -183,8 +183,8 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 			final AbstractProcessStartupType startupType = getProcessDocument(processModel)
 					.getProcessNode().getStartupType();
 			if (startupType instanceof Manual) {
-				final KVMap variables = new KVMap().add("model", processModel).add(
-						PermissionConst.VAR_USERID, userId);
+				final KVMap variables = new KVMap().add("model", processModel)
+						.add(PermissionConst.VAR_USERID, userId);
 				final AbstractParticipantType pt = ((Manual) startupType).getParticipantType();
 				final String participant = pt.getParticipant();
 				if (pt instanceof User) {
@@ -197,8 +197,8 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 					if (permission.getUser(userId).isMember(roleId, variables)) {
 						final ID _roleId = (ID) variables.get(PermissionConst.VAR_ROLEID);
 						// 采用VAR_ROLEID定义的角色, 角色嵌套
-						items.add(new InitiateItem(processModel, userId, _roleId != null ? _roleId
-								: roleId, variables));
+						items.add(new InitiateItem(processModel, userId,
+								_roleId != null ? _roleId : roleId, variables));
 					}
 				}
 			} else {

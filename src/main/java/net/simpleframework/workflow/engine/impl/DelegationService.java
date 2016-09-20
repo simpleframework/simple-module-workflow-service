@@ -30,8 +30,8 @@ import net.simpleframework.workflow.engine.bean.WorkitemBean;
  *         https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class DelegationService extends AbstractWorkflowService<DelegationBean> implements
-		IDelegationService {
+public class DelegationService extends AbstractWorkflowService<DelegationBean>
+		implements IDelegationService {
 
 	@Override
 	public DelegationBean queryRunningDelegation(final WorkitemBean workitem) {
@@ -55,11 +55,8 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 			final EDelegationSource source) {
 		final StringBuilder sb = new StringBuilder();
 		if (source == EDelegationSource.workitem) {
-			sb.append("select d.*,w.processid from ")
-					.append(getTablename(DelegationBean.class))
-					.append(" d left join ")
-					.append(getTablename(WorkitemBean.class))
-					.append(
+			sb.append("select d.*,w.processid from ").append(getTablename(DelegationBean.class))
+					.append(" d left join ").append(getTablename(WorkitemBean.class)).append(
 							" w on d.sourceid = w.id where w.userId=? and d.delegationsource=? order by d.createdate desc");
 			return query(new SQLValue(sb, userId, source));
 		} else {
@@ -70,11 +67,8 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	@Override
 	public IDataQuery<DelegationBean> queryRevDelegations(final ID userId) {
 		final StringBuilder sb = new StringBuilder();
-		sb.append("select d.*,w.processid from ")
-				.append(getTablename(DelegationBean.class))
-				.append(" d left join ")
-				.append(getTablename(WorkitemBean.class))
-				.append(
+		sb.append("select d.*,w.processid from ").append(getTablename(DelegationBean.class))
+				.append(" d left join ").append(getTablename(WorkitemBean.class)).append(
 						" w on d.sourceid = w.id where d.userId=? and d.delegationsource=? order by d.createdate desc");
 		return query(new SQLValue(sb, userId, EDelegationSource.workitem));
 	}
@@ -155,8 +149,8 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 
 	void _updateWorkitem(final DelegationBean delegation, final EWorkitemStatus status) {
 		// 更新Workitem
-		final WorkitemBean workitem = delegation.getDelegationSource() == EDelegationSource.workitem ? wfwService
-				.getBean(delegation.getSourceId()) : null;
+		final WorkitemBean workitem = delegation.getDelegationSource() == EDelegationSource.workitem
+				? wfwService.getBean(delegation.getSourceId()) : null;
 		if (workitem != null) {
 			workitem.setStatus(status);
 			final ID userId = workitem.getUserId();
@@ -177,8 +171,8 @@ public class DelegationService extends AbstractWorkflowService<DelegationBean> i
 	@Transaction(context = IWorkflowContext.class)
 	public void doDelegation_inTran(final DelegationBean delegation) {
 		// 保证每条数据在一个事务内
-		final WorkitemBean workitem = delegation.getDelegationSource() == EDelegationSource.workitem ? wfwService
-				.getBean(delegation.getSourceId()) : null;
+		final WorkitemBean workitem = delegation.getDelegationSource() == EDelegationSource.workitem
+				? wfwService.getBean(delegation.getSourceId()) : null;
 		// 如果任务已经完成，则放弃
 		if (workitem != null && wfwService.isFinalStatus(workitem)) {
 			_abort(delegation);

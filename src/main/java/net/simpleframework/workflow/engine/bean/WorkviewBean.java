@@ -10,8 +10,9 @@ import net.simpleframework.common.ID;
  *         https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-@EntityInterceptor(listenerTypes = { "net.simpleframework.module.log.EntityUpdateLogAdapter" }, columns = {
-		"readMark", "topMark" })
+@EntityInterceptor(listenerTypes = {
+		"net.simpleframework.module.log.EntityUpdateLogAdapter" }, columns = { "readMark",
+				"topMark" })
 public class WorkviewBean extends AbstractWorkitemBean {
 	/* 父id，转发 */
 	private ID parentId;

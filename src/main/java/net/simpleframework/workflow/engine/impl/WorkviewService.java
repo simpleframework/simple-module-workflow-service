@@ -24,8 +24,8 @@ import net.simpleframework.workflow.engine.bean.WorkviewSentBean;
  *         https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class WorkviewService extends AbstractDbBeanService<WorkviewBean> implements
-		IWorkviewService {
+public class WorkviewService extends AbstractDbBeanService<WorkviewBean>
+		implements IWorkviewService {
 
 	@Override
 	public List<WorkviewBean> createWorkviews(final WorkitemBean workitem, final boolean allowSent,

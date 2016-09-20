@@ -12,8 +12,8 @@ import net.simpleframework.workflow.engine.bean.WorkviewSentBean;
  *         https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public interface IWorkviewSentService extends IDbBeanService<WorkviewSentBean>,
-		IWorkflowContextAware {
+public interface IWorkviewSentService
+		extends IDbBeanService<WorkviewSentBean>, IWorkflowContextAware {
 
 	IDataQuery<WorkviewSentBean> getWorkviewsSentList(ID userId);
 }

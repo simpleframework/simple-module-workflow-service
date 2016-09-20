@@ -34,14 +34,14 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 		if (rType == ERelativeType.processInitiator) {
 			final ProcessBean process = wfaService.getProcessBean(activityComplete.getActivity());
 			if (StringUtils.hasText(rRole.getRelative())) {
-				final Collection<Participant> _participants = permission.getRelativeParticipants(
-						process, rRole, variables);
+				final Collection<Participant> _participants = permission
+						.getRelativeParticipants(process, rRole, variables);
 				if (_participants != null) {
 					participants.addAll(_participants);
 				}
 			} else {
-				participants.add(new Participant(process.getUserId(), process.getRoleId(), process
-						.getDeptId()));
+				participants.add(
+						new Participant(process.getUserId(), process.getRoleId(), process.getDeptId()));
 			}
 		} else {
 			ActivityBean preActivity = null;

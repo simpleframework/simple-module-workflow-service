@@ -22,8 +22,8 @@ public class InitiateItems extends ArrayList<InitiateItem> implements IWorkflowC
 		if (model == null) {
 			return null;
 		}
-		final ID id = model instanceof ProcessModelBean ? ((ProcessModelBean) model).getId() : ID
-				.of(model);
+		final ID id = model instanceof ProcessModelBean ? ((ProcessModelBean) model).getId()
+				: ID.of(model);
 		for (final InitiateItem item : this) {
 			if (id.equals(item.getModelId())) {
 				return item;

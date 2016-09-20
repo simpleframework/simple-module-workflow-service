@@ -14,7 +14,8 @@ import net.simpleframework.common.ID;
  *         http://www.simpleframework.net
  */
 @SuppressWarnings("serial")
-public abstract class AbstractWorkitemBean extends AbstractWorkflowBean implements IDomainBeanAware {
+public abstract class AbstractWorkitemBean extends AbstractWorkflowBean
+		implements IDomainBeanAware {
 	/* 流程模型id */
 	private ID modelId;
 	/* 流程实例id */

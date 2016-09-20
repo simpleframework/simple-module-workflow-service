@@ -13,8 +13,8 @@ import net.simpleframework.workflow.remote.AbstractWorkflowRemoteHandler;
  *         http://www.simpleframework.net
  */
 
-public class DefaultProcessRemoteHandler extends AbstractWorkflowRemoteHandler implements
-		IProcessRemoteHandler {
+public class DefaultProcessRemoteHandler extends AbstractWorkflowRemoteHandler
+		implements IProcessRemoteHandler {
 
 	@Override
 	public Map<String, Object> call(final String url, final String method,

@@ -20,8 +20,8 @@ import net.simpleframework.workflow.engine.comment.WfCommentLog.ELogType;
  *         https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class WfCommentLogService extends AbstractDbBeanService<WfCommentLog> implements
-		IWfCommentLogService, IWorkflowContextAware {
+public class WfCommentLogService extends AbstractDbBeanService<WfCommentLog>
+		implements IWfCommentLogService, IWorkflowContextAware {
 
 	@Override
 	public IDataQuery<WfCommentLog> queryLogs(final ID userId, final ELogType logType) {

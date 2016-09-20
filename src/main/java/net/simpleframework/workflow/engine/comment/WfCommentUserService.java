@@ -11,8 +11,8 @@ import net.simpleframework.workflow.engine.IWorkflowContextAware;
  *         https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class WfCommentUserService extends AbstractDbBeanService<WfCommentUser> implements
-		IWfCommentUserService, IWorkflowContextAware {
+public class WfCommentUserService extends AbstractDbBeanService<WfCommentUser>
+		implements IWfCommentUserService, IWorkflowContextAware {
 
 	@Override
 	public WfCommentUser getCommentUser(final ID userId, final Object content) {

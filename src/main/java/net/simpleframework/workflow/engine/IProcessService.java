@@ -22,9 +22,9 @@ import net.simpleframework.workflow.schema.ProcessNode;
  *         https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public interface IProcessService extends IWorkflowVariableAware<ProcessBean>,
-		IEventListenerAware<ProcessBean>, IWorkflowScriptAware<ProcessBean>,
-		IWorkflowService<ProcessBean> {
+public interface IProcessService
+		extends IWorkflowVariableAware<ProcessBean>, IEventListenerAware<ProcessBean>,
+		IWorkflowScriptAware<ProcessBean>, IWorkflowService<ProcessBean> {
 
 	ProcessDocument getProcessDocument(ProcessBean process);
 

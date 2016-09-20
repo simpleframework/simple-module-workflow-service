@@ -24,12 +24,11 @@ import net.simpleframework.workflow.engine.notice.WfNoticeBean.ENoticeStatus;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> implements
-		IWfNoticeService {
+public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean>
+		implements IWfNoticeService {
 	@Override
-	public WfNoticeBean addWfNotice(final String sentKey, final ProcessBean process,
-			final ID userId, final Date dsentDate, final String topic, final String smessage,
-			final int typeno) {
+	public WfNoticeBean addWfNotice(final String sentKey, final ProcessBean process, final ID userId,
+			final Date dsentDate, final String topic, final String smessage, final int typeno) {
 		return _addWfNotice(sentKey, process.getId(), null, userId, dsentDate, topic, smessage,
 				typeno);
 	}
@@ -37,8 +36,8 @@ public class WfNoticeService extends AbstractDbBeanService<WfNoticeBean> impleme
 	@Override
 	public WfNoticeBean addWfNotice(final String sentKey, final WorkitemBean workitem,
 			final Date dsentDate, final String topic, final String smessage, final int typeno) {
-		return _addWfNotice(sentKey, workitem.getProcessId(), workitem.getId(),
-				workitem.getUserId2(), dsentDate, topic, smessage, typeno);
+		return _addWfNotice(sentKey, workitem.getProcessId(), workitem.getId(), workitem.getUserId2(),
+				dsentDate, topic, smessage, typeno);
 	}
 
 	WfNoticeBean _addWfNotice(final String sentKey, final ID processId, final ID workitemId,

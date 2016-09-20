@@ -11,6 +11,6 @@ import net.simpleframework.workflow.engine.bean.ProcessAuthBean;
  *         https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class ProcessAuthService extends AbstractDbBeanService<ProcessAuthBean> implements
-		IProcessAuthService {
+public class ProcessAuthService extends AbstractDbBeanService<ProcessAuthBean>
+		implements IProcessAuthService {
 }

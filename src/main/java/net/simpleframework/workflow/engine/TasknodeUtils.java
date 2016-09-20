@@ -16,20 +16,20 @@ import net.simpleframework.workflow.schema.UserNode.Role;
 public abstract class TasknodeUtils {
 
 	public static boolean isSequential(final AbstractTaskNode taskNode) {
-		final AbstractParticipantType pt = taskNode instanceof UserNode ? ((UserNode) taskNode)
-				.getParticipantType() : null;
+		final AbstractParticipantType pt = taskNode instanceof UserNode
+				? ((UserNode) taskNode).getParticipantType() : null;
 		return pt instanceof Role && ((Role) pt).isSequential();
 	}
 
 	public static boolean isInstanceShared(final AbstractTaskNode taskNode) {
-		final AbstractParticipantType pt = taskNode instanceof UserNode ? ((UserNode) taskNode)
-				.getParticipantType() : null;
+		final AbstractParticipantType pt = taskNode instanceof UserNode
+				? ((UserNode) taskNode).getParticipantType() : null;
 		return pt instanceof Role ? ((Role) pt).isInstanceShared() : true;
 	}
 
 	public static int getResponseValue(final AbstractTaskNode taskNode, final int max) {
-		final AbstractParticipantType pt = taskNode instanceof UserNode ? ((UserNode) taskNode)
-				.getParticipantType() : null;
+		final AbstractParticipantType pt = taskNode instanceof UserNode
+				? ((UserNode) taskNode).getParticipantType() : null;
 		int rv = 0;
 		if (pt instanceof Role) {
 			final Role r = (Role) pt;

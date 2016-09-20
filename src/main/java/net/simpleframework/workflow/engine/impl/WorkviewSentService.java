@@ -13,8 +13,8 @@ import net.simpleframework.workflow.engine.bean.WorkviewSentBean;
  *         https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class WorkviewSentService extends AbstractDbBeanService<WorkviewSentBean> implements
-		IWorkviewSentService {
+public class WorkviewSentService extends AbstractDbBeanService<WorkviewSentBean>
+		implements IWorkviewSentService {
 
 	@Override
 	public IDataQuery<WorkviewSentBean> getWorkviewsSentList(final ID userId) {

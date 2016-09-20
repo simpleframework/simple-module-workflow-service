@@ -23,8 +23,8 @@ import net.simpleframework.workflow.engine.comment.WfCommentLog.ELogType;
  *         https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class WfCommentService extends AbstractCommentService<WfComment> implements
-		IWfCommentService, IWorkflowContextAware {
+public class WfCommentService extends AbstractCommentService<WfComment>
+		implements IWfCommentService, IWorkflowContextAware {
 
 	@Override
 	public WfComment getCurComment(final AbstractWorkitemBean workitem) {
@@ -107,7 +107,8 @@ public class WfCommentService extends AbstractCommentService<WfComment> implemen
 				super.onAfterUpdate(manager, columns, beans);
 				if (ArrayUtils.isEmpty(columns) || ArrayUtils.contains(columns, "ccomment", true)) {
 					for (final WfComment comment : beans) {
-						if (lService.getLog(comment.getUserId(), comment.getCcomment(), ELogType.history) == null) {
+						if (lService.getLog(comment.getUserId(), comment.getCcomment(),
+								ELogType.history) == null) {
 							lService.insertLog(comment, ELogType.history);
 						}
 					}

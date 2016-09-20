@@ -29,11 +29,11 @@ import net.simpleframework.workflow.schema.VariableNode;
  *         https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class VariableService extends AbstractDbBeanService<VariableBean> implements
-		IWorkflowContextAware {
+public class VariableService extends AbstractDbBeanService<VariableBean>
+		implements IWorkflowContextAware {
 
-	VariableBean createVariableBean(final AbstractWorkflowBean bean,
-			final VariableNode variableNode, final Object value) {
+	VariableBean createVariableBean(final AbstractWorkflowBean bean, final VariableNode variableNode,
+			final Object value) {
 		final VariableBean variable = new VariableBean();
 		if (bean instanceof ProcessBean) {
 			if (variableNode.isStatically()) {
@@ -145,11 +145,11 @@ public class VariableService extends AbstractDbBeanService<VariableBean> impleme
 		for (int i = 0; i < length; i++) {
 			VariableNode variableNode = null;
 			if (bean instanceof ProcessBean) {
-				variableNode = wfpService.getProcessNode((ProcessBean) bean).getVariableNodeByName(
-						names[i]);
+				variableNode = wfpService.getProcessNode((ProcessBean) bean)
+						.getVariableNodeByName(names[i]);
 			} else if (bean instanceof ActivityBean) {
-				variableNode = wfaService.getTaskNode((ActivityBean) bean).getVariableNodeByName(
-						names[i]);
+				variableNode = wfaService.getTaskNode((ActivityBean) bean)
+						.getVariableNodeByName(names[i]);
 			}
 			if (variableNode == null) {
 				continue;
@@ -179,8 +179,8 @@ public class VariableService extends AbstractDbBeanService<VariableBean> impleme
 					final IParamsValue paramsValue) throws Exception {
 				super.onBeforeDelete(manager, paramsValue);
 				for (final VariableBean var : coll(manager, paramsValue)) {
-					getEntityManager(VariableLogBean.class).delete(
-							new ExpressionValue("variableId=?", var.getId()));
+					getEntityManager(VariableLogBean.class)
+							.delete(new ExpressionValue("variableId=?", var.getId()));
 				}
 			}
 		});

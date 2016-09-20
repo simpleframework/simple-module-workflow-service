@@ -14,8 +14,8 @@ import net.simpleframework.ctx.hdl.AbstractScanHandler;
  * @author 陈侃(cknet@126.com, 13910090885) https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public abstract class AbstractWfNoticeTypeHandler extends AbstractScanHandler implements
-		IWfNoticeTypeHandler {
+public abstract class AbstractWfNoticeTypeHandler extends AbstractScanHandler
+		implements IWfNoticeTypeHandler {
 
 	static Map<Integer, IWfNoticeTypeHandler> regists = new HashMap<Integer, IWfNoticeTypeHandler>();
 

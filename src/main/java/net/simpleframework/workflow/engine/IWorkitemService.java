@@ -61,8 +61,8 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	IDataQuery<WorkitemBean> getWorklist(ID userId, List<ProcessModelBean> models,
 			EWorkitemStatus... status);
 
-	IDataQuery<WorkitemBean> getWorklist(ID userId, List<ProcessModelBean> models,
-			FilterItems items, EWorkitemStatus... status);
+	IDataQuery<WorkitemBean> getWorklist(ID userId, List<ProcessModelBean> models, FilterItems items,
+			EWorkitemStatus... status);
 
 	/**
 	 * 获取运行态的工作列表

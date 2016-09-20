@@ -16,7 +16,8 @@ import net.simpleframework.workflow.engine.EActivityStatus;
  *         https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-@EntityInterceptor(listenerTypes = { "net.simpleframework.module.log.EntityUpdateLogAdapter" }, columns = { "status" })
+@EntityInterceptor(listenerTypes = {
+		"net.simpleframework.module.log.EntityUpdateLogAdapter" }, columns = { "status" })
 public class ActivityBean extends AbstractWorkflowBean {
 
 	/* 流程实例id */

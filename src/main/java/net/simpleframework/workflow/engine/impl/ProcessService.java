@@ -60,7 +60,8 @@ import net.simpleframework.workflow.schema.VariableNode;
  *         https://github.com/simpleframework
  *         http://www.simpleframework.net
  */
-public class ProcessService extends AbstractWorkflowService<ProcessBean> implements IProcessService {
+public class ProcessService extends AbstractWorkflowService<ProcessBean>
+		implements IProcessService {
 
 	@Override
 	public ProcessModelBean getProcessModel(final ProcessBean process) {
@@ -76,8 +77,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 				new CacheV<ProcessDocument>() {
 					@Override
 					public ProcessDocument get() {
-						final ProcessLobBean lob = getEntityManager(ProcessLobBean.class).getBean(
-								process.getId());
+						final ProcessLobBean lob = getEntityManager(ProcessLobBean.class)
+								.getBean(process.getId());
 						return lob != null ? new ProcessDocument(lob.getProcessSchema()) : null;
 					}
 				});
@@ -130,7 +131,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		return process;
 	}
 
-	private void _createStartNode(final ProcessBean process, final List<TransitionNode> transitions) {
+	private void _createStartNode(final ProcessBean process,
+			final List<TransitionNode> transitions) {
 		// 创建开始任务
 		final StartNode startNode = getProcessNode(process).startNode();
 		final ActivityService wfaServiceImpl = (ActivityService) wfaService;
@@ -197,8 +199,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 				data.add(IProcessRemoteHandler.SUB_ACTIVITYID,
 						properties.getProperty(IProcessRemoteHandler.SUB_ACTIVITYID));
 
-				for (final String mapping : StringUtils.split(properties
-						.getProperty(IProcessRemoteHandler.VAR_MAPPINGS))) {
+				for (final String mapping : StringUtils
+						.split(properties.getProperty(IProcessRemoteHandler.VAR_MAPPINGS))) {
 					data.add(mapping, wfpService.getVariable(process, mapping));
 				}
 
@@ -277,8 +279,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 		if (domainId == null) {
 			return DataQueryUtils.nullQuery();
 		}
-		return query(toProcessListSQLValue("domainid=?", new Object[] { domainId }, processModel,
-				status));
+		return query(
+				toProcessListSQLValue("domainid=?", new Object[] { domainId }, processModel, status));
 	}
 
 	private SQLValue toProcessListSQLValue(final String expr, final Object[] params,
@@ -403,8 +405,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 
 	@Override
 	public void doUpdateTimeoutDate(final ProcessBean process, final int hours) {
-		doUpdateTimeoutDate(process, getWorkCalendarListener(process)
-				.getRealDate(process, hours * 60));
+		doUpdateTimeoutDate(process,
+				getWorkCalendarListener(process).getRealDate(process, hours * 60));
 	}
 
 	ProcessBean _create(final ProcessModelBean processModel, final Participant participant,
@@ -436,9 +438,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean> impleme
 	}
 
 	void _doProcessTimeout() {
-		final IDataQuery<ProcessBean> dq = query(
-				"timeoutdate is not null and (status=? or status=?)", EProcessStatus.running,
-				EProcessStatus.timeout).setFetchSize(0);
+		final IDataQuery<ProcessBean> dq = query("timeoutdate is not null and (status=? or status=?)",
+				EProcessStatus.running, EProcessStatus.timeout).setFetchSize(0);
 		ProcessBean process;
 		final Date n = new Date();
 		while ((process = dq.next()) != null) {
