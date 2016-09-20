@@ -217,7 +217,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 
 	@Override
 	public IDataQuery<ProcessBean> getProcessList(final ID domainId,
-			final ProcessModelBean processModel, final EProcessStatus... status) {
+			final ProcessModelBean processModel, final String topic, final EProcessStatus... status) {
 		final StringBuilder sql = new StringBuilder("1=1");
 		final ArrayList<Object> params = new ArrayList<Object>();
 		if (domainId != null) {
@@ -228,6 +228,9 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 			sql.append(" and modelId=?");
 			params.add(processModel.getId());
 		}
+		if (StringUtils.hasText(topic)) {
+			sql.append(" and title like '%").append(topic).append("%'");
+		}
 		buildStatusSQL(sql, params, null, status);
 		sql.append(" order by createdate desc");
 		return query(sql, params.toArray());
@@ -235,7 +238,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 
 	@Override
 	public IDataQuery<ProcessBean> getProcessWlist(final ID userId,
-			final ProcessModelBean processModel, final EProcessStatus... status) {
+			final ProcessModelBean processModel, final String topic, final EProcessStatus... status) {
 		if (userId == null) {
 			return DataQueryUtils.nullQuery();
 		}
@@ -250,6 +253,9 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 			sql.append(" and p.modelId=?");
 			params.add(processModel.getId());
 		}
+		if (StringUtils.hasText(topic)) {
+			sql.append(" and p.title like '%").append(topic).append("%'");
+		}
 		buildStatusSQL(sql, params, "p", status);
 		sql.append(" order by p.createdate desc");
 		return query(new SQLValue(sql, params.toArray()));
@@ -257,7 +263,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 
 	@Override
 	public IDataQuery<ProcessBean> getProcessWlistInDept(final ID[] deptIds,
-			final ProcessModelBean processModel, final EProcessStatus... status) {
+			final ProcessModelBean processModel, final String topic, final EProcessStatus... status) {
 		if (deptIds == null || deptIds.length == 0) {
 			return DataQueryUtils.nullQuery();
 		}
@@ -270,21 +276,21 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 			sb.append("deptid=?");
 		}
 		sb.append(")");
-		return query(toProcessListSQLValue(sb.toString(), deptIds, processModel, status));
+		return query(toProcessListSQLValue(sb.toString(), deptIds, processModel, topic, status));
 	}
 
 	@Override
 	public IDataQuery<ProcessBean> getProcessWlistInDomain(final ID domainId,
-			final ProcessModelBean processModel, final EProcessStatus... status) {
+			final ProcessModelBean processModel, final String topic, final EProcessStatus... status) {
 		if (domainId == null) {
 			return DataQueryUtils.nullQuery();
 		}
-		return query(
-				toProcessListSQLValue("domainid=?", new Object[] { domainId }, processModel, status));
+		return query(toProcessListSQLValue("domainid=?", new Object[] { domainId }, processModel,
+				topic, status));
 	}
 
 	private SQLValue toProcessListSQLValue(final String expr, final Object[] params,
-			final ProcessModelBean processModel, final EProcessStatus... status) {
+			final ProcessModelBean processModel, final String topic, final EProcessStatus... status) {
 		final StringBuilder sql = new StringBuilder();
 		final List<Object> _params = ArrayUtils.toParams(params);
 		sql.append("select p.*, w.c from (");
@@ -295,6 +301,9 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 		if (processModel != null) {
 			sql.append(" and p.modelId=?");
 			_params.add(processModel.getId());
+		}
+		if (StringUtils.hasText(topic)) {
+			sql.append(" and p.title like '%").append(topic).append("%'");
 		}
 		buildStatusSQL(sql, _params, "p", status);
 		sql.append(" order by p.createdate desc");
@@ -499,13 +508,13 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 			private void updateProcessCount(final ProcessBean process) {
 				// 更新流程实例计数
 				final ProcessModelBean processModel = getProcessModel(process);
-				processModel.setProcessCount(getProcessList(null, processModel).getCount());
+				processModel.setProcessCount(getProcessList(null, processModel, "").getCount());
 				wfpmService.update(new String[] { "processCount" }, processModel);
 
 				final ID domainId = process.getDomainId();
 				final ProcessModelDomainR r = wfpmdService.getProcessModelDomainR(domainId,
 						processModel);
-				r.setProcessCount(getProcessList(domainId, processModel).getCount());
+				r.setProcessCount(getProcessList(domainId, processModel, "").getCount());
 				wfpmdService.update(new String[] { "processCount" }, r);
 			}
 
