@@ -232,7 +232,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 		if (StringUtils.hasText(topic)) {
 			sql.append(" and title like '%").append(SqlUtils.sqlEscape(topic)).append("%'");
 		}
-		buildStatusSQL(sql, params, null, status);
+		buildStatusSQL(sql, params, status);
 		sql.append(" order by createdate desc");
 		return query(sql, params.toArray());
 	}

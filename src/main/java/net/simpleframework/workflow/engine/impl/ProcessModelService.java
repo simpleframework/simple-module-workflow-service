@@ -123,7 +123,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 	public IDataQuery<ProcessModelBean> getModelList(final EProcessModelStatus... status) {
 		final StringBuilder sql = new StringBuilder("1=1");
 		final ArrayList<Object> params = new ArrayList<Object>();
-		buildStatusSQL(sql, params, null, status);
+		buildStatusSQL(sql, params, status);
 		return query(sql.append(DEFAULT_ORDERBY).toString(), params.toArray());
 	}
 

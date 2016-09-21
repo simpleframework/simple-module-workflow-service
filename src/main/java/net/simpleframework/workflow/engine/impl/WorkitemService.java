@@ -496,7 +496,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean>
 			sql.append(" and userid2=?");
 			params.add(userId);
 		}
-		buildStatusSQL(sql, params, null, status);
+		buildStatusSQL(sql, params, status);
 		if (items != null && items.size() > 0) {
 			final ExpressionValue eVal = toExpressionValue(items);
 			sql.append(" and (").append(eVal.getExpression()).append(")");
