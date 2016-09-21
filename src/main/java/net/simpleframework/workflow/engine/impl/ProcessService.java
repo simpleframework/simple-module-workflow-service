@@ -14,6 +14,7 @@ import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.db.common.SQLValue;
+import net.simpleframework.ado.db.common.SqlUtils;
 import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.ado.trans.TransactionVoidCallback;
@@ -229,7 +230,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 			params.add(processModel.getId());
 		}
 		if (StringUtils.hasText(topic)) {
-			sql.append(" and title like '%").append(topic).append("%'");
+			sql.append(" and title like '%").append(SqlUtils.sqlEscape(topic)).append("%'");
 		}
 		buildStatusSQL(sql, params, null, status);
 		sql.append(" order by createdate desc");
@@ -254,7 +255,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 			params.add(processModel.getId());
 		}
 		if (StringUtils.hasText(topic)) {
-			sql.append(" and p.title like '%").append(topic).append("%'");
+			sql.append(" and p.title like '%").append(SqlUtils.sqlEscape(topic)).append("%'");
 		}
 		buildStatusSQL(sql, params, "p", status);
 		sql.append(" order by p.createdate desc");
@@ -303,7 +304,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 			_params.add(processModel.getId());
 		}
 		if (StringUtils.hasText(topic)) {
-			sql.append(" and p.title like '%").append(topic).append("%'");
+			sql.append(" and p.title like '%").append(SqlUtils.sqlEscape(topic)).append("%'");
 		}
 		buildStatusSQL(sql, _params, "p", status);
 		sql.append(" order by p.createdate desc");

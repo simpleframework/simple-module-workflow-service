@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import net.simpleframework.ado.FilterItems;
+import net.simpleframework.ado.db.DbDataQuery;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.workflow.engine.bean.ActivityBean;
@@ -81,6 +82,8 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	 * @return
 	 */
 	IDataQuery<WorkitemBean> getRunningWorklist_Unread(ID userId, List<ProcessModelBean> models);
+
+	void addQueryFilters(DbDataQuery<WorkitemBean> dq, String topic, String pno);
 
 	/**
 	 * 完成当前的工作项

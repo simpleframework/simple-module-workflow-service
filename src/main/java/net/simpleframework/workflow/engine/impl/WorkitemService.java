@@ -9,9 +9,11 @@ import java.util.Map;
 
 import net.simpleframework.ado.FilterItems;
 import net.simpleframework.ado.IParamsValue;
+import net.simpleframework.ado.db.DbDataQuery;
 import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.db.common.ExpressionValue;
 import net.simpleframework.ado.db.common.SQLValue;
+import net.simpleframework.ado.db.common.SqlUtils;
 import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.BeanUtils;
@@ -506,6 +508,22 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean>
 			sql.append(getDefaultOrderby(null));
 		}
 		return query(sql, params.toArray());
+	}
+
+	@Override
+	public void addQueryFilters(DbDataQuery<WorkitemBean> dq, String topic, String pno) {
+		final SQLValue sv = dq.getSqlValue();
+		final StringBuilder sb = new StringBuilder();
+		sb.append("select t.* from (").append(sv.getSql()).append(") t left join ")
+				.append(wfpService.getTablename(ProcessBean.class))
+				.append(" p on t.processid=p.id where 1=1");
+		if (StringUtils.hasText(topic)) {
+			sb.append(" and p.title like '%").append(SqlUtils.sqlEscape(topic)).append("%'");
+		}
+		if (StringUtils.hasText(pno)) {
+			sb.append(" and p.pno like '%").append(SqlUtils.sqlEscape(pno)).append("%'");
+		}
+		sv.setSql(sb.toString());
 	}
 
 	@Override
