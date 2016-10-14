@@ -511,7 +511,8 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean>
 	}
 
 	@Override
-	public void addQueryFilters(DbDataQuery<WorkitemBean> dq, String topic, String pno) {
+	public void addQueryFilters(final DbDataQuery<WorkitemBean> dq, final String topic,
+			final String pno) {
 		final SQLValue sv = dq.getSqlValue();
 		final StringBuilder sb = new StringBuilder();
 		sb.append("select t.* from (").append(sv.getSql()).append(") t left join ")
