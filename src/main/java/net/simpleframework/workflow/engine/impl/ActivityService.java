@@ -651,7 +651,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean>
 		if (fallback2) {
 			preActivity = getPreActivity(activity, taskname);
 			while (preActivity != null && preActivity.getStatus() != EActivityStatus.complete) {
-				preActivity = getPreActivity(preActivity, taskname);
+				preActivity = getPreActivity(getPreActivity(preActivity), taskname);
 			}
 		} else {
 			preActivity = getPreActivity(activity);
