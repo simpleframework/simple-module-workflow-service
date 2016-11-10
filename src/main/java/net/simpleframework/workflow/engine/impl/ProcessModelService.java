@@ -113,7 +113,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 			lob.setProcessSchema(document.toString().toCharArray());
 			getEntityManager(ProcessModelLobBean.class).update(lob);
 		} finally {
-			processModel.removeAttr("processDocument");
+			processModel.removeAttr(ATTR_PROCESS_DOCUMENT);
 		}
 	}
 
