@@ -3,6 +3,7 @@ package net.simpleframework.workflow.engine;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.IDbBeanService;
+import net.simpleframework.workflow.engine.bean.ProcessBean;
 import net.simpleframework.workflow.engine.bean.WorkviewSentBean;
 
 /**
@@ -14,6 +15,8 @@ import net.simpleframework.workflow.engine.bean.WorkviewSentBean;
  */
 public interface IWorkviewSentService
 		extends IDbBeanService<WorkviewSentBean>, IWorkflowContextAware {
+
+	IDataQuery<WorkviewSentBean> getWorkviewsSentList(ProcessBean process);
 
 	IDataQuery<WorkviewSentBean> getWorkviewsSentList(ID userId);
 }

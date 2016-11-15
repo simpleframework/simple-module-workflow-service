@@ -1,9 +1,11 @@
 package net.simpleframework.workflow.engine.impl;
 
+import net.simpleframework.ado.query.DataQueryUtils;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
 import net.simpleframework.workflow.engine.IWorkviewSentService;
+import net.simpleframework.workflow.engine.bean.ProcessBean;
 import net.simpleframework.workflow.engine.bean.WorkviewSentBean;
 
 /**
@@ -15,6 +17,14 @@ import net.simpleframework.workflow.engine.bean.WorkviewSentBean;
  */
 public class WorkviewSentService extends AbstractDbBeanService<WorkviewSentBean>
 		implements IWorkviewSentService {
+
+	@Override
+	public IDataQuery<WorkviewSentBean> getWorkviewsSentList(final ProcessBean process) {
+		if (process == null) {
+			return DataQueryUtils.nullQuery();
+		}
+		return query("processid=? order by createdate desc", process.getId());
+	}
 
 	@Override
 	public IDataQuery<WorkviewSentBean> getWorkviewsSentList(final ID userId) {
