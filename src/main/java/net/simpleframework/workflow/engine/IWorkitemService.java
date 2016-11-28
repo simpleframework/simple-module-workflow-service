@@ -123,7 +123,7 @@ public interface IWorkitemService extends IWorkflowService<WorkitemBean>,
 	 * @param workitem
 	 * @param lastUpdate
 	 */
-	void doLastUpdate(WorkitemBean workitem, Date lastUpdate);
+	void doLastUpdate(WorkitemBean workitem, Date lastUpdate, ID lastUser);
 
 	/**
 	 * 设置工作项委托

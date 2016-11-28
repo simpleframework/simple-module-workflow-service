@@ -32,7 +32,7 @@ public class WfCommentLogService extends AbstractDbBeanService<WfCommentLog>
 		if (logType != null) {
 			items.append(new FilterItem("logType", logType));
 		}
-		return queryByParams(items, new ColumnData("createDate", EOrder.desc));
+		return queryByParams(items, new ColumnData("oorder", EOrder.desc));
 	}
 
 	@Override

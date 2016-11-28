@@ -38,6 +38,9 @@ public class WorkitemBean extends AbstractWorkitemBean {
 
 	/* 最后一次更新时间 */
 	private Date lastUpdate;
+	/* 最后一次更新用户 */
+	private ID lastUser;
+
 	/* 实际完成时间 */
 	private Date completeDate;
 
@@ -111,6 +114,14 @@ public class WorkitemBean extends AbstractWorkitemBean {
 
 	public void setLastUpdate(final Date lastUpdate) {
 		this.lastUpdate = lastUpdate;
+	}
+
+	public ID getLastUser() {
+		return lastUser;
+	}
+
+	public void setLastUser(ID lastUser) {
+		this.lastUser = lastUser;
 	}
 
 	public Date getCompleteDate() {

@@ -137,6 +137,7 @@
         deptid2 char(32),
         createdate timestamp not null,
         lastupdate timestamp not null,
+        lastuser char(32),
         completedate timestamp,
         readmark bit not null,
         readdate timestamp,

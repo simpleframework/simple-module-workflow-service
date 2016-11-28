@@ -54,7 +54,7 @@ public class WfCommentLog extends AbstractUserAwareBean implements IOrderBeanAwa
 	}
 
 	@Override
-	public void setOorder(int oorder) {
+	public void setOorder(final int oorder) {
 		this.oorder = oorder;
 	}
 
