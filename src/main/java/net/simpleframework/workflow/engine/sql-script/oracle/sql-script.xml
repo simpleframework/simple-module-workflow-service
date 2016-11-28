@@ -274,6 +274,7 @@
         userid char(32) not null,
         logtype number(4) not null,
         ccomment varchar2(2000 char) not null,
+        oorder number(11) not null,
         primary key(id)
       );
     ]]>

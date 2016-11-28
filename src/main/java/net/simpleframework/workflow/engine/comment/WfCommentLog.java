@@ -1,6 +1,7 @@
 package net.simpleframework.workflow.engine.comment;
 
 import net.simpleframework.ado.bean.AbstractUserAwareBean;
+import net.simpleframework.ado.bean.IOrderBeanAware;
 import net.simpleframework.ado.db.common.EntityInterceptor;
 import net.simpleframework.common.ID;
 
@@ -12,13 +13,16 @@ import net.simpleframework.common.ID;
  *         http://www.simpleframework.net
  */
 @EntityInterceptor(listenerTypes = { "net.simpleframework.module.log.EntityDeleteLogAdapter" })
-public class WfCommentLog extends AbstractUserAwareBean {
+public class WfCommentLog extends AbstractUserAwareBean implements IOrderBeanAware {
 	/* 意见id */
 	private ID commentId;
 	/* 内容 */
 	private String ccomment;
 	/* 类型 */
 	private ELogType logType;
+
+	/* 排序字段 */
+	private int oorder;
 
 	public ID getCommentId() {
 		return commentId;
@@ -42,6 +46,16 @@ public class WfCommentLog extends AbstractUserAwareBean {
 
 	public void setLogType(final ELogType logType) {
 		this.logType = logType;
+	}
+
+	@Override
+	public int getOorder() {
+		return oorder;
+	}
+
+	@Override
+	public void setOorder(int oorder) {
+		this.oorder = oorder;
 	}
 
 	public static enum ELogType {
