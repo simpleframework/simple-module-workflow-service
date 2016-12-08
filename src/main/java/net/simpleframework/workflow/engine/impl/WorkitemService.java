@@ -375,7 +375,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean>
 	}
 
 	@Override
-	public void doLastUpdate(final WorkitemBean workitem, final Date lastUpdate, ID lastUser) {
+	public void doLastUpdate(final WorkitemBean workitem, final Date lastUpdate, final ID lastUser) {
 		workitem.setLastUpdate(lastUpdate);
 		workitem.setLastUser(lastUser);
 		update(new String[] { "lastUpdate", "lastuser" }, workitem);

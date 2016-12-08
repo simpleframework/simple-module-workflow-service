@@ -120,7 +120,7 @@ public class WorkitemBean extends AbstractWorkitemBean {
 		return lastUser;
 	}
 
-	public void setLastUser(ID lastUser) {
+	public void setLastUser(final ID lastUser) {
 		this.lastUser = lastUser;
 	}
 
