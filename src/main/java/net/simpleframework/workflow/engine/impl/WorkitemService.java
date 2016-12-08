@@ -162,7 +162,6 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean>
 	public void doRetake(final WorkitemBean workitem) {
 		_assert(workitem, EWorkitemStatus.complete);
 		final ActivityBean activity = getActivity(workitem);
-
 		final ActivityService wfaServiceImpl = (ActivityService) wfaService;
 		final ProcessBean process = wfaServiceImpl.getProcessBean(activity);
 		_assert(process, EProcessStatus.running);
@@ -176,9 +175,12 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean>
 			for (final ActivityBean nextActivity : wfaServiceImpl.getNextActivities(activity)) {
 				final AbstractTaskNode tasknode = wfaServiceImpl.getTaskNode(nextActivity);
 				if (tasknode instanceof UserNode) {
-					// nextActivity
-					// 如果用户环节，则不能出现已读和完成
-					assertRetakeWorkitems(nextActivity);
+					// 仅判断完成后的后续环节
+					if (nextActivity.getCreateDate().after(activity.getCompleteDate())) {
+						// nextActivity
+						// 如果用户环节，则不能出现已读和完成
+						assertRetakeWorkitems(nextActivity);
+					}
 					// 放弃
 					wfaServiceImpl._abort(nextActivity);
 				} else if (tasknode instanceof MergeNode) {
