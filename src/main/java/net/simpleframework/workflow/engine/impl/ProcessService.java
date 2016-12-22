@@ -29,6 +29,7 @@ import net.simpleframework.ctx.task.ExecutorRunnableEx;
 import net.simpleframework.ctx.task.ITaskExecutor;
 import net.simpleframework.workflow.WorkflowException;
 import net.simpleframework.workflow.engine.ActivityComplete;
+import net.simpleframework.workflow.engine.EActivityStatus;
 import net.simpleframework.workflow.engine.EProcessAbortPolicy;
 import net.simpleframework.workflow.engine.EProcessModelStatus;
 import net.simpleframework.workflow.engine.EProcessStatus;
@@ -48,6 +49,7 @@ import net.simpleframework.workflow.engine.event.IProcessListener;
 import net.simpleframework.workflow.engine.event.IWorkflowListener;
 import net.simpleframework.workflow.engine.participant.Participant;
 import net.simpleframework.workflow.engine.remote.IProcessRemoteHandler;
+import net.simpleframework.workflow.schema.AbstractTaskNode;
 import net.simpleframework.workflow.schema.ProcessDocument;
 import net.simpleframework.workflow.schema.ProcessNode;
 import net.simpleframework.workflow.schema.StartNode;
@@ -439,6 +441,21 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 	}
 
 	@Override
+	public void doRunning(final ProcessBean process) {
+		final EProcessStatus status = process.getStatus();
+		if (status != EProcessStatus.complete) {
+			throw WorkflowStatusException.of(process, status, EProcessStatus.complete);
+		}
+		final ActivityBean end = wfaService.query("processId=? and tasknodeType=? and status=?",
+				process.getId(), AbstractTaskNode.TT_END, EActivityStatus.complete).next();
+		wfaService.doFallback(end);
+
+		process.setAttr("_status", Boolean.TRUE);
+		process.setStatus(EProcessStatus.running);
+		update(new String[] { "status" }, process);
+	}
+
+	@Override
 	public IWorkflowView getWorkflowView(final ProcessBean process) {
 		if (process == null) {
 			return null;
@@ -560,7 +577,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 						// 状态转换事件
 						final EProcessStatus _status = Convert.toEnum(EProcessStatus.class,
 								queryFor("status", "id=?", process.getId()));
-						if (_isFinalStatus(_status)) {
+						if (!Convert.toBool(process.getAttr("_status")) && _isFinalStatus(_status)) {
 							throw WorkflowException.of($m("ProcessService.4"));
 						}
 

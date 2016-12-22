@@ -638,7 +638,9 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean>
 	@Override
 	public void doFallback(final ActivityBean activity, final String taskname,
 			final boolean isNextActivity) {
-		_assert(activity, EActivityStatus.running);
+		if (activity.getTasknodeType() != AbstractTaskNode.TT_END) {
+			_assert(activity, EActivityStatus.running);
+		}
 		// 验证是否存在已完成的工作
 		if (wfwService.getWorkitems(activity, EWorkitemStatus.complete).size() > 0) {
 			throw WorkflowException.of($m("ActivityService.0"));

@@ -185,4 +185,11 @@ public interface IProcessService
 	 * @return
 	 */
 	IWorkCalendarListener getWorkCalendarListener(ProcessBean process);
+
+	/**
+	 * 恢复到运行状态
+	 * 
+	 * @param process
+	 */
+	void doRunning(ProcessBean process);
 }
