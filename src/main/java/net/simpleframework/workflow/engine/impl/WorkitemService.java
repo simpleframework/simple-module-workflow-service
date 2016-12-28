@@ -389,10 +389,10 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean>
 		}
 		_assert(workitem, EWorkitemStatus.running, EWorkitemStatus.delegate);
 
-		if (!workitem.isReadMark()) {
-			// 设置已读
-			doReadMark(workitem);
-		}
+		// if (!workitem.isReadMark()) {
+		// // 设置已读
+		// doReadMark(workitem);
+		// }
 
 		final DelegationService wfdServiceImpl = (DelegationService) wfdService;
 		if (workitem.getStatus() == EWorkitemStatus.delegate) {
