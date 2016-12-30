@@ -220,8 +220,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 
 	@Override
 	public IDataQuery<ProcessBean> getProcessList(final ID domainId,
-			final ProcessModelBean[] processModels, final String topic,
-			final EProcessStatus... status) {
+			ProcessModelBean[] processModels, final String topic, final EProcessStatus... status) {
 		final StringBuilder sql = new StringBuilder("1=1");
 		final ArrayList<Object> params = new ArrayList<Object>();
 		if (domainId != null) {
@@ -229,6 +228,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 			params.add(domainId);
 		}
 		if (processModels != null) {
+			processModels = (ProcessModelBean[]) ArrayUtils.removeDuplicatesAndNulls(processModels);
 			if (processModels.length == 1) {
 				sql.append(" and modelId=?");
 				params.add(processModels[0].getId());
@@ -254,9 +254,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 	}
 
 	@Override
-	public IDataQuery<ProcessBean> getProcessWlist(final ID userId,
-			final ProcessModelBean[] processModels, final String topic,
-			final EProcessStatus... status) {
+	public IDataQuery<ProcessBean> getProcessWlist(final ID userId, ProcessModelBean[] processModels,
+			final String topic, final EProcessStatus... status) {
 		if (userId == null) {
 			return DataQueryUtils.nullQuery();
 		}
@@ -268,6 +267,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 		sql.append(") w left join ").append(getTablename(ProcessBean.class));
 		sql.append(" p on p.id=w.processid where 1=1");
 		if (processModels != null) {
+			processModels = (ProcessModelBean[]) ArrayUtils.removeDuplicatesAndNulls(processModels);
 			if (processModels.length == 1) {
 				sql.append(" and p.modelId=?");
 				params.add(processModels[0].getId());
@@ -323,8 +323,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 	}
 
 	private SQLValue toProcessListSQLValue(final String expr, final Object[] params,
-			final ProcessModelBean[] processModels, final String topic,
-			final EProcessStatus... status) {
+			ProcessModelBean[] processModels, final String topic, final EProcessStatus... status) {
 		final StringBuilder sql = new StringBuilder();
 		final List<Object> _params = ArrayUtils.toParams(params);
 		sql.append("select p.*, w.c from (");
@@ -333,6 +332,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 		sql.append(") w left join ").append(getTablename(ProcessBean.class));
 		sql.append(" p on p.id=w.processid where 1=1");
 		if (processModels != null) {
+			processModels = (ProcessModelBean[]) ArrayUtils.removeDuplicatesAndNulls(processModels);
 			if (processModels.length == 1) {
 				sql.append(" and p.modelId=?");
 				_params.add(processModels[0].getId());
