@@ -73,8 +73,8 @@ public interface IProcessService
 	 * @param status
 	 * @return
 	 */
-	IDataQuery<ProcessBean> getProcessList(ID domainId, ProcessModelBean processModel, String topic,
-			EProcessStatus... status);
+	IDataQuery<ProcessBean> getProcessList(ID domainId, ProcessModelBean[] processModel,
+			String topic, EProcessStatus... status);
 
 	/**
 	 * 获取经办的流程实例
@@ -85,7 +85,7 @@ public interface IProcessService
 	 * @param status
 	 * @return
 	 */
-	IDataQuery<ProcessBean> getProcessWlist(ID userId, ProcessModelBean processModel, String topic,
+	IDataQuery<ProcessBean> getProcessWlist(ID userId, ProcessModelBean[] processModel, String topic,
 			EProcessStatus... status);
 
 	/**
@@ -97,7 +97,7 @@ public interface IProcessService
 	 * @param status
 	 * @return
 	 */
-	IDataQuery<ProcessBean> getProcessWlistInDept(ID[] deptIds, ProcessModelBean processModel,
+	IDataQuery<ProcessBean> getProcessWlistInDept(ID[] deptIds, ProcessModelBean[] processModel,
 			String topic, EProcessStatus... status);
 
 	/**
@@ -109,7 +109,7 @@ public interface IProcessService
 	 * @param status
 	 * @return
 	 */
-	IDataQuery<ProcessBean> getProcessWlistInDomain(ID domainId, ProcessModelBean processModel,
+	IDataQuery<ProcessBean> getProcessWlistInDomain(ID domainId, ProcessModelBean[] processModel,
 			String topic, EProcessStatus... status);
 
 	/**

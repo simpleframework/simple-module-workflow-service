@@ -620,6 +620,10 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean>
 					final IParamsValue paramsValue) throws Exception {
 				super.onBeforeDelete(manager, paramsValue);
 				for (final WorkitemBean workitem : coll(manager, paramsValue)) {
+					if (!workitem.isReadMark()) {
+						doReadMark(workitem);
+					}
+
 					// 放弃并删除
 					final DelegationBean delegation = wfdService.queryRunningDelegation(workitem);
 					if (delegation != null) {
