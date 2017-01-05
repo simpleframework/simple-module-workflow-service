@@ -812,8 +812,10 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean>
 					break;
 				}
 				// 优先查找合并节点
-				for (final String activityId : _getMergePreActivities(preActivity)) {
-					final ActivityBean preActivity2 = getPreActivity(getBean(activityId), taskname);
+				List<String> list = _getMergePreActivities(preActivity);
+				for (int i = list.size() - 1; i >= 0; i--) {
+					// 先从最新的开始查找
+					final ActivityBean preActivity2 = getPreActivity(getBean(list.get(i)), taskname);
 					if (preActivity2 != null) {
 						return preActivity2;
 					}
