@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
+import net.simpleframework.ado.FilterItems;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
 import net.simpleframework.common.coll.KVMap;
@@ -71,10 +72,11 @@ public interface IProcessService
 	 * @param processModel
 	 * @param topic
 	 * @param status
+	 * @param pitems
 	 * @return
 	 */
 	IDataQuery<ProcessBean> getProcessList(ID domainId, ProcessModelBean[] processModel,
-			String topic, EProcessStatus... status);
+			String topic, EProcessStatus[] status, FilterItems pitems);
 
 	/**
 	 * 获取经办的流程实例
@@ -83,10 +85,11 @@ public interface IProcessService
 	 * @param processModel
 	 * @param topic
 	 * @param status
+	 * @param pitems
 	 * @return
 	 */
 	IDataQuery<ProcessBean> getProcessWlist(ID userId, ProcessModelBean[] processModel, String topic,
-			EProcessStatus... status);
+			EProcessStatus[] status, FilterItems pitems);
 
 	/**
 	 * 获取指定部门下经办的流程实例
@@ -95,10 +98,11 @@ public interface IProcessService
 	 * @param processModel
 	 * @param topic
 	 * @param status
+	 * @param pitems
 	 * @return
 	 */
 	IDataQuery<ProcessBean> getProcessWlistInDept(ID[] deptIds, ProcessModelBean[] processModel,
-			String topic, EProcessStatus... status);
+			String topic, EProcessStatus[] status, FilterItems pitems);
 
 	/**
 	 * 获取某一域下经办的流程实例
@@ -107,10 +111,11 @@ public interface IProcessService
 	 * @param processModel
 	 * @param topic
 	 * @param status
+	 * @param pitems
 	 * @return
 	 */
 	IDataQuery<ProcessBean> getProcessWlistInDomain(ID domainId, ProcessModelBean[] processModel,
-			String topic, EProcessStatus... status);
+			String topic, EProcessStatus[] status, FilterItems pitems);
 
 	/**
 	 * 挂起流程

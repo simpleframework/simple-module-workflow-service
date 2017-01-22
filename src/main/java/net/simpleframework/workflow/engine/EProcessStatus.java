@@ -39,5 +39,5 @@ public enum EProcessStatus {
 		public String toString() {
 			return $m("EProcessStatus.abort");
 		}
-	}
+	};
 }

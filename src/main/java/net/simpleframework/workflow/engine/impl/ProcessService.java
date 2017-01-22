@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import net.simpleframework.ado.FilterItem;
+import net.simpleframework.ado.FilterItems;
 import net.simpleframework.ado.IParamsValue;
 import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.db.common.ExpressionValue;
@@ -220,7 +222,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 
 	@Override
 	public IDataQuery<ProcessBean> getProcessList(final ID domainId,
-			ProcessModelBean[] processModels, final String topic, final EProcessStatus... status) {
+			ProcessModelBean[] processModels, final String topic, final EProcessStatus[] status,
+			final FilterItems pitems) {
 		final StringBuilder sql = new StringBuilder("1=1");
 		final ArrayList<Object> params = new ArrayList<Object>();
 		if (domainId != null) {
@@ -249,13 +252,20 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 			sql.append(" and title like '%").append(SqlUtils.sqlEscape(topic)).append("%'");
 		}
 		buildStatusSQL(sql, params, status);
+		if (pitems != null && pitems.size() > 0) {
+			final ExpressionValue ev = toExpressionValue(pitems);
+			sql.append(" and (").append(ev.getExpression()).append(")");
+			for (final Object o : ev.getValues()) {
+				params.add(o);
+			}
+		}
 		sql.append(" order by createdate desc");
 		return query(sql, params.toArray());
 	}
 
 	@Override
 	public IDataQuery<ProcessBean> getProcessWlist(final ID userId, ProcessModelBean[] processModels,
-			final String topic, final EProcessStatus... status) {
+			final String topic, final EProcessStatus[] status, final FilterItems pitems) {
 		if (userId == null) {
 			return DataQueryUtils.nullQuery();
 		}
@@ -288,14 +298,27 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 			sql.append(" and p.title like '%").append(SqlUtils.sqlEscape(topic)).append("%'");
 		}
 		buildStatusSQL(sql, params, "p", status);
+		if (pitems != null && pitems.size() > 0) {
+			for (final FilterItem fi : pitems) {
+				final String col = fi.getColumn();
+				if (!col.contains(".")) {
+					fi.setColumn("p." + col);
+				}
+			}
+			final ExpressionValue ev = toExpressionValue(pitems);
+			sql.append(" and (").append(ev.getExpression()).append(")");
+			for (final Object o : ev.getValues()) {
+				params.add(o);
+			}
+		}
 		sql.append(" order by p.createdate desc");
 		return query(new SQLValue(sql, params.toArray()));
 	}
 
 	@Override
 	public IDataQuery<ProcessBean> getProcessWlistInDept(final ID[] deptIds,
-			final ProcessModelBean[] processModel, final String topic,
-			final EProcessStatus... status) {
+			final ProcessModelBean[] processModel, final String topic, final EProcessStatus[] status,
+			final FilterItems pitems) {
 		if (deptIds == null || deptIds.length == 0) {
 			return DataQueryUtils.nullQuery();
 		}
@@ -308,22 +331,24 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 			sb.append("deptid=?");
 		}
 		sb.append(")");
-		return query(toProcessListSQLValue(sb.toString(), deptIds, processModel, topic, status));
+		return query(
+				toProcessListSQLValue(sb.toString(), deptIds, processModel, topic, status, pitems));
 	}
 
 	@Override
 	public IDataQuery<ProcessBean> getProcessWlistInDomain(final ID domainId,
-			final ProcessModelBean[] processModel, final String topic,
-			final EProcessStatus... status) {
+			final ProcessModelBean[] processModel, final String topic, final EProcessStatus[] status,
+			final FilterItems pitems) {
 		if (domainId == null) {
 			return DataQueryUtils.nullQuery();
 		}
 		return query(toProcessListSQLValue("domainid=?", new Object[] { domainId }, processModel,
-				topic, status));
+				topic, status, pitems));
 	}
 
 	private SQLValue toProcessListSQLValue(final String expr, final Object[] params,
-			ProcessModelBean[] processModels, final String topic, final EProcessStatus... status) {
+			ProcessModelBean[] processModels, final String topic, final EProcessStatus[] status,
+			final FilterItems pitems) {
 		final StringBuilder sql = new StringBuilder();
 		final List<Object> _params = ArrayUtils.toParams(params);
 		sql.append("select p.*, w.c from (");
@@ -353,6 +378,19 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 			sql.append(" and p.title like '%").append(SqlUtils.sqlEscape(topic)).append("%'");
 		}
 		buildStatusSQL(sql, _params, "p", status);
+		if (pitems != null && pitems.size() > 0) {
+			for (final FilterItem fi : pitems) {
+				final String col = fi.getColumn();
+				if (!col.contains(".")) {
+					fi.setColumn("p." + col);
+				}
+			}
+			final ExpressionValue ev = toExpressionValue(pitems);
+			sql.append(" and (").append(ev.getExpression()).append(")");
+			for (final Object o : ev.getValues()) {
+				_params.add(o);
+			}
+		}
 		sql.append(" order by p.createdate desc");
 		return new SQLValue(sql, _params.toArray());
 	}
@@ -571,14 +609,16 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 				// 更新流程实例计数
 				final ProcessModelBean processModel = getProcessModel(process);
 				processModel.setProcessCount(
-						getProcessList(null, new ProcessModelBean[] { processModel }, "").getCount());
+						getProcessList(null, new ProcessModelBean[] { processModel }, "", null, null)
+								.getCount());
 				wfpmService.update(new String[] { "processCount" }, processModel);
 
 				final ID domainId = process.getDomainId();
 				final ProcessModelDomainR r = wfpmdService.getProcessModelDomainR(domainId,
 						processModel);
 				r.setProcessCount(
-						getProcessList(domainId, new ProcessModelBean[] { processModel }, "").getCount());
+						getProcessList(domainId, new ProcessModelBean[] { processModel }, "", null, null)
+								.getCount());
 				wfpmdService.update(new String[] { "processCount" }, r);
 			}
 
