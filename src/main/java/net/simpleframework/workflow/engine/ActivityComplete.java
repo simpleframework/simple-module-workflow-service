@@ -199,7 +199,10 @@ public class ActivityComplete extends ObjectEx implements IWorkflowContextAware 
 		}
 		for (final TransitionNode transition : values) {
 			final List<Participant> l = getParticipants(transition);
-			if (isParticipantManual(transition.to()) && (l != null && l.size() > 1)) {
+			boolean isParticipantManual=isParticipantManual(transition.to());
+			if(!this.bcomplete&&isParticipantManual){
+				return true;//hwz070210如果是发送时不需要判断执行者数量
+			}else if (isParticipantManual && (l != null && l.size() > 1)) {
 				return true;
 			}
 		}
