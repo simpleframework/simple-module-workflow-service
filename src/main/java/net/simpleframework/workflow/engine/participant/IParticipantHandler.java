@@ -37,9 +37,11 @@ public interface IParticipantHandler extends IWorkflowHandler, IWorkflowContextA
 		}
 
 		protected Object eval(final IScriptEval script, String val) {
-			val = val.trim();
-			if (val.startsWith("${") && val.endsWith("}")) {
-				return script.eval(val.substring(2, val.length() - 1));
+			if (val != null) {
+				val = val.trim();
+				if (val.startsWith("${") && val.endsWith("}")) {
+					return script.eval(val.substring(2, val.length() - 1));
+				}
 			}
 			return val;
 		}
