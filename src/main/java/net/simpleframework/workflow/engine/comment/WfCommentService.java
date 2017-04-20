@@ -63,7 +63,7 @@ public class WfCommentService extends AbstractCommentService<WfComment>
 
 	protected void updateProcessComments(final WfComment c) {
 		final ProcessBean process = wfpService.getBean(c.getContentId());
-		if(null!=process){
+		if (null != process) {
 			process.setComments(count("contentId=?", process.getId()));
 			wfpService.update(new String[] { "comments" }, process);
 		}
