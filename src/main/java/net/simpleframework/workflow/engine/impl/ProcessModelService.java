@@ -169,40 +169,32 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 		}
 		return processModel;
 	}
-
+	
 	@Override
 	public InitiateItems getInitiateItems(final ID userId) {
+		return getInitiateItems(null, userId);
+	}
+	
+	@Override
+	public InitiateItems getInitiateItems(final ProcessModelBean pb,final ID userId){
 		if (userId == null) {
 			return InitiateItems.NULL_ITEMS;
 		}
 
 		final InitiateItems items = new InitiateItems();
-		final IDataQuery<ProcessModelBean> query = getModelList(EProcessModelStatus.deploy);
-		ProcessModelBean processModel;
-		while ((processModel = query.next()) != null) {
-			final AbstractProcessStartupType startupType = getProcessDocument(processModel)
-					.getProcessNode().getStartupType();
-			if (startupType instanceof Manual) {
-				final KVMap variables = new KVMap().add("model", processModel)
-						.add(PermissionConst.VAR_USERID, userId);
-				final AbstractParticipantType pt = ((Manual) startupType).getParticipantType();
-				final String participant = pt.getParticipant();
-				if (pt instanceof User) {
-					final ID userId2 = permission.getUser(participant).getId();
-					if (userId.equals(userId2)) {
-						items.add(new InitiateItem(processModel, userId, null, variables));
-					}
-				} else if (pt instanceof BaseRole) {
-					final ID roleId = permission.getRole(participant, variables).getId();
-					if (permission.getUser(userId).isMember(roleId, variables)) {
-						final ID _roleId = (ID) variables.get(PermissionConst.VAR_ROLEID);
-						// 采用VAR_ROLEID定义的角色, 角色嵌套
-						items.add(new InitiateItem(processModel, userId,
-								_roleId != null ? _roleId : roleId, variables));
-					}
+		if(null!=pb){
+			InitiateItem iitem = getInitiateItem(pb, userId);
+			if(null!=iitem){
+				items.add(iitem);
+			}
+		}else{
+			final IDataQuery<ProcessModelBean> query = getModelList(EProcessModelStatus.deploy);
+			ProcessModelBean processModel;
+			while ((processModel = query.next()) != null) {
+				InitiateItem iitem = getInitiateItem(processModel, userId);
+				if(null!=iitem){
+					items.add(iitem);
 				}
-			} else {
-				//
 			}
 		}
 		return items;
@@ -210,7 +202,39 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 
 	@Override
 	public boolean isStartProcess(final ID userId, final Object model) {
-		return getInitiateItems(userId).get(model) != null;
+		if(model instanceof ProcessModelBean){
+			return getInitiateItem((ProcessModelBean)model,userId) != null;
+		}else{
+			return getInitiateItems(userId).get(model) != null;
+		}
+	}
+	
+	private InitiateItem getInitiateItem(final ProcessModelBean processModel,final ID userId){
+		final AbstractProcessStartupType startupType = getProcessDocument(processModel)
+				.getProcessNode().getStartupType();
+		if (startupType instanceof Manual) {
+			final KVMap variables = new KVMap().add("model", processModel)
+					.add(PermissionConst.VAR_USERID, userId);
+			final AbstractParticipantType pt = ((Manual) startupType).getParticipantType();
+			final String participant = pt.getParticipant();
+			if (pt instanceof User) {
+				final ID userId2 = permission.getUser(participant).getId();
+				if (userId.equals(userId2)) {
+					return new InitiateItem(processModel, userId, null, variables);
+				}
+			} else if (pt instanceof BaseRole) {
+				final ID roleId = permission.getRole(participant, variables).getId();
+				if (permission.getUser(userId).isMember(roleId, variables)) {
+					final ID _roleId = (ID) variables.get(PermissionConst.VAR_ROLEID);
+					// 采用VAR_ROLEID定义的角色, 角色嵌套
+					return new InitiateItem(processModel, userId,
+							_roleId != null ? _roleId : roleId, variables);
+				}
+			}
+		} else {
+			//
+		}
+		return null;
 	}
 
 	@Override
