@@ -85,6 +85,12 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean>
 	public void doComplete(final ActivityComplete activityComplete) {
 		_doComplete(activityComplete);
 	}
+	
+	protected boolean isCreateNext(final ProcessBean process){
+		//单提出来，在业务中覆盖，因为有的业务流程结束后活动的节点还需要发下一节点
+		// 如果流程处在最终状态，则不创建后续环节
+		return !wfpService.isFinalStatus(process);
+	}
 
 	private void _doComplete(final ActivityComplete activityComplete) {
 		final ActivityBean activity = activityComplete.getActivity();
@@ -108,7 +114,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean>
 		final Date createDate = new Date();
 		ActivityBean endActivity = null;
 		// 如果流程处在最终状态，则不创建后续环节
-		if (!wfpService.isFinalStatus(process)) {
+		if (isCreateNext(process)) {
 			// 如果存在定义的后续环节，则按此创建
 			final ActivityBean nextActivity = getFallbackNextActivity(activity);
 			if (nextActivity != null) {
