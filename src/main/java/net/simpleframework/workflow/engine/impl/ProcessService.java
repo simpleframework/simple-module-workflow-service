@@ -525,12 +525,26 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 	@Override
 	public void doRunning(final ProcessBean process) {
 		final EProcessStatus status = process.getStatus();
-		if (!(process.getStatus() == EProcessStatus.complete || process.getStatus() == EProcessStatus.abort)) {
+		final boolean complete = status == EProcessStatus.complete;
+		if (!(complete || status == EProcessStatus.abort)) {
 			throw WorkflowStatusException.of(process, status, EProcessStatus.complete);
 		}
-		final ActivityBean end = wfaService.query("processId=? and tasknodeType=? and status=?",
+		
+		ActivityBean end = wfaService.query("processId=? and tasknodeType=? and status=?",
 				process.getId(), AbstractTaskNode.TT_END, EActivityStatus.complete).next();
-		wfaService.doFallback(end);
+		if(null==end&&status == EProcessStatus.abort){
+			end = wfaService.query("processId=? and tasknodeType=? and status=? order by createdate desc",
+					process.getId(), AbstractTaskNode.TT_USER, EActivityStatus.abort).next();
+			
+			//有的时候没有放弃节点,需要查最后运行的节点
+			ActivityBean endr = wfaService.query("processId=? and tasknodeType=? and status=? order by createdate desc",
+					process.getId(), AbstractTaskNode.TT_USER, EActivityStatus.running).next();
+			
+			if(null==endr||(!end.getTasknodeId().equals(endr.getTasknodeId())))
+				wfaService.doResumeFromAbort(end);
+		}else{
+			wfaService.doFallback(end);
+		}
 
 		process.setAttr("_status", Boolean.TRUE);
 		process.setStatus(EProcessStatus.running);

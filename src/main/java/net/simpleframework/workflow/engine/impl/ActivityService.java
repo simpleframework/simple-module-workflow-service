@@ -581,6 +581,11 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean>
 		_assert(activity, EActivityStatus.suspended);
 		_status(activity, EActivityStatus.running);
 	}
+	
+	@Override
+	public ActivityBean doResumeFromAbort(final ActivityBean activity){
+		return _clone(activity, null, true);
+	}
 
 	@Override
 	public List<ActivityBean> getActivities(final ProcessBean processBean,
