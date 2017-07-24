@@ -525,7 +525,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 	@Override
 	public void doRunning(final ProcessBean process) {
 		final EProcessStatus status = process.getStatus();
-		if (status != EProcessStatus.complete) {
+		if (!(process.getStatus() == EProcessStatus.complete || process.getStatus() == EProcessStatus.abort)) {
 			throw WorkflowStatusException.of(process, status, EProcessStatus.complete);
 		}
 		final ActivityBean end = wfaService.query("processId=? and tasknodeType=? and status=?",
