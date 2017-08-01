@@ -609,6 +609,10 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean>
 		}
 		wfusService.update(stat);
 	}
+	
+	protected void _onAfterInsert(final WorkitemBean workitem){
+		//用于子类继承处理
+	}
 
 	@Override
 	public void onInit() throws Exception {
@@ -685,6 +689,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean>
 						doWorkitemDelegation(workitem, delegation.getSourceId(), delegation.getUserId(),
 								null, null, $m("WorkitemService.5", workitem.getUserText()));
 					}
+					_onAfterInsert(workitem);
 					// 设置用户统计
 					doUserStat_readMark(workitem);
 					doUserStat_status(workitem.getUserId());
