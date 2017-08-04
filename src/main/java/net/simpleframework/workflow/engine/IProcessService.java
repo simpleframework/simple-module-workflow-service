@@ -90,6 +90,8 @@ public interface IProcessService
 	 */
 	IDataQuery<ProcessBean> getProcessWlist(ID userId, ProcessModelBean[] processModel, String topic,
 			EProcessStatus[] status, FilterItems pitems);
+	IDataQuery<ProcessBean> getProcessWlist(final ID userId, ProcessModelBean[] processModels,
+			final String topic, final EProcessStatus[] status, final FilterItems pitems, final FilterItems witems);
 
 	/**
 	 * 获取指定部门下经办的流程实例

@@ -266,14 +266,28 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 	@Override
 	public IDataQuery<ProcessBean> getProcessWlist(final ID userId, ProcessModelBean[] processModels,
 			final String topic, final EProcessStatus[] status, final FilterItems pitems) {
+		return getProcessWlist(userId, processModels, topic, status, pitems, null);
+	}
+	@Override
+	public IDataQuery<ProcessBean> getProcessWlist(final ID userId, ProcessModelBean[] processModels,
+			final String topic, final EProcessStatus[] status, final FilterItems pitems, final FilterItems witems) {
 		if (userId == null) {
 			return DataQueryUtils.nullQuery();
 		}
 		final StringBuilder sql = new StringBuilder();
-		final List<Object> params = ArrayUtils.toParams(userId);
+		final List<Object> params = new ArrayList<Object>();//ArrayUtils.toParams(userId);
+		String wsql=null;
+		if (witems != null && witems.size() > 0) {
+			final ExpressionValue ev = toExpressionValue(witems);
+			wsql=ev.getExpression();
+			for (final Object o : ev.getValues()) {
+				params.add(o);
+			}
+		}
+		params.add(userId);
 		sql.append("select p.*, w.c from (");
 		sql.append("select processid, count(*) as c from ").append(getTablename(WorkitemBean.class));
-		sql.append(" where userid2=? group by processid");
+		sql.append(" where"+(null==wsql?"":"("+wsql+") and")+" userid2=? group by processid");
 		sql.append(") w left join ").append(getTablename(ProcessBean.class));
 		sql.append(" p on p.id=w.processid where 1=1");
 		if (processModels != null) {
