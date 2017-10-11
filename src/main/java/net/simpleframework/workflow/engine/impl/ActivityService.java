@@ -130,7 +130,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean>
 						// 空节点直接完成
 						if (_to.isEmpty()) {
 							for (final ActivityBean next : getNextActivities(activity)) {
-								if (next.getTasknodeId().equals(_to.getId())) {
+								if (next.getTasknodeId().equals(_to.getId())&&!isFinalStatus(next)) {
+									//加上&&!isFinalStatus(next)因为在发送时会发送多次,而以前发的有的已经完成了
 									new ActivityComplete(next).complete();
 								}
 							}
