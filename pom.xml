@@ -14,7 +14,7 @@
   <parent>
     <groupId>com.sansoft</groupId>
 	<artifactId>sansoft-simpleframework-pom</artifactId>
-	<version>1.1.14</version>
+	<version>1.1.15</version>
   </parent>
   <groupId>net.simpleframework</groupId>
   <version>4.1.8</version>
