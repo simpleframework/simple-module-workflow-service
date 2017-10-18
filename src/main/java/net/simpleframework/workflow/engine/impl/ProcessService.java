@@ -264,22 +264,25 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 	}
 
 	@Override
-	public IDataQuery<ProcessBean> getProcessWlist(final ID userId, ProcessModelBean[] processModels,
-			final String topic, final EProcessStatus[] status, final FilterItems pitems) {
+	public IDataQuery<ProcessBean> getProcessWlist(final ID userId,
+			final ProcessModelBean[] processModels, final String topic, final EProcessStatus[] status,
+			final FilterItems pitems) {
 		return getProcessWlist(userId, processModels, topic, status, pitems, null);
 	}
+
 	@Override
 	public IDataQuery<ProcessBean> getProcessWlist(final ID userId, ProcessModelBean[] processModels,
-			final String topic, final EProcessStatus[] status, final FilterItems pitems, final FilterItems witems) {
+			final String topic, final EProcessStatus[] status, final FilterItems pitems,
+			final FilterItems witems) {
 		if (userId == null) {
 			return DataQueryUtils.nullQuery();
 		}
 		final StringBuilder sql = new StringBuilder();
-		final List<Object> params = new ArrayList<Object>();//ArrayUtils.toParams(userId);
-		String wsql=null;
+		final List<Object> params = new ArrayList<Object>();// ArrayUtils.toParams(userId);
+		String wsql = null;
 		if (witems != null && witems.size() > 0) {
 			final ExpressionValue ev = toExpressionValue(witems);
-			wsql=ev.getExpression();
+			wsql = ev.getExpression();
 			for (final Object o : ev.getValues()) {
 				params.add(o);
 			}
@@ -287,7 +290,8 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 		params.add(userId);
 		sql.append("select p.*, w.c from (");
 		sql.append("select processid, count(*) as c from ").append(getTablename(WorkitemBean.class));
-		sql.append(" where"+(null==wsql?"":"("+wsql+") and")+" userid2=? group by processid");
+		sql.append(" where" + (null == wsql ? "" : "(" + wsql + ") and")
+				+ " userid2=? group by processid");
 		sql.append(") w left join ").append(getTablename(ProcessBean.class));
 		sql.append(" p on p.id=w.processid where 1=1");
 		if (processModels != null) {
@@ -543,20 +547,25 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 		if (!(complete || status == EProcessStatus.abort)) {
 			throw WorkflowStatusException.of(process, status, EProcessStatus.complete);
 		}
-		
+
 		ActivityBean end = wfaService.query("processId=? and tasknodeType=? and status=?",
 				process.getId(), AbstractTaskNode.TT_END, EActivityStatus.complete).next();
-		if(null==end&&status == EProcessStatus.abort){
-			end = wfaService.query("processId=? and tasknodeType=? and status=? order by createdate desc",
-					process.getId(), AbstractTaskNode.TT_USER, EActivityStatus.abort).next();
-			
-			//有的时候没有放弃节点,需要查最后运行的节点
-			ActivityBean endr = wfaService.query("processId=? and tasknodeType=? and status=? order by createdate desc",
-					process.getId(), AbstractTaskNode.TT_USER, EActivityStatus.running).next();
-			
-			if(null==endr||(!end.getTasknodeId().equals(endr.getTasknodeId())))
+		if (null == end && status == EProcessStatus.abort) {
+			end = wfaService
+					.query("processId=? and tasknodeType=? and status=? order by createdate desc",
+							process.getId(), AbstractTaskNode.TT_USER, EActivityStatus.abort)
+					.next();
+
+			// 有的时候没有放弃节点,需要查最后运行的节点
+			final ActivityBean endr = wfaService
+					.query("processId=? and tasknodeType=? and status=? order by createdate desc",
+							process.getId(), AbstractTaskNode.TT_USER, EActivityStatus.running)
+					.next();
+
+			if (null == endr || (!end.getTasknodeId().equals(endr.getTasknodeId()))) {
 				wfaService.doResumeFromAbort(end);
-		}else{
+			}
+		} else {
 			wfaService.doFallback(end);
 		}
 

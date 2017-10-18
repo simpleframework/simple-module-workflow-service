@@ -76,7 +76,8 @@ public interface IProcessModelService extends IWorkflowService<ProcessModelBean>
 	 * @return
 	 */
 	InitiateItems getInitiateItems(ID userId);
-	InitiateItems getInitiateItems(final ProcessModelBean pb,final ID userId);
+
+	InitiateItems getInitiateItems(final ProcessModelBean pb, final ID userId);
 
 	/**
 	 * 判断用户是否可以启动指定的流程模型

@@ -609,9 +609,9 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean>
 		}
 		wfusService.update(stat);
 	}
-	
-	protected void _onAfterInsert(final WorkitemBean workitem){
-		//用于子类继承处理
+
+	protected void _onAfterInsert(final WorkitemBean workitem) {
+		// 用于子类继承处理
 	}
 
 	@Override

@@ -120,7 +120,7 @@ public interface IActivityService
 	 * @param activity
 	 */
 	void doResume(ActivityBean activity);
-	
+
 	/**
 	 * 恢复被放弃的节点当前环节，采用克隆方式
 	 * 

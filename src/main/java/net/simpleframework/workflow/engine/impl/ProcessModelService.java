@@ -169,30 +169,30 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 		}
 		return processModel;
 	}
-	
+
 	@Override
 	public InitiateItems getInitiateItems(final ID userId) {
 		return getInitiateItems(null, userId);
 	}
-	
+
 	@Override
-	public InitiateItems getInitiateItems(final ProcessModelBean pb,final ID userId){
+	public InitiateItems getInitiateItems(final ProcessModelBean pb, final ID userId) {
 		if (userId == null) {
 			return InitiateItems.NULL_ITEMS;
 		}
 
 		final InitiateItems items = new InitiateItems();
-		if(null!=pb){
-			InitiateItem iitem = getInitiateItem(pb, userId);
-			if(null!=iitem){
+		if (null != pb) {
+			final InitiateItem iitem = getInitiateItem(pb, userId);
+			if (null != iitem) {
 				items.add(iitem);
 			}
-		}else{
+		} else {
 			final IDataQuery<ProcessModelBean> query = getModelList(EProcessModelStatus.deploy);
 			ProcessModelBean processModel;
 			while ((processModel = query.next()) != null) {
-				InitiateItem iitem = getInitiateItem(processModel, userId);
-				if(null!=iitem){
+				final InitiateItem iitem = getInitiateItem(processModel, userId);
+				if (null != iitem) {
 					items.add(iitem);
 				}
 			}
@@ -202,14 +202,14 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 
 	@Override
 	public boolean isStartProcess(final ID userId, final Object model) {
-		if(model instanceof ProcessModelBean){
-			return getInitiateItem((ProcessModelBean)model,userId) != null;
-		}else{
+		if (model instanceof ProcessModelBean) {
+			return getInitiateItem((ProcessModelBean) model, userId) != null;
+		} else {
 			return getInitiateItems(userId).get(model) != null;
 		}
 	}
-	
-	private InitiateItem getInitiateItem(final ProcessModelBean processModel,final ID userId){
+
+	private InitiateItem getInitiateItem(final ProcessModelBean processModel, final ID userId) {
 		final AbstractProcessStartupType startupType = getProcessDocument(processModel)
 				.getProcessNode().getStartupType();
 		if (startupType instanceof Manual) {
@@ -227,8 +227,8 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 				if (permission.getUser(userId).isMember(roleId, variables)) {
 					final ID _roleId = (ID) variables.get(PermissionConst.VAR_ROLEID);
 					// 采用VAR_ROLEID定义的角色, 角色嵌套
-					return new InitiateItem(processModel, userId,
-							_roleId != null ? _roleId : roleId, variables);
+					return new InitiateItem(processModel, userId, _roleId != null ? _roleId : roleId,
+							variables);
 				}
 			}
 		} else {

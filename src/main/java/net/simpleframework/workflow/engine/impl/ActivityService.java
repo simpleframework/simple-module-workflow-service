@@ -85,9 +85,9 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean>
 	public void doComplete(final ActivityComplete activityComplete) {
 		_doComplete(activityComplete);
 	}
-	
-	protected boolean isCreateNext(final ProcessBean process){
-		//单提出来，在业务中覆盖，因为有的业务流程结束后活动的节点还需要发下一节点
+
+	protected boolean isCreateNext(final ProcessBean process) {
+		// 单提出来，在业务中覆盖，因为有的业务流程结束后活动的节点还需要发下一节点
 		// 如果流程处在最终状态，则不创建后续环节
 		return !wfpService.isFinalStatus(process);
 	}
@@ -130,8 +130,8 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean>
 						// 空节点直接完成
 						if (_to.isEmpty()) {
 							for (final ActivityBean next : getNextActivities(activity)) {
-								if (next.getTasknodeId().equals(_to.getId())&&!isFinalStatus(next)) {
-									//加上&&!isFinalStatus(next)因为在发送时会发送多次,而以前发的有的已经完成了
+								if (next.getTasknodeId().equals(_to.getId()) && !isFinalStatus(next)) {
+									// 加上&&!isFinalStatus(next)因为在发送时会发送多次,而以前发的有的已经完成了
 									new ActivityComplete(next).complete();
 								}
 							}
@@ -582,9 +582,9 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean>
 		_assert(activity, EActivityStatus.suspended);
 		_status(activity, EActivityStatus.running);
 	}
-	
+
 	@Override
-	public ActivityBean doResumeFromAbort(final ActivityBean activity){
+	public ActivityBean doResumeFromAbort(final ActivityBean activity) {
 		return _clone(activity, null, true);
 	}
 
