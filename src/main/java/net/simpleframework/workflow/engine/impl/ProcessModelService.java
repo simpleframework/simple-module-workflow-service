@@ -148,6 +148,8 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 			public int compare(final ProcessModelBean pm1, final ProcessModelBean pm2) {
 				final ProcessNode pn1 = wfpmService.getProcessDocument(pm1).getProcessNode();
 				final ProcessNode pn2 = wfpmService.getProcessDocument(pm2).getProcessNode();
+				if(pn1.getOorder() == pn2.getOorder())
+					return 0;//jdk7及以上不返回0会抛 Comparison method violates its general contract!
 				return pn1.getOorder() > pn2.getOorder() ? 1 : -1;
 			}
 		});
