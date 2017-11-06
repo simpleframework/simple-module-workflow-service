@@ -22,7 +22,7 @@ public class ParticipantUserHandler extends AbstractParticipantHandler {
 	@Override
 	public Collection<Participant> getParticipants(final IScriptEval script,
 			final ActivityComplete activityComplete, final Map<String, Object> variables) {
-		final List<Participant> participants = new ArrayList<Participant>();
+		final List<Participant> participants = new ArrayList<>();
 		final Object participant = eval(script, getParticipantType(variables).getParticipant());
 		if (participant != null) {
 			if (participant instanceof Iterable) {

@@ -20,7 +20,7 @@ public abstract class ParticipantUtils {
 
 	private static HashMap<Class<? extends AbstractParticipantType>, IParticipantHandler> handlerCache;
 	static {
-		handlerCache = new HashMap<Class<? extends AbstractParticipantType>, IParticipantHandler>();
+		handlerCache = new HashMap<>();
 		handlerCache.put(AbstractParticipantType.User.class, new ParticipantUserHandler());
 		handlerCache.put(UserNode.Role.class, new ParticipantRoleHandler());
 		handlerCache.put(UserNode.RelativeRole.class, new ParticipantRelativeRoleHandler());

@@ -70,7 +70,7 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean>
 		wfvsService.insert(sent);
 
 		// 创建接收记录
-		final List<WorkviewBean> list = new ArrayList<WorkviewBean>();
+		final List<WorkviewBean> list = new ArrayList<>();
 		for (final ID id : userIds) {
 			// 重复发送则忽略
 			if (getWorkviewBean(processId, id) != null) {
@@ -135,7 +135,7 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean>
 	@Override
 	public IDataQuery<WorkviewBean> getChildren(final WorkitemBean workitem, final ID parentId) {
 		final StringBuilder sql = new StringBuilder("workitemid=?");
-		final List<Object> params = new ArrayList<Object>();
+		final List<Object> params = new ArrayList<>();
 		params.add(workitem.getId());
 		if (parentId == null) {
 			sql.append(" and parentid is null");

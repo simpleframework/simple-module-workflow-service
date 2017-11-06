@@ -42,7 +42,7 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 	private final Map<String, Object> variables = new KVMap();
 
 	/* 存放开始节点的手动转移 */
-	private final Map<String, TransitionNode> _transitions = new LinkedHashMap<String, TransitionNode>();
+	private final Map<String, TransitionNode> _transitions = new LinkedHashMap<>();
 
 	public InitiateItem(final ProcessModelBean processModel, final ID userId, final ID roleId,
 			final Map<String, Object> variables) {
@@ -106,7 +106,7 @@ public class InitiateItem extends ObjectEx implements IWorkflowContextAware {
 	}
 
 	public List<TransitionNode> getTransitions() {
-		return new ArrayList<TransitionNode>(_transitions.values());
+		return new ArrayList<>(_transitions.values());
 	}
 
 	public void resetTransitions(final String[] transitionIds) {

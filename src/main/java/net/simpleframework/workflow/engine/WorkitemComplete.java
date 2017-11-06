@@ -87,7 +87,7 @@ public class WorkitemComplete extends ObjectEx implements IWorkflowContextAware 
 		WORKITEMCOMPLETE_CACHE.remove(workitemId);
 	}
 
-	private static Map<ID, WorkitemComplete> WORKITEMCOMPLETE_CACHE = new ConcurrentHashMap<ID, WorkitemComplete>();
+	private static Map<ID, WorkitemComplete> WORKITEMCOMPLETE_CACHE = new ConcurrentHashMap<>();
 
 	public static WorkitemComplete get(final WorkitemBean workitem) {
 		final ID key = workitem.getId();

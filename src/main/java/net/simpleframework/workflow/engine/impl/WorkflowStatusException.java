@@ -30,7 +30,7 @@ public class WorkflowStatusException extends RuntimeExceptionEx {
 	private static List<Class<?>> BEANCLASS_LIST;
 
 	static {
-		BEANCLASS_LIST = new ArrayList<Class<?>>();
+		BEANCLASS_LIST = new ArrayList<>();
 		BEANCLASS_LIST.add(EProcessModelStatus.class);
 		BEANCLASS_LIST.add(EProcessStatus.class);
 		BEANCLASS_LIST.add(EActivityStatus.class);

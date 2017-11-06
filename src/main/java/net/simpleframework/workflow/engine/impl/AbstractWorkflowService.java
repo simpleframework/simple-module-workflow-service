@@ -44,7 +44,7 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean>
 		extends AbstractDbBeanService<T> implements IWorkflowService<T> {
 	static Collection<String> defaultExpr;
 	static {
-		defaultExpr = new ArrayList<String>();
+		defaultExpr = new ArrayList<>();
 		defaultExpr.add("import " + ID.class.getPackage().getName() + ".*;");
 		defaultExpr.add("import " + WorkflowContext.class.getPackage().getName() + ".*;");
 	}
@@ -135,11 +135,11 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean>
 		return singleton(WorkCalendarAdapter.class);
 	}
 
-	private final Map<ID, Set<String>> listenerClassMap = new ConcurrentHashMap<ID, Set<String>>();
+	private final Map<ID, Set<String>> listenerClassMap = new ConcurrentHashMap<>();
 
 	public Collection<IWorkflowListener> getEventListeners(final T bean) {
 		final Set<String> set = getListeners(bean);
-		final ArrayList<IWorkflowListener> al = new ArrayList<IWorkflowListener>();
+		final ArrayList<IWorkflowListener> al = new ArrayList<>();
 		for (final String listenerClass : set) {
 			final IWorkflowListener l = (IWorkflowListener) singleton(listenerClass);
 			if ((bean instanceof ProcessModelBean && l instanceof IProcessModelListener)
@@ -153,7 +153,7 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean>
 	}
 
 	private Set<String> getListeners(final T bean) {
-		final Set<String> set = new LinkedHashSet<String>();
+		final Set<String> set = new LinkedHashSet<>();
 		Set<String> _set = null;
 		if (bean instanceof ProcessModelBean) {
 			_set = wfpmService.getProcessDocument((ProcessModelBean) bean).getProcessNode()
@@ -189,7 +189,7 @@ public abstract class AbstractWorkflowService<T extends AbstractIdBean>
 		final ID id = bean.getId();
 		Set<String> set = listenerClassMap.get(id);
 		if (set == null) {
-			listenerClassMap.put(id, set = new LinkedHashSet<String>());
+			listenerClassMap.put(id, set = new LinkedHashSet<>());
 		}
 		set.add(listenerClass.getName());
 	}

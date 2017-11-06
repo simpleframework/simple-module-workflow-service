@@ -22,7 +22,7 @@ public abstract class PropSequential implements IWorkflowContextAware {
 	static final String SEQUENTIAL = "sequential";
 
 	public static List<?> list(final ActivityBean activity) {
-		final List<Object> l = new ArrayList<Object>();
+		final List<Object> l = new ArrayList<>();
 		for (final String str : StringUtils.split(activity.getProperties().getProperty(SEQUENTIAL),
 				";")) {
 			final Object o = str.charAt(0) == '#' ? wfwService.getBean(str.substring(1))

@@ -122,7 +122,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 	@Override
 	public IDataQuery<ProcessModelBean> getModelList(final EProcessModelStatus... status) {
 		final StringBuilder sql = new StringBuilder("1=1");
-		final ArrayList<Object> params = new ArrayList<Object>();
+		final ArrayList<Object> params = new ArrayList<>();
 		buildStatusSQL(sql, params, status);
 		return query(sql.append(DEFAULT_ORDERBY).toString(), params.toArray());
 	}
@@ -135,7 +135,7 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 						.append(getTablename(ProcessModelDomainR.class)).append(" d right join ")
 						.append(getTablename(ProcessModelBean.class))
 						.append(" m on d.modelid = m.id where d.domainid=?");
-		final ArrayList<Object> params = new ArrayList<Object>();
+		final ArrayList<Object> params = new ArrayList<>();
 		params.add(domainId);
 		buildStatusSQL(sql, params, "m", status);
 		return getEntityManager().queryBeans(new SQLValue(sql, params.toArray()));
@@ -148,8 +148,10 @@ public class ProcessModelService extends AbstractWorkflowService<ProcessModelBea
 			public int compare(final ProcessModelBean pm1, final ProcessModelBean pm2) {
 				final ProcessNode pn1 = wfpmService.getProcessDocument(pm1).getProcessNode();
 				final ProcessNode pn2 = wfpmService.getProcessDocument(pm2).getProcessNode();
-				if(pn1.getOorder() == pn2.getOorder())
-					return 0;//jdk7及以上不返回0会抛 Comparison method violates its general contract!
+				if (pn1.getOorder() == pn2.getOorder()) {
+					return 0;// jdk7及以上不返回0会抛 Comparison method violates its general
+				}
+				// contract!
 				return pn1.getOorder() > pn2.getOorder() ? 1 : -1;
 			}
 		});

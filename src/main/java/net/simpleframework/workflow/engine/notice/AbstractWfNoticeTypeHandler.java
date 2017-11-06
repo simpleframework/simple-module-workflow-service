@@ -17,7 +17,7 @@ import net.simpleframework.ctx.hdl.AbstractScanHandler;
 public abstract class AbstractWfNoticeTypeHandler extends AbstractScanHandler
 		implements IWfNoticeTypeHandler {
 
-	static Map<Integer, IWfNoticeTypeHandler> regists = new HashMap<Integer, IWfNoticeTypeHandler>();
+	static Map<Integer, IWfNoticeTypeHandler> regists = new HashMap<>();
 
 	@Override
 	public void onScan(final IApplicationContext application) throws Exception {

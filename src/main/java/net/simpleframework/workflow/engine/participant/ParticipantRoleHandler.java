@@ -23,7 +23,7 @@ public class ParticipantRoleHandler extends AbstractParticipantHandler {
 	@Override
 	public Collection<Participant> getParticipants(final IScriptEval script,
 			final ActivityComplete activityComplete, final Map<String, Object> variables) {
-		final ArrayList<Participant> participants = new ArrayList<Participant>();
+		final ArrayList<Participant> participants = new ArrayList<>();
 		final Object participant = eval(script, getParticipantType(variables).getParticipant());
 		final ID roleId = permission.getRole(participant, variables).getId();
 		final Iterator<PermissionUser> users = permission.users(roleId, variables);

@@ -413,7 +413,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean>
 	@Override
 	public List<WorkitemBean> getNextWorkitems(final ActivityBean preActivity,
 			final EWorkitemStatus... status) {
-		final List<WorkitemBean> workitems = new ArrayList<WorkitemBean>();
+		final List<WorkitemBean> workitems = new ArrayList<>();
 		for (final ActivityBean activity : wfaService.getNextActivities(preActivity)) {
 			workitems.addAll(getWorkitems(activity, status));
 		}
@@ -423,7 +423,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean>
 	@Override
 	public List<WorkitemBean> getWorkitems(final ActivityBean activity,
 			final EWorkitemStatus... status) {
-		final List<WorkitemBean> workitems = new ArrayList<WorkitemBean>();
+		final List<WorkitemBean> workitems = new ArrayList<>();
 		if (activity != null) {
 			WorkitemBean workitem;
 			final IDataQuery<WorkitemBean> dq = query("activityId=?", activity.getId());
@@ -479,7 +479,7 @@ public class WorkitemService extends AbstractWorkflowService<WorkitemBean>
 			final List<ProcessModelBean> models, final FilterItems items,
 			final EWorkitemStatus... status) {
 		final StringBuilder sql = new StringBuilder("1=1");
-		final ArrayList<Object> params = new ArrayList<Object>();
+		final ArrayList<Object> params = new ArrayList<>();
 		if (process != null) {
 			sql.append(" and processid=?");
 			params.add(process.getId());

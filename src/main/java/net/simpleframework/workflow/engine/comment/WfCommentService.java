@@ -41,7 +41,7 @@ public class WfCommentService extends AbstractCommentService<WfComment>
 					EWorkitemStatus.complete);
 
 			final ID processId = process.getId();
-			final HashSet<ID> users = new HashSet<ID>();
+			final HashSet<ID> users = new HashSet<>();
 			for (final WorkitemBean w : list) {
 				users.add(w.getUserId2());
 			}

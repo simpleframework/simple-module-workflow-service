@@ -28,7 +28,7 @@ public class ParticipantRelativeRoleHandler extends AbstractParticipantHandler {
 	@Override
 	public Collection<Participant> getParticipants(final IScriptEval script,
 			final ActivityComplete activityComplete, final Map<String, Object> variables) {
-		final ArrayList<Participant> participants = new ArrayList<Participant>();
+		final ArrayList<Participant> participants = new ArrayList<>();
 		final UserNode.RelativeRole rRole = (UserNode.RelativeRole) getParticipantType(variables);
 		final ERelativeType rType = rRole.getRelativeType();
 		if (rType == ERelativeType.processInitiator) {

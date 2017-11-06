@@ -170,7 +170,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean>
 
 			if (!TasknodeUtils.isInstanceShared(tasknode) && !TasknodeUtils.isSequential(tasknode)) {
 				// 多实例并行，处理响应数
-				final ArrayList<ActivityBean> al = new ArrayList<ActivityBean>();
+				final ArrayList<ActivityBean> al = new ArrayList<>();
 				int completes = 0;
 				for (final ActivityBean activity2 : getNextActivities(getPreActivity(activity))) {
 					if (activity2.getTasknodeId().equals(tasknode.getId())) {
@@ -229,7 +229,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean>
 				}
 			}
 		} else {
-			final ArrayList<Participant> participants = new ArrayList<Participant>();
+			final ArrayList<Participant> participants = new ArrayList<>();
 			final boolean sequential = TasknodeUtils.isSequential(to);
 			if (_participants != null && _participants.size() > 0) {
 				if (sequential) {
@@ -268,7 +268,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean>
 
 	@Override
 	public List<Participant> getEmptyParticipants(final ActivityBean activity) {
-		final List<Participant> participants = new ArrayList<Participant>();
+		final List<Participant> participants = new ArrayList<>();
 		for (final String participant : StringUtils
 				.split(activity.getProperties().getProperty(EMPTY_PARTICIPANTS), ";")) {
 			participants.add(Participant.of(participant));
@@ -347,7 +347,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean>
 					}
 				}
 			} else {
-				aborts = new ArrayList<ActivityBean>();
+				aborts = new ArrayList<>();
 
 				complete = false;
 				int completes = 0;
@@ -595,7 +595,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean>
 			return CollectionUtils.EMPTY_LIST();
 		}
 		final StringBuilder sql = new StringBuilder();
-		final ArrayList<Object> params = new ArrayList<Object>();
+		final ArrayList<Object> params = new ArrayList<>();
 		sql.append("processId=?");
 		params.add(processBean.getId());
 		buildStatusSQL(sql, params, status);
@@ -630,7 +630,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean>
 			}
 
 			if (to instanceof UserNode || to instanceof SubNode) {
-				final List<TransitionNode> transitions = new ArrayList<TransitionNode>();
+				final List<TransitionNode> transitions = new ArrayList<>();
 				transitions.add(new TransitionNode(null, null).setFrom(from.getId()).setTo(to.getId()));
 				_doComplete(new ActivityComplete(activity, transitions).setBcomplete(bComplete));
 			} else {
@@ -783,13 +783,13 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean>
 
 	@Override
 	public List<ActivityBean> getLastNextActivities(final ActivityBean preActivity) {
-		final Map<Date, List<ActivityBean>> cache = new HashMap<Date, List<ActivityBean>>();
+		final Map<Date, List<ActivityBean>> cache = new HashMap<>();
 		Date last = null;
 		for (final ActivityBean activity : getNextActivities(preActivity)) {
 			final Date k = activity.getCreateDate();
 			List<ActivityBean> l = cache.get(k);
 			if (l == null) {
-				cache.put(k, l = new ArrayList<ActivityBean>());
+				cache.put(k, l = new ArrayList<>());
 			}
 			l.add(activity);
 			if (last == null || last.before(k)) {
@@ -801,7 +801,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean>
 
 	@Override
 	public List<ActivityBean> getNextAllActivities(final ActivityBean preActivity) {
-		final List<ActivityBean> l = new ArrayList<ActivityBean>();
+		final List<ActivityBean> l = new ArrayList<>();
 		for (final ActivityBean next : getNextActivities(preActivity)) {
 			l.add(next);
 			l.addAll(getNextActivities(next));
@@ -897,7 +897,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean>
 
 	@Override
 	public List<Participant> getParticipants(final ActivityBean activity, final boolean all) {
-		final List<Participant> list = new ArrayList<Participant>();
+		final List<Participant> list = new ArrayList<>();
 		for (final WorkitemBean workitem : wfwService.getWorkitems(activity)) {
 			if (!all && workitem.getStatus().ordinal() > EWorkitemStatus.complete.ordinal()) {
 				continue;
@@ -909,7 +909,7 @@ public class ActivityService extends AbstractWorkflowService<ActivityBean>
 
 	@Override
 	public List<Participant> getParticipants2(final ActivityBean activity) {
-		final List<Participant> list = new ArrayList<Participant>();
+		final List<Participant> list = new ArrayList<>();
 		for (final WorkitemBean workitem : wfwService.getWorkitems(activity,
 				EWorkitemStatus.complete)) {
 			list.add(new Participant(workitem, true));

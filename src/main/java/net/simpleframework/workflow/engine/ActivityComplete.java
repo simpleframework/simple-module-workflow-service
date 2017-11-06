@@ -44,8 +44,8 @@ public class ActivityComplete extends ObjectEx implements IWorkflowContextAware 
 
 	private final Map<String, List<Participant>> _participants;
 	{
-		_transitions = new LinkedHashMap<String, TransitionNode>();
-		_participants = new LinkedHashMap<String, List<Participant>>();
+		_transitions = new LinkedHashMap<>();
+		_participants = new LinkedHashMap<>();
 	}
 
 	/* 是否完成当前环节，当前环节可以不完成，而直接创建后续环节 */
@@ -133,7 +133,7 @@ public class ActivityComplete extends ObjectEx implements IWorkflowContextAware 
 				PermissionConst.VAR_USERID,
 				wfpService.getBean(getActivity().getProcessId()).getUserId());
 		final AbstractParticipantType pt = ((UserNode) toTask).getParticipantType();
-		final ArrayList<Participant> participants = new ArrayList<Participant>();
+		final ArrayList<Participant> participants = new ArrayList<>();
 		if (pt instanceof RuleRole) {
 			final IParticipantHandler hdl = (IParticipantHandler) ObjectFactory
 					.singleton(((UserNode) toTask).getParticipantType().getParticipant());
@@ -187,7 +187,7 @@ public class ActivityComplete extends ObjectEx implements IWorkflowContextAware 
 	public boolean isParticipantManual(final String[] transitionIds) {
 		Collection<TransitionNode> values;
 		if (transitionIds != null) {
-			values = new ArrayList<TransitionNode>();
+			values = new ArrayList<>();
 			for (final String id : transitionIds) {
 				final TransitionNode transition = getTransitionById(id);
 				if (transition != null) {
@@ -226,7 +226,7 @@ public class ActivityComplete extends ObjectEx implements IWorkflowContextAware 
 	}
 
 	public List<TransitionNode> getTransitions() {
-		final ArrayList<TransitionNode> l = new ArrayList<TransitionNode>(_transitions.values());
+		final ArrayList<TransitionNode> l = new ArrayList<>(_transitions.values());
 		Collections.sort(l, new Comparator<TransitionNode>() {
 			@Override
 			public int compare(final TransitionNode o1, final TransitionNode o2) {
@@ -269,9 +269,9 @@ public class ActivityComplete extends ObjectEx implements IWorkflowContextAware 
 			return;
 		}
 
-		final Map<String, List<Participant>> participants = new LinkedHashMap<String, List<Participant>>();
+		final Map<String, List<Participant>> participants = new LinkedHashMap<>();
 		for (final TransitionNode transition : getTransitions()) {
-			final ArrayList<Participant> al = new ArrayList<Participant>();
+			final ArrayList<Participant> al = new ArrayList<>();
 			final String[] parr = participantIds.get(transition.getId());
 			if (parr != null) {
 				for (final String id : parr) {

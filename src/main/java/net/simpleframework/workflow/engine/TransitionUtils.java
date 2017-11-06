@@ -38,7 +38,7 @@ public abstract class TransitionUtils {
 
 	public static void doTransitions(final AbstractTaskNode tasknode, final IScriptEval script,
 			final Map<String, TransitionNode> _transitions) {
-		final Map<String, TransitionNode> logicTransitions = new LinkedHashMap<String, TransitionNode>();
+		final Map<String, TransitionNode> logicTransitions = new LinkedHashMap<>();
 		for (final TransitionNode transition : tasknode.toTransitions()) {
 			final AbstractTransitionType tt = transition.getTransitionType();
 			if (tt instanceof Conditional) {
@@ -62,7 +62,7 @@ public abstract class TransitionUtils {
 			}
 		}
 
-		final ArrayList<TransitionNode> al = new ArrayList<TransitionNode>(logicTransitions.values());
+		final ArrayList<TransitionNode> al = new ArrayList<>(logicTransitions.values());
 		while (al.size() > 0) {
 			final TransitionNode transition = al.remove(0);
 			final LogicConditional lc = (LogicConditional) transition.getTransitionType();
@@ -87,7 +87,7 @@ public abstract class TransitionUtils {
 		if (transitionIds == null) {
 			return;
 		}
-		final Map<String, TransitionNode> transitions = new LinkedHashMap<String, TransitionNode>();
+		final Map<String, TransitionNode> transitions = new LinkedHashMap<>();
 		for (final String id : transitionIds) {
 			final TransitionNode transition = _transitions.get(id);
 			if (transition != null) {

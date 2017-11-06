@@ -225,7 +225,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 			ProcessModelBean[] processModels, final String topic, final EProcessStatus[] status,
 			final FilterItems pitems) {
 		final StringBuilder sql = new StringBuilder("1=1");
-		final ArrayList<Object> params = new ArrayList<Object>();
+		final ArrayList<Object> params = new ArrayList<>();
 		if (domainId != null) {
 			sql.append(" and domainId=?");
 			params.add(domainId);
@@ -278,7 +278,7 @@ public class ProcessService extends AbstractWorkflowService<ProcessBean>
 			return DataQueryUtils.nullQuery();
 		}
 		final StringBuilder sql = new StringBuilder();
-		final List<Object> params = new ArrayList<Object>();// ArrayUtils.toParams(userId);
+		final List<Object> params = new ArrayList<>();// ArrayUtils.toParams(userId);
 		String wsql = null;
 		if (witems != null && witems.size() > 0) {
 			final ExpressionValue ev = toExpressionValue(witems);
