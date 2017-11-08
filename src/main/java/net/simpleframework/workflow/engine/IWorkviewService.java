@@ -50,8 +50,10 @@ public interface IWorkviewService extends IDbBeanService<WorkviewBean>, IWorkflo
 	 * @return
 	 */
 	IDataQuery<WorkviewBean> getWorkviewsList(ID userId);
+	IDataQuery<WorkviewBean> getWorkviewsList(final ID userId,final ID[] modelid);
 
 	IDataQuery<WorkviewBean> getUnreadWorkviewsList(ID userId);
+	IDataQuery<WorkviewBean> getUnreadWorkviewsList(ID userId,final ID[] modelid);
 
 	IDataQuery<WorkviewBean> getWorkviewsListBySent(ID sentId);
 }
