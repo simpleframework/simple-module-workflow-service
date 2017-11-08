@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.plaf.ListUI;
+
 import net.simpleframework.ado.db.IDbEntityManager;
 import net.simpleframework.ado.query.IDataQuery;
 import net.simpleframework.common.ID;
+import net.simpleframework.common.StringUtils;
 import net.simpleframework.common.coll.ArrayUtils;
 import net.simpleframework.ctx.permission.PermissionUser;
 import net.simpleframework.ctx.service.ado.db.AbstractDbBeanService;
@@ -121,10 +124,54 @@ public class WorkviewService extends AbstractDbBeanService<WorkviewBean>
 	public IDataQuery<WorkviewBean> getWorkviewsList(final ID userId) {
 		return query("userId=?" + getDefaultOrderby(), userId);
 	}
+	
+	@Override
+	public IDataQuery<WorkviewBean> getWorkviewsList(final ID userId,final ID[] modelid) {
+		StringBuilder s=new StringBuilder();
+		List<Object> list = new ArrayList<Object>();
+		s.append("userId=?");
+		list.add(userId);
+		if(null!=modelid&&modelid.length>0){
+			s.append(" and ").append(getsql(modelid, "modelId"));
+			list.addAll(ArrayUtils.toParams(modelid));
+		}
+		s.append(getDefaultOrderby());
+		return query(s.toString(),list.toArray() );
+	}
+	
+	private String getsql(final ID[] ids, final String fieldname) {
+		if (ids.length == 1) {
+			return fieldname + "=?";
+		}
+		final StringBuilder sb = new StringBuilder();
+		sb.append("(");
+		for (int i = 0; i < ids.length; i++) {
+			if (i > 0) {
+				sb.append(" or ");
+			}
+			sb.append(fieldname + "=?");
+		}
+		sb.append(")");
+		return sb.toString();
+	}
 
 	@Override
 	public IDataQuery<WorkviewBean> getUnreadWorkviewsList(final ID userId) {
 		return query("userId=? and readMark=?" + getDefaultOrderby(), userId, Boolean.FALSE);
+	}
+	
+	public IDataQuery<WorkviewBean> getUnreadWorkviewsList(final ID userId,final ID[] modelid) {
+		StringBuilder s=new StringBuilder();
+		List<Object> list = new ArrayList<Object>();
+		s.append("userId=? and readMark=?");
+		list.add(userId);
+		list.add(Boolean.FALSE);
+		if(null!=modelid&&modelid.length>0){
+			s.append(" and ").append(getsql(modelid, "modelId"));
+			list.addAll(ArrayUtils.toParams(modelid));
+		}
+		s.append(getDefaultOrderby());
+		return query(s.toString(),list.toArray() );
 	}
 
 	@Override
